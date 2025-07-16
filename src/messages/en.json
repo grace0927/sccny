@@ -43,7 +43,9 @@
     "churchOfficeHours": "Church Office Hours",
     "callBeforeVisit": "Please call before your visit. Thank you.",
     "allRightsReserved": "All rights reserved.",
-    "followUs": "Follow Us:"
+    "followUs": "Follow Us:",
+    "specialGathering": "Special Gathering",
+    "baptismClass": "Baptism Class"
   },
   "About": {
     "title": "About Us"

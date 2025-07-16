@@ -20,20 +20,21 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: { locale?: string | undefined };
 }) {
   params = await params;
   const locale = params.locale;
 
   // Validate that the incoming `locale` parameter is valid
-  if (!["en", "zh"].includes(locale)) {
+  if (!["en", "zh"].includes(locale || "")) {
     notFound();
   }
 
   let messages;
   try {
-    messages = await getMessages(locale);
+    messages = await getMessages(params);
   } catch (error) {
+    console.error("Error loading messages:", error);
     notFound();
   }
 
