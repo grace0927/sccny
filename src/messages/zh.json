@@ -1,0 +1,86 @@
+{
+  "Navigation": {
+    "HOME": "主页",
+    "ABOUT US": "关于我们",
+    "CONFESSION OF FAITH": "信仰根基",
+    "HISTORIC CREEDS": "认信的信仰宣言",
+    "OUR VISION": "异象宗旨",
+    "MINISTRIES": "教会事工",
+    "MEETING TIMES": "聚会时间",
+    "MESSAGES": "信息录音",
+    "SERMON RECORDINGS": "讲道录音",
+    "SUNDAY SCHOOL": "主日学录音",
+    "SPECIAL GATHERING": "特会信息",
+    "BAPTISM CLASS": "受浸班录音",
+    "PASTORAL SEARCH": "寻牧启事",
+    "CONTACT US": "联系我们",
+    "LANGUAGE": "语言"
+  },
+  "Home": {
+    "weeklyGoldenVerse": "每周金句",
+    "campusFellowship": "校园团契",
+    "seekingTruth": "真理追求",
+    "learnMore": "了解更多"
+  },
+  "Footer": {
+    "aboutUs": "关于我们",
+    "confessionOfFaith": "信仰根基",
+    "historicCreeds": "认信的信仰宣言",
+    "ourVision": "异象宗旨",
+    "contactUs": "联系我们",
+    "ministries": "教会事工",
+    "prayerMeeting": "祷告聚会",
+    "familyFellowship": "家庭团契",
+    "sisterFellowship": "姊妹团契",
+    "calebFellowship": "迦勒团契",
+    "truthPursuitClass": "真理追求班",
+    "youthMinistry": "青少年事工",
+    "childrenMinistry": "儿童事工",
+    "sermons": "讲道录音",
+    "sermonRecordings": "主日学分享",
+    "lordsDaySchool": "主日学分享",
+    "churchName": "施福基督教会",
+    "churchOfficeHours": "教会办公时间",
+    "callBeforeVisit": "来访前请先致电。谢谢。",
+    "allRightsReserved": "版权所有"
+  },
+  "About": {
+    "title": "关于我们"
+  },
+  "ConfessionOfFaith": {
+    "title": "信仰根基"
+  },
+  "HistoricCreeds": {
+    "title": "认信的信仰宣言"
+  },
+  "OurVision": {
+    "title": "异象宗旨"
+  },
+  "Ministries": {
+    "title": "教会事工"
+  },
+  "MeetingTimes": {
+    "title": "聚会时间"
+  },
+  "Messages": {
+    "title": "信息录音"
+  },
+  "SermonRecordings": {
+    "title": "讲道录音"
+  },
+  "SundaySchool": {
+    "title": "主日学录音"
+  },
+  "SpecialGathering": {
+    "title": "特会信息"
+  },
+  "BaptismClass": {
+    "title": "受浸班录音"
+  },
+  "PastoralSearch": {
+    "title": "寻牧启事"
+  },
+  "Contact": {
+    "title": "联系我们"
+  }
+}

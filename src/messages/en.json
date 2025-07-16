@@ -1,0 +1,86 @@
+{
+  "Navigation": {
+    "HOME": "Home",
+    "ABOUT US": "About Us",
+    "CONFESSION OF FAITH": "Confession of Faith",
+    "HISTORIC CREEDS": "Historic Creeds",
+    "OUR VISION": "Our Vision",
+    "MINISTRIES": "Ministries",
+    "MEETING TIMES": "Meeting Times",
+    "MESSAGES": "Messages",
+    "SERMON RECORDINGS": "Sermon Recordings",
+    "SUNDAY SCHOOL": "Sunday School",
+    "SPECIAL GATHERING": "Special Gathering",
+    "BAPTISM CLASS": "Baptism Class",
+    "PASTORAL SEARCH": "Pastoral Search",
+    "CONTACT US": "Contact Us",
+    "LANGUAGE": "Language"
+  },
+  "Home": {
+    "weeklyGoldenVerse": "Weekly Golden Verse",
+    "campusFellowship": "Campus Fellowship",
+    "seekingTruth": "Seeking Truth",
+    "learnMore": "Learn More"
+  },
+  "Footer": {
+    "aboutUs": "About Us",
+    "confessionOfFaith": "Confession of Faith",
+    "historicCreeds": "Historic Creeds",
+    "ourVision": "Our Vision",
+    "contactUs": "Contact Us",
+    "ministries": "Ministries",
+    "prayerMeeting": "Prayer Meeting",
+    "familyFellowship": "Family Fellowship",
+    "sisterFellowship": "Sister Fellowship",
+    "calebFellowship": "Caleb Fellowship",
+    "truthPursuitClass": "Truth Pursuit Class",
+    "youthMinistry": "Youth Ministry",
+    "childrenMinistry": "Children Ministry",
+    "sermons": "Sermons",
+    "sermonRecordings": "Sermon Recordings",
+    "lordsDaySchool": "Lord's Day School",
+    "churchName": "Suffolk Christian Church",
+    "churchOfficeHours": "Church Office Hours",
+    "callBeforeVisit": "Please call before your visit. Thank you.",
+    "allRightsReserved": "All rights reserved."
+  },
+  "About": {
+    "title": "About Us"
+  },
+  "ConfessionOfFaith": {
+    "title": "Confession of Faith"
+  },
+  "HistoricCreeds": {
+    "title": "Historic Creeds"
+  },
+  "OurVision": {
+    "title": "Our Vision"
+  },
+  "Ministries": {
+    "title": "Ministries"
+  },
+  "MeetingTimes": {
+    "title": "Meeting Times"
+  },
+  "Messages": {
+    "title": "Messages"
+  },
+  "SermonRecordings": {
+    "title": "Sermon Recordings"
+  },
+  "SundaySchool": {
+    "title": "Sunday School"
+  },
+  "SpecialGathering": {
+    "title": "Special Gathering"
+  },
+  "BaptismClass": {
+    "title": "Baptism Class"
+  },
+  "PastoralSearch": {
+    "title": "Pastoral Search"
+  },
+  "Contact": {
+    "title": "Contact Us"
+  }
+}
