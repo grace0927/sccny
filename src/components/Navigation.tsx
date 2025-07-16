@@ -2,6 +2,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { Menu, X } from "lucide-react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "HOME", href: "/" },
@@ -30,113 +41,180 @@ const navigation = [
   { name: "CONTACT US", href: "/contact" },
 ];
 
+const ListItem = ({
+  title,
+  href,
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<"li"> & { href: string; title: string }) => {
+  return (
+    <li {...props}>
+      <NavigationMenuLink asChild>
+        <Link
+          href={href}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+          )}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          {children && (
+            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+              {children}
+            </p>
+          )}
+        </Link>
+      </NavigationMenuLink>
+    </li>
+  );
+};
+
 export default function Navigation() {
   const t = useTranslations("Navigation");
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="navbar bg-base-100 shadow-md">
-      <div className="navbar-start">
-        <div className="dropdown">
-          <label
-            tabIndex={0}
-            className="btn btn-ghost lg:hidden"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />
-            </svg>
-          </label>
-          {isOpen && (
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              {navigation.map((item) => (
-                <li key={item.name}>
-                  {item.sublinks ? (
-                    <div className="dropdown dropdown-hover">
-                      <label tabIndex={0} className="m-1">
-                        {t(item.name)}
-                      </label>
-                      <ul
-                        tabIndex={0}
-                        className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+    <div className="bg-background shadow-md border-b">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <Link href="/" className="text-xl font-bold text-foreground">
+              SCC
+            </Link>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex lg:items-center lg:space-x-4">
+            <NavigationMenu>
+              <NavigationMenuList>
+                {navigation.map((item) => (
+                  <NavigationMenuItem key={item.name}>
+                    {item.sublinks ? (
+                      <>
+                        <NavigationMenuTrigger>
+                          {t(item.name)}
+                        </NavigationMenuTrigger>
+                        <NavigationMenuContent>
+                          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                            {item.sublinks.map((sublink) => (
+                              <ListItem
+                                key={sublink.name}
+                                title={t(sublink.name)}
+                                href={sublink.href}
+                              />
+                            ))}
+                          </ul>
+                        </NavigationMenuContent>
+                      </>
+                    ) : (
+                      <NavigationMenuLink
+                        asChild
+                        className={navigationMenuTriggerStyle()}
                       >
+                        <Link href={item.href}>{t(item.name)}</Link>
+                      </NavigationMenuLink>
+                    )}
+                  </NavigationMenuItem>
+                ))}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
+
+          {/* Language Selector - Desktop */}
+          <div className="hidden lg:flex lg:items-center">
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>{t("LANGUAGE")}</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[200px] gap-3 p-4">
+                      <ListItem title="English" href="/en" />
+                      <ListItem title="中文" href="/zh" />
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="lg:hidden">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+              aria-expanded="false"
+            >
+              <span className="sr-only">Open main menu</span>
+              {isMobileMenuOpen ? (
+                <X className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="block h-6 w-6" aria-hidden="true" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 border-t">
+              {navigation.map((item) => (
+                <div key={item.name} className="space-y-1">
+                  {item.sublinks ? (
+                    <div>
+                      <div className="px-3 py-2 text-sm font-medium text-foreground">
+                        {t(item.name)}
+                      </div>
+                      <div className="pl-4 space-y-1">
                         {item.sublinks.map((sublink) => (
-                          <li key={sublink.name}>
-                            <Link href={sublink.href}>{t(sublink.name)}</Link>
-                          </li>
+                          <Link
+                            key={sublink.name}
+                            href={sublink.href}
+                            className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            {t(sublink.name)}
+                          </Link>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   ) : (
-                    <Link href={item.href}>{t(item.name)}</Link>
+                    <Link
+                      href={item.href}
+                      className="block px-3 py-2 text-sm font-medium text-foreground hover:bg-accent rounded-md"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {t(item.name)}
+                    </Link>
                   )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <Link href="/" className="btn btn-ghost text-xl">
-          SCC
-        </Link>
-      </div>
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-          {navigation.map((item) => (
-            <li key={item.name}>
-              {item.sublinks ? (
-                <div className="dropdown dropdown-hover">
-                  <label tabIndex={0} className="m-1">
-                    {t(item.name)}
-                  </label>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-                  >
-                    {item.sublinks.map((sublink) => (
-                      <li key={sublink.name}>
-                        <Link href={sublink.href}>{t(sublink.name)}</Link>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              ) : (
-                <Link href={item.href}>{t(item.name)}</Link>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="navbar-end">
-        <div className="dropdown dropdown-end">
-          <label tabIndex={0} className="btn btn-ghost m-1">
-            {t("LANGUAGE")}
-          </label>
-          <ul
-            tabIndex={0}
-            className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-          >
-            <li>
-              <Link href="/en">English</Link>
-            </li>
-            <li>
-              <Link href="/zh">中文</Link>
-            </li>
-          </ul>
-        </div>
+              ))}
+
+              {/* Mobile Language Selector */}
+              <div className="pt-4 border-t">
+                <div className="px-3 py-2 text-sm font-medium text-foreground">
+                  {t("LANGUAGE")}
+                </div>
+                <div className="pl-4 space-y-1">
+                  <Link
+                    href="/en"
+                    className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    English
+                  </Link>
+                  <Link
+                    href="/zh"
+                    className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    中文
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
