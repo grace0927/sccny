@@ -17,10 +17,13 @@
     "LANGUAGE": "Language"
   },
   "Home": {
+    "churchName": "Suffolk Christian Church",
+    "churchBibleVerse": "Jesus said to him, \"I am the way, and the truth, and the life. No one comes to the Father except through me. -- John 14:6",
     "weeklyGoldenVerse": "Weekly Golden Verse",
     "campusFellowship": "Campus Fellowship",
     "seekingTruth": "Seeking Truth",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "sundayWorship": "Sunday Worship"
   },
   "Footer": {
     "aboutUs": "About Us",

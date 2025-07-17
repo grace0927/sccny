@@ -17,10 +17,13 @@
     "LANGUAGE": "语言"
   },
   "Home": {
+    "churchName": "施福基督教会",
+    "churchBibleVerse": "耶稣说：『我就是道路、真理、生命，若不藉着我，没有人能到父那里去』— 约翰福音14：6",
     "weeklyGoldenVerse": "每周金句",
     "campusFellowship": "校园团契",
     "seekingTruth": "真理追求",
-    "learnMore": "了解更多"
+    "learnMore": "了解更多",
+    "sundayWorship": "主日崇拜"
   },
   "Footer": {
     "aboutUs": "关于我们",

@@ -1,8 +1,8 @@
 "use client";
 import { useEffect } from "react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { initFlowbite } from "flowbite";
+import { Link } from "@/i18n/navigation";
 
 const navigation = [
   { name: "HOME", href: "/" },
@@ -31,6 +31,11 @@ const navigation = [
   { name: "CONTACT US", href: "/contact" },
 ];
 
+const languageOptions = [
+  { locale: "en", label: "English" },
+  { locale: "zh", label: "中文" },
+];
+
 export default function Navigation() {
   const t = useTranslations("Navigation");
 
@@ -41,16 +46,6 @@ export default function Navigation() {
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
-        >
-          <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-            SCC
-          </span>
-        </Link>
-
         {/* Language Dropdown and Mobile Menu Button */}
         <div className="flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
           {/* Language Dropdown */}
@@ -83,24 +78,18 @@ export default function Navigation() {
             id="language-dropdown-menu"
           >
             <ul className="py-2 font-medium" role="none">
-              <li>
-                <Link
-                  href="/en"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-                  role="menuitem"
-                >
-                  English
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/zh"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-                  role="menuitem"
-                >
-                  中文
-                </Link>
-              </li>
+              {languageOptions.map((option) => (
+                <li key={option.locale}>
+                  <Link
+                    locale={option.locale}
+                    href="/"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+                    role="menuitem"
+                  >
+                    {option.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

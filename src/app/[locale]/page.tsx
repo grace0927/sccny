@@ -17,11 +17,10 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="text-center">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              施福基督教会 Suffolk Christian Church
+              {t("churchName")}
             </h1>
             <p className="text-sm md:text-base text-gray-600 mb-2">
-              耶稣说：『我就是道路、真理、生命，若不藉着我，没有人能到父那里去』—
-              约翰福音14：6
+              {t("churchBibleVerse")}
             </p>
             <div className="text-sm text-gray-500">
               <a
@@ -33,7 +32,7 @@ export default function Home() {
                 18 Moriches Rd, Lake Grove, NY 11755
               </a>
               <span className="mx-2">|</span>
-              <span>主日崇拜 Sunday Worship：10:00 am － 12:30 pm</span>
+              <span>{t("sundayWorship")}: 10:00 am - 12:30 pm</span>
             </div>
           </div>
         </div>
