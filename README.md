@@ -1,33 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SCCNY Monorepo
+
+A [Turborepo](https://turbo.build/repo) monorepo containing the SCCNY (Second Chinese Christian Church of New York) website built with [Next.js](https://nextjs.org).
+
+## Project Structure
+
+```
+├── apps/
+│   └── sccny/           # Main Next.js application
+│       ├── src/         # Application source code
+│       ├── public/      # Static assets
+│       ├── package.json # App-specific dependencies
+│       └── next.config.mjs
+├── packages/            # Shared packages (for future use)
+├── turbo.json           # Turborepo configuration
+└── package.json         # Root workspace configuration
+```
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Installation
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+### Development
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Build all applications:
 
-## Learn More
+```bash
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Other Commands
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run lint    # Lint all apps
+npm run start   # Start production server
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tech Stack
+
+- **Framework**: [Next.js 15](https://nextjs.org) with App Router
+- **Styling**: [Tailwind CSS](https://tailwindcss.com)
+- **Internationalization**: [next-intl](https://next-intl-docs.vercel.app)
+- **Build Tool**: [Turborepo](https://turbo.build/repo)
+- **Language**: TypeScript
+
+## Features
+
+- 🌐 Multi-language support (English/Chinese)
+- 📱 Responsive design
+- ⚡ Optimized performance with Next.js
+- 🎨 Modern UI with Tailwind CSS
+- 🚀 Fast builds with Turborepo
+
+## Development
+
+The project uses Turborepo for efficient monorepo management. All apps are located in the `apps/` directory, and shared packages can be added to `packages/` when needed.
 
 ## Deploy on Vercel
 
