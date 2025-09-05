@@ -1,0 +1,74 @@
+
+> @sccny/app@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.2
+
+   Creating an optimized production build ...
+ ⚠ Attempted to load @next/swc-darwin-arm64, but an error occurred: dlopen(/Volumes/WorkSpace/WorkSpace/Development/sccny/node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node, 0x0001): tried: '/Volumes/WorkSpace/WorkSpace/Development/sccny/node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node' (segment '__TEXT' load command content extends beyond end of file), '/System/Volumes/Preboot/Cryptexes/OS/Volumes/WorkSpace/WorkSpace/Development/sccny/node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node' (no such file), '/Volumes/WorkSpace/WorkSpace/Development/sccny/node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node' (segment '__TEXT' load command content extends beyond end of file)
+ ✓ Compiled successfully in 7.8s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/32) ...
+   Generating static pages (8/32) 
+   Generating static pages (16/32) 
+   Generating static pages (24/32) 
+ ✓ Generating static pages (32/32)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                  Size  First Load JS
+┌ ○ /_not-found                             988 B         103 kB
+├ ● /[locale]                             2.58 kB         159 kB
+├   ├ /en
+├   └ /zh
+├ ● /[locale]/about                       1.91 kB         153 kB
+├   ├ /en/about
+├   └ /zh/about
+├ ● /[locale]/about/confession-of-faith   1.91 kB         153 kB
+├   ├ /en/about/confession-of-faith
+├   └ /zh/about/confession-of-faith
+├ ● /[locale]/about/historic-creeds       1.91 kB         153 kB
+├   ├ /en/about/historic-creeds
+├   └ /zh/about/historic-creeds
+├ ● /[locale]/about/ministries            1.91 kB         153 kB
+├   ├ /en/about/ministries
+├   └ /zh/about/ministries
+├ ● /[locale]/about/vision                1.91 kB         153 kB
+├   ├ /en/about/vision
+├   └ /zh/about/vision
+├ ● /[locale]/contact                     1.89 kB         158 kB
+├   ├ /en/contact
+├   └ /zh/contact
+├ ● /[locale]/meeting-times               1.91 kB         153 kB
+├   ├ /en/meeting-times
+├   └ /zh/meeting-times
+├ ● /[locale]/messages                    1.91 kB         153 kB
+├   ├ /en/messages
+├   └ /zh/messages
+├ ● /[locale]/messages/baptism-class      1.91 kB         153 kB
+├   ├ /en/messages/baptism-class
+├   └ /zh/messages/baptism-class
+├ ● /[locale]/messages/sermon-recordings  1.91 kB         153 kB
+├   ├ /en/messages/sermon-recordings
+├   └ /zh/messages/sermon-recordings
+├ ● /[locale]/messages/special-gathering  1.91 kB         153 kB
+├   ├ /en/messages/special-gathering
+├   └ /zh/messages/special-gathering
+├ ● /[locale]/messages/sunday-school      1.91 kB         153 kB
+├   ├ /en/messages/sunday-school
+├   └ /zh/messages/sunday-school
+└ ● /[locale]/pastoral-search             1.91 kB         153 kB
+    ├ /en/pastoral-search
+    └ /zh/pastoral-search
++ First Load JS shared by all              102 kB
+  ├ chunks/18-ef38cc2f87045b34.js         45.9 kB
+  ├ chunks/87c73c54-24122e7b92478d00.js   54.2 kB
+  └ other shared chunks (total)           1.93 kB
+
+
+ƒ Middleware                              45.4 kB
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+
