@@ -44,5 +44,7 @@ yarn-error.log*
 next-env.d.ts
 
 # tools
-.kilocode/*
-.kilocode*
+/.kilocode/**/*
+/.kilocode/*
+/.kilocode*
+.kilocode
