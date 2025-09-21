@@ -1,6 +1,6 @@
 # SCCNY Monorepo
 
-A [Turborepo](https://turbo.build/repo) monorepo containing the SCCNY (Second Chinese Christian Church of New York) website built with [Next.js](https://nextjs.org).
+A [Turborepo](https://turbo.build/repo) monorepo containing the SCCNY (Suffolk Chinese Christian Church of New York) website built with [Next.js](https://nextjs.org).
 
 ## Project Structure
 

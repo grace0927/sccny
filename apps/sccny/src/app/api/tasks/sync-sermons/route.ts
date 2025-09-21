@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { sermonScraper } from "@/lib/scraper";
 
 /**
- * POST /api/tasks/sync-sermons
+ * GET /api/tasks/sync-sermons
  *
  * Manually trigger sermon synchronization from the church website
  * This endpoint is also called by Vercel cron jobs for automated daily sync
  */
-export async function POST(request: NextRequest) {
+export async function GET() {
   try {
     console.log("Starting manual sermon sync...");
 
@@ -38,19 +38,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-/**
- * GET /api/tasks/sync-sermons
- *
- * Health check endpoint for cron job monitoring
- * Returns basic status information
- */
-export async function GET() {
-  return NextResponse.json({
-    status: "healthy",
-    service: "sermon-sync",
-    timestamp: new Date().toISOString(),
-    description: "Sermon synchronization service is operational",
-  });
 }
