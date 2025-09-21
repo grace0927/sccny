@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useState, useEffect, useCallback } from "react";
 import {
   SermonListProps,
   Sermon,
@@ -18,7 +17,6 @@ export default function SermonList({
   type,
   showFilters = true,
 }: SermonListProps) {
-  const t = useTranslations("SermonList");
   const [sermons, setSermons] = useState<Sermon[]>(initialSermons);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,53 +28,55 @@ export default function SermonList({
     ...(type && { type }),
   });
 
-  const fetchSermons = async (
-    page: number = 1,
-    currentFilters: SermonFiltersType = filters
-  ) => {
-    setLoading(true);
-    setError(null);
+  const fetchSermons = useCallback(
+    async (page: number = 1, currentFilters: SermonFiltersType = filters) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const queryParams = new URLSearchParams({
-        page: page.toString(),
-        limit: "20",
-        sortBy: currentFilters.sortBy || "date",
-        sortOrder: currentFilters.sortOrder || "desc",
-        ...(currentFilters.speaker && { speaker: currentFilters.speaker }),
-        ...(currentFilters.series && { series: currentFilters.series }),
-        ...(currentFilters.type && { type: currentFilters.type }),
-        ...(currentFilters.search && { search: currentFilters.search }),
-      });
+      try {
+        const queryParams = new URLSearchParams({
+          page: page.toString(),
+          limit: "20",
+          sortBy: currentFilters.sortBy || "date",
+          sortOrder: currentFilters.sortOrder || "desc",
+          ...(currentFilters.speaker && { speaker: currentFilters.speaker }),
+          ...(currentFilters.series && { series: currentFilters.series }),
+          ...(currentFilters.type && { type: currentFilters.type }),
+          ...(currentFilters.search && { search: currentFilters.search }),
+        });
 
-      const response = await fetch(`/api/sermons?${queryParams}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await fetch(`/api/sermons?${queryParams}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: SermonsResponse = await response.json();
+        setSermons(data.data);
+        setTotalPages(data.pagination.totalPages);
+        setCurrentPage(page);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch sermons"
+        );
+        console.error("Error fetching sermons:", err);
+      } finally {
+        setLoading(false);
       }
-
-      const data: SermonsResponse = await response.json();
-      setSermons(data.data);
-      setTotalPages(data.pagination.totalPages);
-      setCurrentPage(page);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch sermons");
-      console.error("Error fetching sermons:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [filters]
+  );
 
   // Fetch sermons when filters change
   useEffect(() => {
     fetchSermons(1, filters);
-  }, [filters]);
+  }, [fetchSermons, filters]);
 
   // Fetch sermons when page changes
   useEffect(() => {
     if (currentPage > 1) {
       fetchSermons(currentPage, filters);
     }
-  }, [currentPage]);
+  }, [currentPage, fetchSermons, filters]);
 
   const handleFiltersChange = (newFilters: SermonFiltersType) => {
     setFilters(newFilters);

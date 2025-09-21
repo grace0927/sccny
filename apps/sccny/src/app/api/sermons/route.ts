@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import {
-  SermonCreateSchema,
-  GetSermonsQuerySchema,
-  SermonCreateType,
-  GetSermonsQueryType,
-} from "@/lib/validations";
+import { SermonCreateSchema, GetSermonsQuerySchema } from "@/lib/validations";
 
 export async function GET(request: NextRequest) {
   try {
@@ -92,7 +87,10 @@ export async function POST(request: NextRequest) {
     console.error("Error creating sermon:", error);
     if (error instanceof Error && error.name === "ZodError") {
       return NextResponse.json(
-        { error: "Validation failed", details: (error as any).errors },
+        {
+          error: "Validation failed",
+          details: (error as unknown as { errors: unknown }).errors,
+        },
         { status: 400 }
       );
     }

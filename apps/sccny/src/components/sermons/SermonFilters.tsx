@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   SermonFiltersProps,
@@ -267,7 +267,8 @@ export default function SermonFilters({
             </span>
             {filters.search && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {t("search", { defaultValue: "Search" })}: "{filters.search}"
+                {t("search", { defaultValue: "Search" })}: &quot;
+                {filters.search}&quot;
                 <button
                   onClick={() => handleFilterChange("search", "")}
                   className="ml-1 text-blue-600 hover:text-blue-800"

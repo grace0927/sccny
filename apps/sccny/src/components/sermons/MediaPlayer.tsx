@@ -22,7 +22,6 @@ export default function MediaPlayer({
   );
 
   const mediaRef = activeMedia === "video" ? videoRef : audioRef;
-  const currentUrl = activeMedia === "video" ? videoUrl : audioUrl;
 
   useEffect(() => {
     const media = mediaRef.current;

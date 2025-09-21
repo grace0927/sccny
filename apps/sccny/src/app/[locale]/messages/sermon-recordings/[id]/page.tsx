@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import SermonDetail from "@/components/sermons/SermonDetail";
 import { Sermon } from "@/components/sermons/types";
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { SermonCardProps } from "./types";
 import { format } from "date-fns";
@@ -10,8 +9,6 @@ export default function SermonCard({
   showMediaButtons = true,
   compact = false,
 }: SermonCardProps) {
-  const t = useTranslations("SermonCard");
-
   const formatDate = (dateString: string) => {
     try {
       return format(new Date(dateString), "MMM d, yyyy");

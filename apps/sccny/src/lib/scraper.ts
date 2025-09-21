@@ -118,40 +118,33 @@ export class SermonScraper {
   ): RawSermonData | null {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const titleElement = $(element as any)
+      const $element = $(element as any);
+      const titleElement = $element
         .find("h1, h2, h3, .title, .sermon-title")
         .first();
       const title = titleElement.text().trim();
 
       // Extract date
-      const dateElement = $(element as any)
-        .find(".posted_on")
-        .first();
+      const dateElement = $element.find(".posted_on").first();
       const dateText = dateElement.text().trim();
       const date = this.parseDate(dateText);
 
       // Extract series
-      const seriesElement = $(element as any)
-        .find(".series, .category")
-        .first();
+      const seriesElement = $element.find(".series, .category").first();
       const series = seriesElement.text().trim() || undefined;
 
       // Extract scripture
-      const scriptureElement = $(element as any)
+      const scriptureElement = $element
         .find(".scripture, .bible-verse")
         .first();
       const scripture = scriptureElement.text().trim() || undefined;
 
       // Extract URLs
       const videoUrl = this.extractUrl(
-        $(element as any)
-          .find('a[href*="youtube"], a[href*="vimeo"], video')
-          .first()
+        $element.find('a[href*="youtube"], a[href*="vimeo"], video').first()
       );
       const audioUrl = this.extractUrl(
-        $(element as any)
-          .find('a[href*="mp3"], a[href*="audio"], audio source')
-          .first()
+        $element.find('a[href*="mp3"], a[href*="audio"], audio source').first()
       );
 
       // Extract speaker
@@ -159,7 +152,7 @@ export class SermonScraper {
         audioUrl?.split("-").at(-1)?.trim().split(".")[0] || "Unknown Speaker";
 
       // Extract description
-      const descriptionElement = $(element as any)
+      const descriptionElement = $element
         .find(".description, .summary, .excerpt, .content p")
         .first();
       const description = descriptionElement.text().trim() || undefined;
@@ -184,6 +177,7 @@ export class SermonScraper {
   /**
    * Extract URL from element
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private extractUrl(element: cheerio.Cheerio<any>): string | undefined {
     const href = element.attr("href");
     const src = element.attr("src");
@@ -349,7 +343,17 @@ export class SermonScraper {
         } else {
           // Create new sermon
           await prisma.sermon.create({
-            data: sermon as any, // Temporary type bypass until type system is straightened out
+            data: {
+              title: sermon.title,
+              speaker: sermon.speaker,
+              date: new Date(sermon.date!),
+              type: sermon.type,
+              series: sermon.series,
+              scripture: sermon.scripture,
+              videoUrl: sermon.videoUrl,
+              audioUrl: sermon.audioUrl,
+              description: sermon.description,
+            },
           });
           newCount++;
         }
