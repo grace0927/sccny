@@ -170,16 +170,72 @@
     "title": "信息录音"
   },
   "SermonRecordings": {
-    "title": "讲道录音"
+    "title": "讲道录音",
+    "description": "聆听和观看我们最新的讲道、主日学课程和特别信息。"
+  },
+  "SermonList": {
+    "noSermons": "未找到讲道",
+    "tryAdjustingFilters": "请尝试调整您的搜索或筛选条件。",
+    "noSermonsUploaded": "一旦上传讲道，它们将显示在这里。"
+  },
+  "SermonCard": {
+    "watchVideo": "观看视频",
+    "listenAudio": "收听音频",
+    "viewDetails": "查看详情"
+  },
+  "SermonFilters": {
+    "title": "筛选讲道",
+    "search": "搜索",
+    "searchPlaceholder": "按标题、讲员或经文搜索...",
+    "speaker": "讲员",
+    "speakerPlaceholder": "按讲员筛选",
+    "series": "系列",
+    "seriesPlaceholder": "按系列筛选",
+    "type": "类型",
+    "allTypes": "所有类型",
+    "sermon": "讲道",
+    "sundaySchool": "主日学",
+    "retreatMessage": "退修信息",
+    "baptismClass": "受浸班",
+    "sortBy": "排序方式",
+    "date": "日期",
+    "title": "标题",
+    "speaker": "讲员",
+    "descending": "↓",
+    "ascending": "↑",
+    "clearAll": "清除全部",
+    "activeFilters": "活跃筛选"
+  },
+  "SermonPagination": {
+    "showingPage": "第",
+    "of": "页，共",
+    "previous": "上一页",
+    "next": "下一页"
+  },
+  "MediaPlayer": {
+    "video": "视频",
+    "audio": "音频",
+    "noMedia": "此讲道没有可用的媒体。"
+  },
+  "SermonDetail": {
+    "messages": "信息",
+    "sermonRecordings": "讲道录音",
+    "errorTitle": "加载讲道时出错",
+    "backToSermons": "返回讲道列表",
+    "aboutThisSermon": "关于此讲道",
+    "backToAllSermons": "返回所有讲道"
   },
   "SundaySchool": {
-    "title": "主日学录音"
+    "title": "主日学录音",
+    "description": "聆听和观看我们的主日学课程和教导。"
   },
   "SpecialGathering": {
-    "title": "特会信息"
+    "title": "特会信息",
+    "description": "聆听和观看我们的特别聚会信息和退修教导。"
   },
   "BaptismClass": {
-    "title": "受浸班录音"
+    "title": "受浸班录音",
+    "description": "聆听和观看我们的受浸班教导和准备材料。"
   },
   "PastoralSearch": {
     "title": "青少年牧师招聘",

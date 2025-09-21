@@ -170,16 +170,72 @@
     "title": "Messages"
   },
   "SermonRecordings": {
-    "title": "Sermon Recordings"
+    "title": "Sermon Recordings",
+    "description": "Listen to and watch our latest sermons, Sunday school lessons, and special messages."
+  },
+  "SermonList": {
+    "noSermons": "No sermons found",
+    "tryAdjustingFilters": "Try adjusting your search or filter criteria.",
+    "noSermonsUploaded": "Sermons will appear here once they are uploaded."
+  },
+  "SermonCard": {
+    "watchVideo": "Watch Video",
+    "listenAudio": "Listen Audio",
+    "viewDetails": "View Details"
+  },
+  "SermonFilters": {
+    "title": "Filter Sermons",
+    "search": "Search",
+    "searchPlaceholder": "Search by title, speaker, or scripture...",
+    "speaker": "Speaker",
+    "speakerPlaceholder": "Filter by speaker",
+    "series": "Series",
+    "seriesPlaceholder": "Filter by series",
+    "type": "Type",
+    "allTypes": "All Types",
+    "sermon": "Sermon",
+    "sundaySchool": "Sunday School",
+    "retreatMessage": "Retreat Message",
+    "baptismClass": "Baptism Class",
+    "sortBy": "Sort By",
+    "date": "Date",
+    "title": "Title",
+    "speaker": "Speaker",
+    "descending": "↓",
+    "ascending": "↑",
+    "clearAll": "Clear All",
+    "activeFilters": "Active filters"
+  },
+  "SermonPagination": {
+    "showingPage": "Page",
+    "of": "of",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "MediaPlayer": {
+    "video": "Video",
+    "audio": "Audio",
+    "noMedia": "No media available for this sermon."
+  },
+  "SermonDetail": {
+    "messages": "Messages",
+    "sermonRecordings": "Sermon Recordings",
+    "errorTitle": "Error Loading Sermon",
+    "backToSermons": "Back to Sermons",
+    "aboutThisSermon": "About This Sermon",
+    "backToAllSermons": "Back to All Sermons"
   },
   "SundaySchool": {
-    "title": "Sunday School"
+    "title": "Sunday School",
+    "description": "Listen to and watch our Sunday school lessons and teachings."
   },
   "SpecialGathering": {
-    "title": "Special Gathering"
+    "title": "Special Gathering",
+    "description": "Listen to and watch our special gathering messages and retreat teachings."
   },
   "BaptismClass": {
-    "title": "Baptism Class"
+    "title": "Baptism Class",
+    "description": "Listen to and watch our baptism class teachings and preparation materials."
   },
   "PastoralSearch": {
     "title": "Youth Pastoral Search",
