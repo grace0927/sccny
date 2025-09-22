@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sermonScraper } from "@/lib/scraper";
+import { sermonScraper } from "@/lib/sermon-scraper";
 
 /**
  * GET /api/tasks/sync-sermons

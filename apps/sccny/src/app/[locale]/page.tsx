@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import Carousel from "@/components/Carousel";
+import NewsList from "@/components/news/NewsList";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -160,52 +161,7 @@ export default function Home() {
                   Read All
                 </Link>
               </div>
-              <div className="space-y-6">
-                <article className="border-b border-gray-200 pb-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    施福教会2025年春季特会
-                  </h3>
-                  <p className="text-sm text-gray-500 mb-2">
-                    posted on April 10, 2025
-                  </p>
-                  <Link
-                    href="/news/spring-conference-2025"
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    Read More
-                  </Link>
-                </article>
-
-                <article className="border-b border-gray-200 pb-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    2025-02-09 仅有线上聚会 Online Service only on Feb. 9th 2025
-                  </h3>
-                  <p className="text-sm text-gray-500 mb-2">
-                    posted on February 8, 2025
-                  </p>
-                  <Link
-                    href="/news/online-service-feb-9"
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    Read More
-                  </Link>
-                </article>
-
-                <article className="border-b border-gray-200 pb-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    2024 康来昌牧师特会: 信耶稣的意义
-                  </h3>
-                  <p className="text-sm text-gray-500 mb-2">
-                    posted on October 13, 2024
-                  </p>
-                  <Link
-                    href="/news/pastor-kang-conference-2024"
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    Read More
-                  </Link>
-                </article>
-              </div>
+              <NewsList limit={3} />
             </div>
           </div>
         </div>

@@ -37,3 +37,22 @@ enum SermonType {
   RETREAT_MESSAGE
   BAPTISM_CLASS
 }
+
+model News {
+  id          String     @id @default(cuid())
+  title       String
+  date        DateTime
+  content     String
+  excerpt     String?
+  status      NewsStatus @default(PUBLISHED)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("news")
+}
+
+enum NewsStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
