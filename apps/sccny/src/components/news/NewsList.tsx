@@ -52,7 +52,7 @@ export default function NewsList({
         setError(null);
 
         const baseUrl =
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+          process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
         const url = showPagination
           ? `${baseUrl}/api/news?page=${page}&limit=${limit}&status=PUBLISHED&sortBy=date&sortOrder=desc`
           : `${baseUrl}/api/news?page=1&limit=${limit}&status=PUBLISHED&sortBy=date&sortOrder=desc`;

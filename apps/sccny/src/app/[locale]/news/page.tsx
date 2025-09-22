@@ -18,7 +18,7 @@ interface NewsPageProps {
 
 async function getNews(page: number = 1, limit: number = 20) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     const url = `${baseUrl}/api/news?page=${page}&limit=${limit}&status=PUBLISHED&sortBy=date&sortOrder=desc`;
 
     const response = await fetch(url, {

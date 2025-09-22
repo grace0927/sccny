@@ -246,7 +246,7 @@ All endpoints return JSON responses. Authentication is not required for Phase 1 
 
 ```bash
 DATABASE_URL="postgresql://..."
-NEXT_PUBLIC_API_URL="https://sccny.vercel.app"
+NEXT_PUBLIC_BASE_URL="https://sccny.vercel.app"
 ```
 
 ### Build Configuration
