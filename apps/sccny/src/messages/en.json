@@ -170,6 +170,22 @@
   "Messages": {
     "title": "Messages"
   },
+  "News": {
+    "title": "News & Announcements",
+    "description": "Stay updated with the latest news and announcements from our church community."
+  },
+  "NewsDetail": {
+    "home": "Home",
+    "news": "News",
+    "errorTitle": "Error Loading News Article",
+    "backToNews": "Back to News",
+    "published": "Published",
+    "updated": "Updated",
+    "publishedOn": "Published on",
+    "lastUpdated": "Last updated",
+    "shareArticle": "Share this article",
+    "backToAllNews": "Back to All News"
+  },
   "SermonRecordings": {
     "title": "Sermon Recordings",
     "description": "Listen to and watch our latest sermons, Sunday school lessons, and special messages."

@@ -170,6 +170,22 @@
   "Messages": {
     "title": "信息录音"
   },
+  "News": {
+    "title": "新闻公告",
+    "description": "了解我们教会社区的最新新闻和公告。"
+  },
+  "NewsDetail": {
+    "home": "主页",
+    "news": "新闻",
+    "errorTitle": "加载新闻文章时出错",
+    "backToNews": "返回新闻",
+    "published": "发布",
+    "updated": "更新",
+    "publishedOn": "发布于",
+    "lastUpdated": "最后更新",
+    "shareArticle": "分享此文章",
+    "backToAllNews": "返回所有新闻"
+  },
   "SermonRecordings": {
     "title": "讲道录音",
     "description": "聆听和观看我们最新的讲道、主日学课程和特别信息。"

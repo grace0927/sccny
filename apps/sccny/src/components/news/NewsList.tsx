@@ -1,30 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import NewsCard from "./NewsCard";
-
-interface NewsItem {
-  id: string;
-  title: string;
-  date: string;
-  excerpt: string;
-  status: string;
-  createdAt: string;
-}
-
-interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
-interface NewsListProps {
-  limit?: number;
-  showPagination?: boolean;
-  page?: number;
-}
+import { NewsListProps, NewsItem } from "./types";
 
 function formatDate(dateString: string) {
   const date = new Date(dateString);
@@ -36,45 +14,49 @@ function formatDate(dateString: string) {
 }
 
 export default function NewsList({
-  limit = 3,
-  showPagination = false,
-  page = 1,
+  initialNews = [],
+  showFilters = false,
+  limit = 20,
 }: NewsListProps) {
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [news, setNews] = useState<NewsItem[]>(initialNews);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pagination, setPagination] = useState<PaginationInfo | null>(null);
 
   useEffect(() => {
-    async function fetchNews() {
-      try {
-        setLoading(true);
-        setError(null);
+    // Only fetch if we don't have initial news
+    if (initialNews.length === 0) {
+      const fetchNews = async () => {
+        try {
+          setLoading(true);
+          setError(null);
 
-        const url = showPagination
-          ? `/api/news?page=${page}&limit=${limit}&status=PUBLISHED&sortBy=date&sortOrder=desc`
-          : `/api/news?page=1&limit=${limit}&status=PUBLISHED&sortBy=date&sortOrder=desc`;
+          const queryParams = new URLSearchParams({
+            page: "1",
+            limit: limit.toString(),
+            sortBy: "date",
+            sortOrder: "desc",
+            status: "PUBLISHED",
+          });
 
-        const response = await fetch(url);
+          const response = await fetch(`/api/news?${queryParams}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch news");
+          const data = await response.json();
+          setNews(data.data || []);
+        } catch (err) {
+          console.error("Error fetching news:", err);
+          setError(err instanceof Error ? err.message : "Failed to load news");
+          setNews([]);
+        } finally {
+          setLoading(false);
         }
+      };
 
-        const data = await response.json();
-        setNews(data.data || []);
-        setPagination(data.pagination || null);
-      } catch (err) {
-        console.error("Error fetching news:", err);
-        setError(err instanceof Error ? err.message : "Failed to load news");
-        setNews([]);
-      } finally {
-        setLoading(false);
-      }
+      fetchNews();
     }
-
-    fetchNews();
-  }, [limit, showPagination, page]);
+  }, [limit, initialNews.length]);
 
   if (loading) {
     return (
@@ -116,18 +98,37 @@ export default function NewsList({
     );
   }
 
-  if (showPagination) {
+  // For homepage/preview mode (no filters)
+  if (!showFilters) {
     return (
-      <div className="space-y-8">
+      <div className="space-y-6">
         {news.map((item) => (
-          <NewsCard key={item.id} item={item} />
+          <article key={item.id} className="border-b border-gray-200 pb-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2 hover:text-blue-600">
+              <Link href={`/news/${item.id}`}>{item.title}</Link>
+            </h3>
+            <p className="text-sm text-gray-500 mb-2">
+              {formatDate(item.date)}
+            </p>
+            {item.excerpt && (
+              <p className="text-gray-600 mb-2 line-clamp-2">{item.excerpt}</p>
+            )}
+            <Link
+              href={`/news/${item.id}`}
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            >
+              Read More →
+            </Link>
+          </article>
         ))}
 
-        {/* Pagination controls would go here if needed for detailed listing pages */}
-        {pagination && pagination.totalPages > 1 && (
-          <div className="text-center">
-            <Link href="/news" className="text-blue-600 hover:text-blue-800">
-              View all news →
+        {news.length > 0 && (
+          <div className="text-center pt-4">
+            <Link
+              href="/news"
+              className="inline-flex items-center px-4 py-2 border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition-colors"
+            >
+              View All News →
             </Link>
           </div>
         )}
@@ -135,35 +136,77 @@ export default function NewsList({
     );
   }
 
-  // Condensed view for homepage
+  // For full news page (with pagination but no filters)
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {news.map((item) => (
-        <article key={item.id} className="border-b border-gray-200 pb-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2 hover:text-blue-600">
-            <Link href={`/news/${item.id}`}>{item.title}</Link>
-          </h3>
-          <p className="text-sm text-gray-500 mb-2">{formatDate(item.date)}</p>
-          {item.excerpt && (
-            <p className="text-gray-600 mb-2 line-clamp-2">{item.excerpt}</p>
-          )}
-          <Link
-            href={`/news/${item.id}`}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-          >
-            Read More →
-          </Link>
+        <article
+          key={item.id}
+          className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+        >
+          <div className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+                <Link href={`/news/${item.id}`}>{item.title}</Link>
+              </h2>
+              <time className="text-sm text-gray-500 shrink-0 ml-4">
+                {formatDate(item.date)}
+              </time>
+            </div>
+
+            {item.excerpt && (
+              <p className="text-gray-600 text-lg leading-relaxed mb-6">
+                {item.excerpt}
+              </p>
+            )}
+
+            <div className="flex items-center justify-between">
+              <time className="text-sm text-gray-400">
+                Posted on {formatDate(item.createdAt)}
+              </time>
+              <Link
+                href={`/news/${item.id}`}
+                className="inline-flex items-center px-4 py-2 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition-colors duration-200"
+              >
+                Read More
+                <svg
+                  className="w-4 h-4 ml-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </Link>
+            </div>
+          </div>
         </article>
       ))}
 
-      {news.length > 0 && (
-        <div className="text-center pt-4">
-          <Link
-            href="/news"
-            className="inline-flex items-center px-4 py-2 border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition-colors"
+      {news.length === 0 && (
+        <div className="text-center py-12">
+          <svg
+            className="mx-auto h-12 w-12 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            View All News →
-          </Link>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+            />
+          </svg>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            No news found
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            News articles will appear here once they are published.
+          </p>
         </div>
       )}
     </div>
