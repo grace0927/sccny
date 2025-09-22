@@ -74,10 +74,3 @@ export default async function SermonDetailPage({ params }: PageProps) {
 
   return <SermonDetail sermon={sermon} />;
 }
-
-// Optional: Generate static params for known sermons (if you want static generation)
-// export async function generateStaticParams() {
-//   // This would fetch all sermon IDs to pre-generate pages
-//   // For now, we'll use dynamic generation
-//   return [];
-// }

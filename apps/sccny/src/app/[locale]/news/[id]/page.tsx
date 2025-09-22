@@ -54,7 +54,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string; locale: string }>;
 }) {
-  const { id, locale } = await params;
+  const { id } = await params;
   const item = await getNewsItem(id);
 
   if (!item) {
