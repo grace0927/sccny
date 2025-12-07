@@ -50,6 +50,7 @@ export default function Home() {
                   alt="Weekly Golden Verse"
                   width={300}
                   height={140}
+                  unoptimized
                 />
               </figure>
               <div className="card-body">
@@ -68,6 +69,7 @@ export default function Home() {
                   alt="Campus Fellowship"
                   width={300}
                   height={140}
+                  unoptimized
                 />
               </figure>
               <div className="card-body">
@@ -89,6 +91,7 @@ export default function Home() {
                   alt="Seeking Truth"
                   width={300}
                   height={140}
+                  unoptimized
                 />
               </figure>
               <div className="card-body">

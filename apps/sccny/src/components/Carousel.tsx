@@ -36,6 +36,7 @@ export default function Carousel() {
             width={940}
             height={340}
             className="w-full"
+            unoptimized
           />
         </div>
       ))}
