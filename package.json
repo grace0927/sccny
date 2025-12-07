@@ -14,5 +14,8 @@
   },
   "devDependencies": {
     "turbo": "^2.6.3"
+  },
+  "dependencies": {
+    "next": "^16.0.7"
   }
 }
