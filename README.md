@@ -8,10 +8,10 @@ A [Turborepo](https://turbo.build/repo) monorepo containing the SCCNY (Suffolk C
 ├── apps/
 │   └── sccny/           # Main Next.js application
 │       ├── src/         # Application source code
-│       ├── public/      # Static assets
+│       ├── prisma/      # Database schema
 │       ├── package.json # App-specific dependencies
 │       └── next.config.mjs
-├── packages/            # Shared packages (for future use)
+├── docs/                # Project documentation
 ├── turbo.json           # Turborepo configuration
 └── package.json         # Root workspace configuration
 ```

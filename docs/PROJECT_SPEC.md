@@ -10,12 +10,11 @@ The SCCNY (Suffolk Chinese Christian Church of New York) website is a modern, mu
 sccny-monorepo/
 ├── apps/sccny/              # Main Next.js application
 │   ├── src/                 # Application source code
-│   ├── public/              # Static assets
 │   ├── prisma/              # Database schema and migrations
 │   └── package.json         # App-specific dependencies
+├── docs/                    # Documentation
 ├── turbo.json               # Turborepo configuration
-├── package.json             # Root workspace configuration
-└── doc/                     # Documentation
+└── package.json             # Root workspace configuration
 ```
 
 ## Technical Architecture
@@ -31,7 +30,7 @@ sccny-monorepo/
 
 - **Styling**: Tailwind CSS v4
 - **Component Library**: Flowbite (primary), shadcn/ui (secondary)
-- **Icons**: Heroicons, Lucide React
+- **Icons**: Heroicons
 - **Fonts**: Geist Sans & Geist Mono (Google Fonts)
 
 ### Component Library Strategy
@@ -383,7 +382,7 @@ For new feature development, follow this established pattern to ensure consisten
 
 #### 2. Documentation Phase
 
-- **Feature Specification**: Create detailed implementation plan in `/doc/features/`
+- **Feature Specification**: Create detailed implementation plan in `/docs/features/`
 - **Component Architecture**: Define component structure and responsibilities
 - **API Integration Strategy**: Document how the feature will integrate with existing APIs
 - **UI/UX Design**: Specify user interface patterns and responsive design approach
@@ -411,7 +410,7 @@ For new feature development, follow this established pattern to ensure consisten
 
 #### Example Implementation: Message Pages Feature
 
-- **Location**: `/doc/features/message-pages-implementation.md`
+- **Location**: `/docs/features/message-pages-implementation.md`
 - **Pattern**: Analysis → Documentation → Incremental Implementation → Updates
 - **Components**: SermonList, SermonCard, SermonDetail, MediaPlayer, etc.
 - **Integration**: Uses existing sermon API and Flowbite UI components
