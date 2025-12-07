@@ -49,3 +49,6 @@ next-env.d.ts
 /.kilocode/*
 /.kilocode*
 .kilocode
+
+# turbo
+.turbo
