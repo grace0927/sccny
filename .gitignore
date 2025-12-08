@@ -52,6 +52,7 @@ next-env.d.ts
 
 # turbo
 .turbo
+apps/sccny/.turbo
 
 # mac.DS_Store
 .DS_Store
