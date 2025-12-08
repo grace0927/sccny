@@ -1,85 +1,32 @@
 
 
-> sccny@0.1.0 build
+> sccny@0.2.0 build
 > next build
 
 [1G[0K   [1m[38;2;173;127;168m▲ Next.js 15.5.7[39m[22m
    - Environments: .env.local, .env
 
  [37m[1m [22m[39m Creating an optimized production build ...
- [32m[1m✓[22m[39m Compiled successfully in 22.5s
-[?25l [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[1A[2K[1G[?25h [37m[1m [22m[39m Linting and checking validity of types     [32m[1m✓[22m[39m Linting and checking validity of types 
-[?25l [37m[1m [22m[39m Collecting page data  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting page data  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting page data  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting page data  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting page data  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting page data  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting page data  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting page data  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting page data  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting page data  [36m.[39m[2K[1G[1A[2K[1G[?25h [37m[1m [22m[39m Collecting page data     [32m[1m✓[22m[39m Collecting page data 
-[?25l [37m[1m [22m[39m Generating static pages (0/38)  [36m[    ][39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Generating static pages (0/38)  [36m[=   ][39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Generating static pages (22/38)  [36m[==  ][39m[2K[1G[1A[2K[1G[?25h [32m[1m✓[22m[39m Generating static pages (38/38)
-[?25l [37m[1m [22m[39m Finalizing page optimization  [36m.[39m[?25l [37m[1m [22m[39m Collecting build traces  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m.[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m..[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Finalizing page optimization  [36m...[39m[2K[1G[1A[2K[1G [37m[1m [22m[39m Collecting build traces  [36m...[39m[2K[1G[1A[2K[1G[?25h [37m[1m [22m[39m Collecting build traces     [32m[1m✓[22m[39m Collecting build traces 
-[2K[1G[1A[2K[1G[?25h [37m[1m [22m[39m Finalizing page optimization     [32m[1m✓[22m[39m Finalizing page optimization 
+/*! 🌼 daisyUI 5.5.8 */
+ [32m[1m✓[22m[39m Compiled successfully in 18.4s
+[?25l [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39mFailed to compile.
 
-[4mRoute (app)[24m                                       [4mSize[24m  [4mFirst Load JS[24m  [4m[24m  [4m[24m
-┌ ○ /_not-found                                  991 B         [37m[1m103 kB[22m[39m
-├ ● /[locale]                                  1.01 kB         [37m[1m161 kB[22m[39m
-├   ├ /en
-├   └ /zh
-├ ● /[locale]/about                            1.94 kB         [37m[1m154 kB[22m[39m
-├   ├ /en/about
-├   └ /zh/about
-├ ● /[locale]/about/confession-of-faith        1.94 kB         [37m[1m154 kB[22m[39m
-├   ├ /en/about/confession-of-faith
-├   └ /zh/about/confession-of-faith
-├ ● /[locale]/about/historic-creeds            1.94 kB         [37m[1m154 kB[22m[39m
-├   ├ /en/about/historic-creeds
-├   └ /zh/about/historic-creeds
-├ ● /[locale]/about/ministries                 1.94 kB         [37m[1m154 kB[22m[39m
-├   ├ /en/about/ministries
-├   └ /zh/about/ministries
-├ ● /[locale]/about/vision                     1.94 kB         [37m[1m154 kB[22m[39m
-├   ├ /en/about/vision
-├   └ /zh/about/vision
-├ ● /[locale]/contact                          1.94 kB         [37m[1m159 kB[22m[39m
-├   ├ /en/contact
-├   └ /zh/contact
-├ ● /[locale]/meeting-times                    1.94 kB         [37m[1m154 kB[22m[39m
-├   ├ /en/meeting-times
-├   └ /zh/meeting-times
-├ ● /[locale]/messages                         1.94 kB         [37m[1m154 kB[22m[39m
-├   ├ /en/messages
-├   └ /zh/messages
-├ ● /[locale]/messages/baptism-class             134 B         [37m[1m180 kB[22m[39m
-├   ├ /en/messages/baptism-class
-├   └ /zh/messages/baptism-class
-├ ● /[locale]/messages/sermon-recordings         133 B         [37m[1m180 kB[22m[39m
-├   ├ /en/messages/sermon-recordings
-├   └ /zh/messages/sermon-recordings
-├ ƒ /[locale]/messages/sermon-recordings/[id]  3.66 kB         [37m[1m124 kB[22m[39m
-├ ● /[locale]/messages/special-gathering         134 B         [37m[1m180 kB[22m[39m
-├   ├ /en/messages/special-gathering
-├   └ /zh/messages/special-gathering
-├ ● /[locale]/messages/sunday-school             134 B         [37m[1m180 kB[22m[39m
-├   ├ /en/messages/sunday-school
-├   └ /zh/messages/sunday-school
-├ ● /[locale]/news                               189 B         [37m[1m155 kB[22m[39m
-├   ├ /en/news
-├   └ /zh/news
-├ ƒ /[locale]/news/[id]                        2.45 kB         [37m[1m123 kB[22m[39m
-├ ● /[locale]/pastoral-search                  1.94 kB         [37m[1m154 kB[22m[39m
-├   ├ /en/pastoral-search
-├   └ /zh/pastoral-search
-├ ƒ /api/news                                    139 B         [37m[1m103 kB[22m[39m
-├ ƒ /api/news/[id]                               139 B         [37m[1m103 kB[22m[39m
-├ ƒ /api/sermons                                 139 B         [37m[1m103 kB[22m[39m
-├ ƒ /api/sermons/[id]                            139 B         [37m[1m103 kB[22m[39m
-├ ƒ /api/tasks/sync-news                         139 B         [37m[1m103 kB[22m[39m
-├ ƒ /api/tasks/sync-sermons                      139 B         [37m[1m103 kB[22m[39m
-└ ƒ /handler/[...stack]                          424 B         [37m[1m477 kB[22m[39m
-+ First Load JS shared by all                   [37m[1m102 kB[22m[39m
-  ├ chunks/18-bdbe4008f006778b.js              46.2 kB
-  ├ chunks/87c73c54-09e1ba5c70e60a51.js        54.2 kB
-  └ other shared chunks (total)                1.94 kB
+./src/app/handler/[...stack]/page.tsx:5:24
+Type error: Type 'StackClientApp<true, string>' is not assignable to type 'StackServerApp<true>'.
+  Type 'StackClientApp<true, string>' is missing the following properties from type '{ createTeam(data: ServerOrglikeCustomizableJson): Promise<ServerTeam>; createPermissionDefinition(data: ServerPermissionDefinitionCustomizableJson): Promise<...>; updatePermissionDefinition(permissionId: string, data: Partial<...>): Promise<...>; deletePermissionDefinition(permissionId: string): Promise<...>; listP...': createTeam, createPermissionDefinition, updatePermissionDefinition, deletePermissionDefinition, and 2 more.
 
-
-ƒ Middleware                                   [37m[1m44.2 kB[22m[39m
-
-○  (Static)   prerendered as static content
-●  (SSG)      prerendered as static HTML (uses [36mgenerateStaticParams[39m)
-ƒ  (Dynamic)  server-rendered on demand
-
-[?25h[1G[0K⠙[1G[0K
+[0m [90m 3 |[39m
+ [90m 4 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mHandler[39m() {
+[31m[1m>[22m[39m[90m 5 |[39m   [36mreturn[39m [33m<[39m[33mStackHandler[39m app[33m=[39m{stackClientApp} fullPage [33m/[39m[33m>[39m[33m;[39m
+ [90m   |[39m                        [31m[1m^[22m[39m
+ [90m 6 |[39m }
+ [90m 7 |[39m[0m
+[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[?25h[31mNext.js build worker exited with code: 1 and signal: null[39m
+[?25l [36m.[39m [?25h[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m Lifecycle script `build` failed with error:
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcode[39m [33m1[39m
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mpath[39m /Volumes/WorkSpace/WorkSpace/Development/sccny/apps/sccny
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mworkspace[39m sccny@0.2.0
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mlocation[39m /Volumes/WorkSpace/WorkSpace/Development/sccny/apps/sccny
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m command failed
+[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcommand[39m sh -c next build
+[1G[0K⠙[1G[0K

@@ -13,7 +13,6 @@ This document outlines the comprehensive implementation plan for the message pag
 - **Validation**: Comprehensive Zod schemas for all sermon operations
 - **Page Structure**: Basic routing structure for all message types
 - **Internationalization**: Translation files and next-intl setup
-- **UI Framework**: Flowbite component library integration
 
 ### ✅ Completed Components
 

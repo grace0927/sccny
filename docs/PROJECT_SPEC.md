@@ -29,32 +29,8 @@ sccny-monorepo/
 ### Frontend Architecture
 
 - **Styling**: Tailwind CSS v4
-- **Component Library**: Flowbite (primary), shadcn/ui (secondary)
 - **Icons**: Heroicons
 - **Fonts**: Geist Sans & Geist Mono (Google Fonts)
-
-### Component Library Strategy
-
-#### 1. Flowbite Components (Primary Choice)
-
-- **Rationale**: Comprehensive component library with Tailwind CSS integration
-- **Features**: Accessibility built-in, responsive design patterns
-- **Installation**: `npm install flowbite`
-- **JavaScript**: Requires `initFlowbite()` initialization for interactive components
-
-#### 2. Component Selection Hierarchy
-
-1. **Flowbite** - Primary choice for UI components
-2. **shadcn/ui** - Secondary choice when Flowbite doesn't provide needed functionality
-3. **Headless UI** - For complex interactive components
-4. **Custom components** - Only when none of the above provide needed functionality
-
-#### 3. Implementation Guidelines
-
-- Use Flowbite's data attributes for interactive functionality
-- Initialize Flowbite JavaScript in useEffect hooks
-- Use `cn()` utility for conditional styling when combining libraries
-- Maintain consistency with Flowbite's design system
 
 ### Internationalization (i18n)
 
@@ -413,13 +389,12 @@ For new feature development, follow this established pattern to ensure consisten
 - **Location**: `/docs/features/message-pages-implementation.md`
 - **Pattern**: Analysis → Documentation → Incremental Implementation → Updates
 - **Components**: SermonList, SermonCard, SermonDetail, MediaPlayer, etc.
-- **Integration**: Uses existing sermon API and Flowbite UI components
+- **Integration**: Uses existing sermon API
 
 ### Component Development Guidelines
 
 #### Reusable Component Standards
 
-- **Flowbite Integration**: Use Flowbite components as primary choice
 - **TypeScript**: Full type safety with proper interfaces
 - **Internationalization**: Support both English and Chinese languages
 - **Responsive Design**: Mobile-first approach with Tailwind CSS

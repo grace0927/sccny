@@ -1,8 +1,7 @@
 "use client";
-import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { initFlowbite } from "flowbite";
 import { Link } from "@/i18n/navigation";
+import { useState } from "react";
 
 const navigation = [
   { name: "HOME", href: "/" },
@@ -39,155 +38,129 @@ const languageOptions = [
 
 export default function Navigation() {
   const t = useTranslations("Navigation");
-
-  useEffect(() => {
-    initFlowbite();
-  }, []);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white border-gray-200 dark:bg-gray-900">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        {/* Language Dropdown and Mobile Menu Button */}
-        <div className="flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
-          {/* Language Dropdown */}
-          <button
-            type="button"
-            data-dropdown-toggle="language-dropdown-menu"
-            className="inline-flex items-center font-medium justify-center px-4 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
+    <div className="navbar bg-base-100 shadow-sm">
+      <div className="navbar-start">
+        {/* Mobile menu button */}
+        <div className="dropdown">
+          <label
+            tabIndex={0}
+            className="btn btn-ghost lg:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {t("LANGUAGE")}
             <svg
-              className="w-2.5 h-2.5 ms-2.5"
-              aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
               fill="none"
-              viewBox="0 0 10 6"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
               <path
-                stroke="currentColor"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="m1 1 4 4 4-4"
+                d="M4 6h16M4 12h16M4 18h16"
               />
             </svg>
-          </button>
-
-          {/* Language Dropdown Menu */}
-          <div
-            className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700"
-            id="language-dropdown-menu"
-          >
-            <ul className="py-2 font-medium" role="none">
-              {languageOptions.map((option) => (
-                <li key={option.locale}>
-                  <Link
-                    locale={option.locale}
-                    href="/"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-                    role="menuitem"
-                  >
-                    {option.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            data-collapse-toggle="navbar-language"
-            type="button"
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-            aria-controls="navbar-language"
-            aria-expanded="false"
-          >
-            <span className="sr-only">Open main menu</span>
-            <svg
-              className="w-5 h-5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 17 14"
+          </label>
+          {mobileMenuOpen && (
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content mt-3 z-[100] p-2 shadow bg-base-100 rounded-box w-52 whitespace-nowrap"
             >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M1 1h15M1 7h15M1 13h15"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* Main Navigation Menu */}
-        <div
-          className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
-          id="navbar-language"
-        >
-          <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            {navigation.map((item, index) => (
-              <li key={item.name}>
-                {item.sublinks ? (
-                  <>
-                    <button
-                      id={`dropdownNavbarLink-${index}`}
-                      data-dropdown-toggle={`dropdownNavbar-${index}`}
-                      className="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent"
-                    >
-                      {t(item.name)}
-                      <svg
-                        className="w-2.5 h-2.5 ms-2.5"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 10 6"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="m1 1 4 4 4-4"
-                        />
-                      </svg>
-                    </button>
-                    {/* Dropdown menu */}
-                    <div
-                      id={`dropdownNavbar-${index}`}
-                      className="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-                    >
-                      <ul
-                        className="py-2 text-sm text-gray-700 dark:text-gray-400"
-                        aria-labelledby={`dropdownNavbarLink-${index}`}
-                      >
+              {navigation.map((item) => (
+                <li key={item.name}>
+                  {item.sublinks ? (
+                    <details className="z-[100]">
+                      <summary>{t(item.name)}</summary>
+                      <ul className="p-2 whitespace-nowrap min-w-[200px] z-[100]">
                         {item.sublinks.map((sublink) => (
                           <li key={sublink.name}>
-                            <Link
-                              href={sublink.href}
-                              className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                            >
-                              {t(sublink.name)}
-                            </Link>
+                            <Link href={sublink.href}>{t(sublink.name)}</Link>
                           </li>
                         ))}
                       </ul>
-                    </div>
-                  </>
-                ) : (
-                  <Link
-                    href={item.href}
-                    className="block py-2 px-3 md:p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                  >
+                    </details>
+                  ) : (
+                    <Link href={item.href}>{t(item.name)}</Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal px-1">
+          {navigation.map((item) => (
+            <li key={item.name} className="group">
+              {item.sublinks ? (
+                <div className="relative">
+                  <button className="hover:bg-transparent hover:text-primary flex items-center">
                     {t(item.name)}
-                  </Link>
-                )}
+                    <svg
+                      className="w-4 h-4 ml-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  <ul className="absolute -left-5 top-[24px] mt-1 p-2 whitespace-nowrap min-w-[200px] z-[100] bg-base-100 shadow-lg rounded-box opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200">
+                    {item.sublinks.map((sublink) => (
+                      <li key={sublink.name}>
+                        <Link
+                          href={sublink.href}
+                          className="hover:bg-base-200 block px-2 py-1 rounded"
+                        >
+                          {t(sublink.name)}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <Link
+                  href={item.href}
+                  className="hover:bg-transparent hover:text-primary"
+                >
+                  {t(item.name)}
+                </Link>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="navbar-end">
+        {/* Language dropdown */}
+        <div className="dropdown dropdown-end">
+          <label tabIndex={0} className="btn btn-ghost m-1">
+            {t("LANGUAGE")}
+          </label>
+          <ul
+            tabIndex={0}
+            className="dropdown-content z-[100] menu p-2 shadow bg-base-100 rounded-box w-52 whitespace-nowrap"
+          >
+            {languageOptions.map((option) => (
+              <li key={option.locale}>
+                <Link locale={option.locale} href="/">
+                  {option.label}
+                </Link>
               </li>
             ))}
           </ul>
         </div>
       </div>
-    </nav>
+    </div>
   );
 }
