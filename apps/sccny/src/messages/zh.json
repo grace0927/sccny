@@ -216,8 +216,8 @@
     "baptismClass": "受浸班",
     "sortBy": "排序方式",
     "date": "日期",
-    "title": "标题",
-    "speaker": "讲员",
+    "sortTitle": "标题",
+    "sortSpeaker": "讲员",
     "descending": "↓",
     "ascending": "↑",
     "clearAll": "清除全部",
@@ -302,5 +302,17 @@
     "direction1": "从Long Island Expressway：第60号出口下，遇到Hawkins Ave往北行（从东来者请向右转；从西来者请向左转）2.7英里后，向左转至Moriches Rd，行驶0.2英里，左手边即为施福基督教会。",
     "direction2": "从Stony Brook的石溪大学来：从校园出来后，若走Stony Brook Rd，则向南行，横跨347号公路后，继续向南行，遇到25号公路，横跨后继续名为Hawkins Rd，继续南行0.6英里后，向右转至Moriches Rd，行驶0.2英里，左手边即为施福基督教会。",
     "mapLink": "查看各教地图，请点击这里(Google Map)。"
+  },
+  "Tools": {
+    "title": "工具箱",
+    "description": "对您日常灵修生活有用的工具。",
+    "bible": {
+      "title": "圣经查询 (精简版)",
+      "description": "一个简单的圣经查询工具，帮助您快速查找经文。",
+      "searchPlaceholder": "输入书卷 章:节 (例如 弗 2:1)",
+      "searchButton": "搜索",
+      "resultTitle": "圣经经文",
+      "loading": "加载中..."
+    }
   }
 }

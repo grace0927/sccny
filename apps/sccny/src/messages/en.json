@@ -21,7 +21,7 @@
     "churchName": "Suffolk Christian Church",
     "churchBibleVerse": "Jesus said to him, \"I am the way, and the truth, and the life. No one comes to the Father except through me. -- John 14:6",
     "weeklyGoldenVerse": "Weekly Golden Verse",
-    "campusFellowship": "Campus Fellowship",
+    "campusFellowship": "CampusFellowship",
     "seekingTruth": "Seeking Truth",
     "learnMore": "Learn More",
     "sundayWorship": "Sunday Worship"
@@ -216,8 +216,8 @@
     "baptismClass": "Baptism Class",
     "sortBy": "Sort By",
     "date": "Date",
-    "title": "Title",
-    "speaker": "Speaker",
+    "sortTitle": "Title",
+    "sortSpeaker": "Speaker",
     "descending": "↓",
     "ascending": "↑",
     "clearAll": "Clear All",
@@ -302,5 +302,17 @@
     "direction1": "From Long Island Expressway: Take Exit 60 south, arrive at Hawkins Ave and go north (from the east, please turn right; from the west, please turn left) 2.7 miles later, turn left to Moriches Rd, drive 0.2 miles, on the left is Suffolk Christian Church.",
     "direction2": "From Stony Brook University: From the campus, go to Stony Brook Rd, then go south, cross Route 347, continue south, arrive at Route 25, cross Route 25 and continue to Hawkins Rd, continue south for 0.6 miles, then turn right to Moriches Rd, drive 0.2 miles, on the left is Suffolk Christian Church.",
     "mapLink": "To check our location, please click here (Google Map)."
+  },
+  "Tools": {
+    "title": "Tools",
+    "description": "Useful tools for your daily spiritual life.",
+    "bible": {
+      "title": "Holy Bible Lite",
+      "description": "A simple Bible lookup tool to help you find verses quickly.",
+      "searchPlaceholder": "Enter book chapter:verse (e.g. Eph 2:1)",
+      "searchButton": "Search",
+      "resultTitle": "Bible Verse",
+      "loading": "Loading..."
+    }
   }
 }
