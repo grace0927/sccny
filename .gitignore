@@ -57,3 +57,12 @@ apps/sccny/.turbo/*
 # mac.DS_Store
 .DS_Store
 ._*
+
+# AI assistants
+.claude/settings.local.json
+.cursor/
+
+# Environment files
+.env
+.env.local
+.env.*.local
