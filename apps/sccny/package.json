@@ -7,12 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && node -e \"require('fs').writeFileSync('src/generated/prisma/index.ts', '/* Re-export from client */\\nexport * from \\'./client\\'\\n')\""
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
-    "@prisma/client": "~6.16.0",
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
     "@radix-ui/react-navigation-menu": "^1.2.14",
     "@stackframe/stack": "^2.8.62",
     "axios": "^1.13.4",
@@ -20,9 +21,10 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
     "next": "16.1.5",
     "next-intl": "^4.7.0",
-    "prisma": "~6.16.0",
+    "prisma": "^7.3.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "tailwind-merge": "^3.4.0",
