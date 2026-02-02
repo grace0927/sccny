@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && node -e \"require('fs').writeFileSync('src/generated/prisma/index.ts', '/* Re-export from client */\\nexport * from \\'./client\\'\\n')\""
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

@@ -1,4 +1,4 @@
-import { SermonType } from "@/generated/prisma";
+import { SermonType } from "@/generated/prisma/browser";
 
 // Base sermon type from API
 export interface Sermon {

@@ -6,7 +6,7 @@ import {
   SermonFiltersProps,
   SermonFilters as SermonFiltersType,
 } from "./types";
-import { SermonType } from "@/generated/prisma";
+import { SermonType } from "@/generated/prisma/browser";
 
 export default function SermonFilters({
   onFiltersChange,
