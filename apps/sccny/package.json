@@ -15,7 +15,7 @@
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@radix-ui/react-navigation-menu": "^1.2.14",
-    "@stackframe/stack": "^2.8.64",
+    "@stackframe/stack": "^2.8.65",
     "axios": "^1.13.4",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
