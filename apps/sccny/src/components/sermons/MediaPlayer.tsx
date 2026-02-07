@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { MediaPlayerProps } from "./types";
+import { Tabs, TabsList, TabsTrigger, TabsContent, Card, CardContent, Button } from "dark-blue";
 
 export default function MediaPlayer({
   videoUrl,
@@ -87,8 +88,8 @@ export default function MediaPlayer({
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const switchMedia = (type: "video" | "audio") => {
-    setActiveMedia(type);
+  const switchMedia = (type: string) => {
+    setActiveMedia(type as "video" | "audio");
     setIsPlaying(false);
     setCurrentTime(0);
     setDuration(0);
@@ -96,8 +97,8 @@ export default function MediaPlayer({
 
   if (!videoUrl && !audioUrl) {
     return (
-      <div className="bg-gray-100 rounded-lg p-8 text-center">
-        <p className="text-gray-500">
+      <div className="bg-muted rounded-lg p-8 text-center">
+        <p className="text-muted-foreground">
           {t("noMedia", {
             defaultValue: "No media available for this sermon.",
           })}
@@ -107,77 +108,110 @@ export default function MediaPlayer({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <Card className="overflow-hidden">
       {/* Media Selection Tabs */}
       {videoUrl && audioUrl && (
-        <div className="flex border-b border-gray-200">
-          <button
-            onClick={() => switchMedia("video")}
-            className={`flex-1 py-3 px-4 text-sm font-medium ${
-              activeMedia === "video"
-                ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            {t("video", { defaultValue: "Video" })}
-          </button>
-          <button
-            onClick={() => switchMedia("audio")}
-            className={`flex-1 py-3 px-4 text-sm font-medium ${
-              activeMedia === "audio"
-                ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            {t("audio", { defaultValue: "Audio" })}
-          </button>
-        </div>
+        <Tabs value={activeMedia} onValueChange={switchMedia}>
+          <TabsList className="w-full rounded-none">
+            <TabsTrigger value="video" className="flex-1">
+              {t("video", { defaultValue: "Video" })}
+            </TabsTrigger>
+            <TabsTrigger value="audio" className="flex-1">
+              {t("audio", { defaultValue: "Audio" })}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="video">
+            <CardContent className="pt-6">
+              <video
+                ref={videoRef}
+                src={videoUrl}
+                className="w-full rounded-lg"
+                poster="/api/placeholder/640/360"
+                preload="metadata"
+              />
+            </CardContent>
+          </TabsContent>
+
+          <TabsContent value="audio">
+            <CardContent className="pt-6">
+              <div className="bg-muted rounded-lg p-8 text-center">
+                <div className="mb-4">
+                  <svg
+                    className="w-16 h-16 mx-auto text-muted-foreground"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-foreground mb-2">{title}</h3>
+                <audio
+                  ref={audioRef}
+                  src={audioUrl}
+                  preload="metadata"
+                  className="hidden"
+                />
+              </div>
+            </CardContent>
+          </TabsContent>
+        </Tabs>
       )}
 
-      {/* Media Player */}
-      <div className="p-6">
-        {activeMedia === "video" && videoUrl && (
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            className="w-full rounded-lg"
-            poster="/api/placeholder/640/360"
-            preload="metadata"
-          />
-        )}
-
-        {activeMedia === "audio" && audioUrl && (
-          <div className="bg-gray-50 rounded-lg p-8 text-center">
-            <div className="mb-4">
-              <svg
-                className="w-16 h-16 mx-auto text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1}
-                  d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
-                />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
-            <audio
-              ref={audioRef}
-              src={audioUrl}
+      {/* Single media (no tabs) */}
+      {!(videoUrl && audioUrl) && (
+        <CardContent className="pt-6">
+          {activeMedia === "video" && videoUrl && (
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              className="w-full rounded-lg"
+              poster="/api/placeholder/640/360"
               preload="metadata"
-              className="hidden"
             />
-          </div>
-        )}
+          )}
 
-        {/* Controls */}
-        <div className="mt-4 space-y-4">
+          {activeMedia === "audio" && audioUrl && (
+            <div className="bg-muted rounded-lg p-8 text-center">
+              <div className="mb-4">
+                <svg
+                  className="w-16 h-16 mx-auto text-muted-foreground"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1}
+                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-foreground mb-2">{title}</h3>
+              <audio
+                ref={audioRef}
+                src={audioUrl}
+                preload="metadata"
+                className="hidden"
+              />
+            </div>
+          )}
+        </CardContent>
+      )}
+
+      {/* Controls */}
+      <CardContent className="pb-6">
+        <div className="space-y-4">
           {/* Progress Bar */}
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-500 w-12">
+            <span className="text-sm text-muted-foreground w-12">
               {formatTime(currentTime)}
             </span>
             <input
@@ -186,18 +220,19 @@ export default function MediaPlayer({
               max={duration || 0}
               value={currentTime}
               onChange={handleSeek}
-              className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+              className="flex-1 h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
             />
-            <span className="text-sm text-gray-500 w-12">
+            <span className="text-sm text-muted-foreground w-12">
               {formatTime(duration)}
             </span>
           </div>
 
           {/* Control Buttons */}
           <div className="flex items-center justify-center space-x-4">
-            <button
+            <Button
               onClick={togglePlay}
-              className="flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              size="lg"
+              className="rounded-full w-12 h-12 p-0"
             >
               {isPlaying ? (
                 <svg
@@ -224,13 +259,13 @@ export default function MediaPlayer({
                   />
                 </svg>
               )}
-            </button>
+            </Button>
 
             {/* Volume Control */}
             <div className="flex items-center space-x-2">
               <button
                 onClick={toggleMute}
-                className="text-gray-600 hover:text-gray-800"
+                className="text-muted-foreground hover:text-foreground"
               >
                 {isMuted || volume === 0 ? (
                   <svg
@@ -265,12 +300,12 @@ export default function MediaPlayer({
                 step="0.1"
                 value={isMuted ? 0 : volume}
                 onChange={handleVolumeChange}
-                className="w-20 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                className="w-20 h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
               />
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

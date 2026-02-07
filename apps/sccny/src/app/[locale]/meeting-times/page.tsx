@@ -83,44 +83,44 @@ export default function MeetingTimes() {
       <Navigation />
       <main className="min-h-screen">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl mb-12">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl mb-12">
             {t("title")}
           </h1>
 
           <div className="overflow-x-auto shadow-lg rounded-lg">
-            <table className="min-w-full bg-white border border-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full bg-card border border-border">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-foreground border-b border-border">
                     {t("activity")}
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-foreground border-b border-border">
                     {t("time")}
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-foreground border-b border-border">
                     {t("location")}
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-border">
                 {meetingData.map((meeting, index) => (
                   <tr
                     key={index}
-                    className="hover:bg-gray-50 transition-colors duration-200"
+                    className="hover:bg-muted transition-colors duration-200"
                   >
-                    <td className="px-6 py-4 text-sm text-gray-900 border-b border-gray-100">
+                    <td className="px-6 py-4 text-sm text-foreground border-b border-border">
                       {meeting.activity}
                     </td>
-                    <td className="px-6 py-4 text-sm text-blue-600 font-medium border-b border-gray-100">
+                    <td className="px-6 py-4 text-sm text-primary font-medium border-b border-border">
                       {meeting.time}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700 border-b border-gray-100">
+                    <td className="px-6 py-4 text-sm text-foreground border-b border-border">
                       {meeting.location.startsWith("https://") ? (
                         <a
                           href={meeting.location}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 underline"
+                          className="text-primary hover:text-primary/80 underline"
                         >
                           {meeting.location}
                         </a>

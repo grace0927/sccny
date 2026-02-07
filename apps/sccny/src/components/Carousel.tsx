@@ -22,11 +22,11 @@ export default function Carousel() {
   }, []);
 
   return (
-    <div className="carousel w-full">
+    <div className="relative w-full overflow-hidden">
       {images.map((src, index) => (
         <div
           key={src}
-          className={`carousel-item relative w-full ${
+          className={`relative w-full ${
             index === currentIndex ? "" : "hidden"
           }`}
         >
@@ -40,6 +40,19 @@ export default function Carousel() {
           />
         </div>
       ))}
+      {/* Indicators */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        {images.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`w-2 h-2 rounded-full transition-colors ${
+              index === currentIndex ? "bg-primary" : "bg-card/50"
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </div>
   );
 }

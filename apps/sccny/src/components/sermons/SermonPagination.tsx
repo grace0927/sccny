@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { PaginationProps } from "./types";
+import { Button } from "dark-blue";
 
 export default function SermonPagination({
   currentPage,
@@ -14,7 +15,7 @@ export default function SermonPagination({
   if (totalPages <= 1) return null;
 
   const getPageNumbers = () => {
-    const pages = [];
+    const pages: (number | string)[] = [];
     const maxVisible = 5;
 
     if (totalPages <= maxVisible) {
@@ -52,11 +53,11 @@ export default function SermonPagination({
 
   return (
     <nav
-      className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6"
+      className="flex items-center justify-between px-4 py-3 bg-card border-t border-border sm:px-6"
       aria-label="Pagination"
     >
       <div className="hidden sm:block">
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-muted-foreground">
           {t("showingPage", { defaultValue: "Page" })}{" "}
           <span className="font-medium">{currentPage}</span>{" "}
           {t("of", { defaultValue: "of" })}{" "}
@@ -64,11 +65,12 @@ export default function SermonPagination({
         </p>
       </div>
 
-      <div className="flex justify-between flex-1 sm:justify-end">
-        <button
+      <div className="flex justify-between flex-1 sm:justify-end gap-1">
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
         >
           <span className="sr-only">
             {t("previous", { defaultValue: "Previous" })}
@@ -86,31 +88,29 @@ export default function SermonPagination({
               d="M15 19l-7-7 7-7"
             />
           </svg>
-        </button>
+        </Button>
 
         {showPageNumbers && (
-          <div className="hidden sm:flex">
+          <div className="hidden sm:flex gap-1">
             {pageNumbers.map((page, index) => (
-              <button
+              <Button
                 key={index}
+                variant={page === currentPage ? "default" : "outline"}
+                size="sm"
                 onClick={() => typeof page === "number" && onPageChange(page)}
                 disabled={page === "..."}
-                className={`relative inline-flex items-center px-4 py-2 text-sm font-medium border ${
-                  page === currentPage
-                    ? "z-10 bg-indigo-50 border-indigo-500 text-indigo-600"
-                    : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                } ${page === "..." ? "cursor-default" : ""}`}
               >
                 {page}
-              </button>
+              </Button>
             ))}
           </div>
         )}
 
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
         >
           <span className="sr-only">{t("next", { defaultValue: "Next" })}</span>
           <svg
@@ -126,7 +126,7 @@ export default function SermonPagination({
               d="M9 5l7 7-7 7"
             />
           </svg>
-        </button>
+        </Button>
       </div>
     </nav>
   );

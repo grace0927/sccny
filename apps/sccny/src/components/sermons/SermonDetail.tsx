@@ -5,6 +5,18 @@ import { Sermon } from "./types";
 import MediaPlayer from "./MediaPlayer";
 import LoadingStates from "./LoadingStates";
 import { format } from "date-fns";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  Badge,
+  Button,
+  Card,
+  CardContent,
+} from "dark-blue";
 
 interface SermonDetailProps {
   sermon: Sermon | null;
@@ -27,16 +39,15 @@ export default function SermonDetail({
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl font-bold text-foreground mb-4">
             {t("errorTitle", { defaultValue: "Error Loading Sermon" })}
           </h1>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <Link
-            href="/messages/sermon-recordings"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            {t("backToSermons", { defaultValue: "Back to Sermons" })}
-          </Link>
+          <p className="text-muted-foreground mb-6">{error}</p>
+          <Button asChild>
+            <Link href="/messages/sermon-recordings">
+              {t("backToSermons", { defaultValue: "Back to Sermons" })}
+            </Link>
+          </Button>
         </div>
       </div>
     );
@@ -65,74 +76,44 @@ export default function SermonDetail({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white shadow-sm">
+      <div className="bg-card shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <nav className="flex mb-4" aria-label="Breadcrumb">
-            <ol className="flex items-center space-x-2">
-              <li>
-                <Link
-                  href="/messages"
-                  className="text-gray-500 hover:text-gray-700"
-                >
+          <Breadcrumb className="mb-4">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/messages">
                   {t("messages", { defaultValue: "Messages" })}
-                </Link>
-              </li>
-              <li>
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </li>
-              <li>
-                <Link
-                  href="/messages/sermon-recordings"
-                  className="text-gray-500 hover:text-gray-700"
-                >
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/messages/sermon-recordings">
                   {t("sermonRecordings", { defaultValue: "Sermon Recordings" })}
-                </Link>
-              </li>
-              <li>
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </li>
-              <li className="text-gray-900 font-medium truncate">
-                {sermon.title}
-              </li>
-            </ol>
-          </nav>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{sermon.title}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
           {/* Sermon Type Badge */}
           <div className="mb-4">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+            <Badge variant="subtle">
               {getSermonTypeLabel(sermon.type)}
-            </span>
+            </Badge>
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-foreground mb-4">
             {sermon.title}
           </h1>
 
           {/* Meta Information */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-6">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
             <div className="flex items-center">
               <svg
                 className="w-4 h-4 mr-1"
@@ -221,39 +202,40 @@ export default function SermonDetail({
 
         {/* Description */}
         {sermon.description && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              {t("aboutThisSermon", { defaultValue: "About This Sermon" })}
-            </h2>
-            <div className="prose prose-gray max-w-none">
-              <p className="text-gray-700 whitespace-pre-line">
-                {sermon.description}
-              </p>
-            </div>
-          </div>
+          <Card className="mb-8">
+            <CardContent className="pt-6">
+              <h2 className="text-xl font-semibold text-foreground mb-4">
+                {t("aboutThisSermon", { defaultValue: "About This Sermon" })}
+              </h2>
+              <div className="prose prose-gray max-w-none">
+                <p className="text-muted-foreground whitespace-pre-line">
+                  {sermon.description}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Back to Sermons */}
         <div className="text-center">
-          <Link
-            href="/messages/sermon-recordings"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            {t("backToAllSermons", { defaultValue: "Back to All Sermons" })}
-          </Link>
+          <Button asChild>
+            <Link href="/messages/sermon-recordings">
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              {t("backToAllSermons", { defaultValue: "Back to All Sermons" })}
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

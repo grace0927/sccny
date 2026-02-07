@@ -1,34 +1,33 @@
 "use client";
 
+import { Skeleton, Card, CardContent } from "dark-blue";
+
 const NewsListSkeleton = () => {
   return (
     <div className="space-y-6">
       {Array.from({ length: 6 }, (_, i) => (
-        <div
-          key={i}
-          className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse"
-        >
-          <div className="p-6">
+        <Card key={i} className="overflow-hidden">
+          <CardContent className="pt-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
-                <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
               </div>
-              <div className="h-4 bg-gray-200 rounded w-20 ml-4"></div>
+              <Skeleton className="h-4 w-20 ml-4" />
             </div>
 
             <div className="space-y-2 mb-6">
-              <div className="h-4 bg-gray-200 rounded w-full"></div>
-              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-              <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-5/6" />
+              <Skeleton className="h-4 w-4/6" />
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="h-3 bg-gray-200 rounded w-32"></div>
-              <div className="h-8 bg-gray-200 rounded w-24"></div>
+              <Skeleton className="h-3 w-32" />
+              <Skeleton className="h-8 w-24 rounded-md" />
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );
@@ -36,47 +35,47 @@ const NewsListSkeleton = () => {
 
 const NewsCardSkeleton = () => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
-      <div className="p-6">
+    <Card className="overflow-hidden">
+      <CardContent className="pt-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <Skeleton className="h-5 w-3/4 mb-2" />
           </div>
-          <div className="h-4 bg-gray-200 rounded w-16 ml-4"></div>
+          <Skeleton className="h-4 w-16 ml-4" />
         </div>
 
         <div className="space-y-2 mb-4">
-          <div className="h-4 bg-gray-200 rounded w-full"></div>
-          <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-4/5" />
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="h-3 bg-gray-200 rounded w-28"></div>
-          <div className="h-8 bg-gray-200 rounded w-20"></div>
+          <Skeleton className="h-3 w-28" />
+          <Skeleton className="h-8 w-20 rounded-md" />
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
 const NewsDetailSkeleton = () => {
   return (
-    <div className="max-w-4xl mx-auto animate-pulse">
+    <div className="max-w-4xl mx-auto">
       {/* Back Button */}
       <div className="mb-8">
-        <div className="h-10 bg-gray-200 rounded w-32"></div>
+        <Skeleton className="h-10 w-32 rounded-md" />
       </div>
 
       {/* Article Header */}
-      <header className="mb-8 pb-8 border-b border-gray-200">
-        <div className="h-12 bg-gray-200 rounded w-3/4 mb-6"></div>
+      <header className="mb-8 pb-8 border-b border-border">
+        <Skeleton className="h-12 w-3/4 mb-6" />
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center space-x-4">
-            <div className="h-4 bg-gray-200 rounded w-24"></div>
-            <div className="h-4 bg-gray-200 rounded w-32"></div>
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-32" />
           </div>
-          <div className="h-4 bg-gray-200 rounded w-40"></div>
+          <Skeleton className="h-4 w-40" />
         </div>
       </header>
 
@@ -84,23 +83,23 @@ const NewsDetailSkeleton = () => {
       <div className="space-y-4 mb-12">
         {Array.from({ length: 8 }, (_, i) => (
           <div key={i} className="space-y-2">
-            <div className="h-4 bg-gray-200 rounded w-full"></div>
-            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-            <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-4/6" />
           </div>
         ))}
       </div>
 
       {/* Article Footer */}
-      <footer className="pt-8 border-t border-gray-200">
+      <footer className="pt-8 border-t border-border">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="h-4 bg-gray-200 rounded w-48"></div>
+          <Skeleton className="h-4 w-48" />
           <div className="flex items-center space-x-2">
-            <div className="h-4 bg-gray-200 rounded w-24"></div>
+            <Skeleton className="h-4 w-24" />
             <div className="flex space-x-2">
-              <div className="h-8 w-8 bg-gray-200 rounded"></div>
-              <div className="h-8 w-8 bg-gray-200 rounded"></div>
-              <div className="h-8 w-8 bg-gray-200 rounded"></div>
+              <Skeleton className="h-8 w-8 rounded" />
+              <Skeleton className="h-8 w-8 rounded" />
+              <Skeleton className="h-8 w-8 rounded" />
             </div>
           </div>
         </div>
@@ -111,25 +110,27 @@ const NewsDetailSkeleton = () => {
 
 const FiltersSkeleton = () => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6 animate-pulse">
-      <div className="flex flex-col lg:flex-row gap-4">
-        <div className="flex-1">
-          <div className="h-10 bg-gray-200 rounded"></div>
+    <Card className="mb-6">
+      <CardContent className="pt-6">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex-1">
+            <Skeleton className="h-10 w-full rounded-md" />
+          </div>
+          <div className="w-full lg:w-48">
+            <Skeleton className="h-10 w-full rounded-md" />
+          </div>
+          <div className="w-full lg:w-48">
+            <Skeleton className="h-10 w-full rounded-md" />
+          </div>
+          <div className="w-full lg:w-40">
+            <Skeleton className="h-10 w-full rounded-md" />
+          </div>
+          <div className="w-full lg:w-32">
+            <Skeleton className="h-10 w-full rounded-md" />
+          </div>
         </div>
-        <div className="w-full lg:w-48">
-          <div className="h-10 bg-gray-200 rounded"></div>
-        </div>
-        <div className="w-full lg:w-48">
-          <div className="h-10 bg-gray-200 rounded"></div>
-        </div>
-        <div className="w-full lg:w-40">
-          <div className="h-10 bg-gray-200 rounded"></div>
-        </div>
-        <div className="w-full lg:w-32">
-          <div className="h-10 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

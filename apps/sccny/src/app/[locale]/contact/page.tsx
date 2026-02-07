@@ -11,7 +11,7 @@ export default function Contact() {
       <Navigation />
       <main className="min-h-screen">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl mb-12">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl mb-12">
             {t("title")}
           </h1>
 
@@ -30,7 +30,7 @@ export default function Contact() {
 
           {/* Introduction Text */}
           <div className="mb-12">
-            <p className="text-lg text-gray-700 leading-relaxed">
+            <p className="text-lg text-foreground leading-relaxed">
               {t("introText")}
             </p>
           </div>
@@ -38,14 +38,14 @@ export default function Contact() {
           {/* Contact Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
             {/* Phone */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+            <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
+              <h3 className="text-xl font-semibold text-foreground mb-3">
                 {t("phone")}
               </h3>
-              <p className="text-lg text-blue-600 font-medium">
+              <p className="text-lg text-primary font-medium">
                 <a
                   href={`tel:${t("phoneNumber")}`}
-                  className="hover:text-blue-800"
+                  className="hover:text-primary/80"
                 >
                   {t("phoneNumber")}
                 </a>
@@ -53,14 +53,14 @@ export default function Contact() {
             </div>
 
             {/* Email */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+            <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
+              <h3 className="text-xl font-semibold text-foreground mb-3">
                 {t("email")}
               </h3>
-              <p className="text-lg text-blue-600 font-medium">
+              <p className="text-lg text-primary font-medium">
                 <a
                   href={`mailto:${t("emailAddress")}`}
-                  className="hover:text-blue-800 break-all"
+                  className="hover:text-primary/80 break-all"
                 >
                   {t("emailAddress")}
                 </a>
@@ -70,31 +70,31 @@ export default function Contact() {
 
           {/* Address */}
           <div className="mb-12">
-            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+            <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
+              <h3 className="text-xl font-semibold text-foreground mb-3">
                 {t("address")}
               </h3>
-              <p className="text-lg text-gray-700">{t("churchAddress")}</p>
+              <p className="text-lg text-foreground">{t("churchAddress")}</p>
             </div>
           </div>
 
           {/* Driving Directions */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6">
+            <h2 className="text-3xl font-bold text-foreground mb-6">
               {t("driveDirection")}
             </h2>
 
             <div className="space-y-6">
-              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                <h4 className="text-lg font-semibold text-gray-800 mb-3">1.</h4>
-                <p className="text-gray-700 leading-relaxed">
+              <div className="bg-muted rounded-lg p-6 border border-border">
+                <h4 className="text-lg font-semibold text-foreground mb-3">1.</h4>
+                <p className="text-foreground leading-relaxed">
                   {t("direction1")}
                 </p>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                <h4 className="text-lg font-semibold text-gray-800 mb-3">2.</h4>
-                <p className="text-gray-700 leading-relaxed">
+              <div className="bg-muted rounded-lg p-6 border border-border">
+                <h4 className="text-lg font-semibold text-foreground mb-3">2.</h4>
+                <p className="text-foreground leading-relaxed">
                   {t("direction2")}
                 </p>
               </div>
@@ -103,13 +103,13 @@ export default function Contact() {
 
           {/* Google Map Link */}
           <div className="mb-12">
-            <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
-              <p className="text-gray-700">
+            <div className="bg-muted rounded-lg p-6 border border-border">
+              <p className="text-foreground">
                 <a
                   href="https://maps.google.com/maps?q=18+Moriches+Rd,+Lake+Grove,+NY+11755,+USA"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline font-medium"
+                  className="text-primary hover:text-primary/80 underline font-medium"
                 >
                   {t("mapLink")}
                 </a>

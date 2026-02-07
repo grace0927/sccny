@@ -5,6 +5,7 @@ import Carousel from "@/components/Carousel";
 import NewsList from "@/components/news/NewsList";
 import Image from "next/image";
 import Link from "next/link";
+import { Card, CardContent, CardTitle, CardFooter, Button } from "dark-blue";
 
 export default function Home() {
   const t = useTranslations("Home");
@@ -14,19 +15,19 @@ export default function Home() {
       <Navigation />
 
       {/* Header Section with Church Info */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-card border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="text-center">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
               {t("churchName")}
             </h1>
-            <p className="text-sm md:text-base text-gray-600 mb-2">
+            <p className="text-sm md:text-base text-muted-foreground mb-2">
               {t("churchBibleVerse")}
             </p>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-muted-foreground">
               <a
                 href="https://www.google.com/maps/place/18+Moriches+Rd,+Lake+Grove,+NY+11755"
-                className="hover:text-blue-600"
+                className="hover:text-primary"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -42,8 +43,8 @@ export default function Home() {
       <main className="min-h-screen">
         <Carousel />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="card bg-base-100 shadow-xl">
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="shadow-xl overflow-hidden">
               <figure>
                 <Image
                   src="https://www.scc-ny.org/wp-content/uploads/2012/04/sermonpic.jpg"
@@ -53,16 +54,16 @@ export default function Home() {
                   unoptimized
                 />
               </figure>
-              <div className="card-body">
-                <h2 className="card-title">{t("weeklyGoldenVerse")}</h2>
-                <div className="card-actions justify-end">
-                  <Link href="/golden-verse" className="btn btn-primary">
-                    {t("learnMore")}
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div className="card bg-base-100 shadow-xl">
+              <CardContent className="pt-4">
+                <CardTitle>{t("weeklyGoldenVerse")}</CardTitle>
+              </CardContent>
+              <CardFooter className="justify-end">
+                <Button asChild>
+                  <Link href="/golden-verse">{t("learnMore")}</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+            <Card className="shadow-xl overflow-hidden">
               <figure>
                 <Image
                   src="https://www.scc-ny.org/wp-content/uploads/2015/08/CampusFellowship.jpg"
@@ -72,19 +73,18 @@ export default function Home() {
                   unoptimized
                 />
               </figure>
-              <div className="card-body">
-                <h2 className="card-title">{t("campusFellowship")}</h2>
-                <div className="card-actions justify-end">
-                  <Link
-                    href="/ministries/campus-fellowship"
-                    className="btn btn-primary"
-                  >
+              <CardContent className="pt-4">
+                <CardTitle>{t("campusFellowship")}</CardTitle>
+              </CardContent>
+              <CardFooter className="justify-end">
+                <Button asChild>
+                  <Link href="/ministries/campus-fellowship">
                     {t("learnMore")}
                   </Link>
-                </div>
-              </div>
-            </div>
-            <div className="card bg-base-100 shadow-xl">
+                </Button>
+              </CardFooter>
+            </Card>
+            <Card className="shadow-xl overflow-hidden">
               <figure>
                 <Image
                   src="https://www.scc-ny.org/wp-content/uploads/2012/09/seekingtruth.jpg"
@@ -94,37 +94,38 @@ export default function Home() {
                   unoptimized
                 />
               </figure>
-              <div className="card-body">
-                <h2 className="card-title">{t("seekingTruth")}</h2>
-                <div className="card-actions justify-end">
-                  <Link href="/lordsday-worship" className="btn btn-primary">
-                    {t("learnMore")}
-                  </Link>
-                </div>
-              </div>
-            </div>
+              <CardContent className="pt-4">
+                <CardTitle>{t("seekingTruth")}</CardTitle>
+              </CardContent>
+              <CardFooter className="justify-end">
+                <Button asChild>
+                  <Link href="/lordsday-worship">{t("learnMore")}</Link>
+                </Button>
+              </CardFooter>
+            </Card>
           </div>
 
           {/* Latest Sermon Section */}
-          <div className="mt-16 bg-gray-100 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <div className="mt-16 bg-muted p-8 rounded-lg">
+            <h2 className="text-2xl font-bold text-foreground mb-4">
               Latest Sermon
             </h2>
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">
+                <h3 className="text-lg font-semibold text-foreground">
                   拆毁隔断的墙 – 黄克斌 - July 13, 2025
                 </h3>
               </div>
               <div className="mt-4 md:mt-0">
-                <a
-                  href="http://www.scc-ny.org/wp-content/uploads/2025/07/拆毁隔断的墙-黄克斌.mp3"
-                  className="btn btn-primary"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Download Latest Sermon
-                </a>
+                <Button asChild>
+                  <a
+                    href="http://www.scc-ny.org/wp-content/uploads/2025/07/拆毁隔断的墙-黄克斌.mp3"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Download Latest Sermon
+                  </a>
+                </Button>
               </div>
             </div>
           </div>
@@ -134,18 +135,18 @@ export default function Home() {
             {/* Upcoming Events */}
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-foreground">
                   Upcoming Events
                 </h2>
                 <Link
                   href="/events"
-                  className="text-blue-600 hover:text-blue-800"
+                  className="text-primary hover:text-primary/80"
                 >
                   View All
                 </Link>
               </div>
               <div className="space-y-4">
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   No upcoming events at this time.
                 </p>
               </div>
@@ -154,12 +155,12 @@ export default function Home() {
             {/* News & Announcements */}
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-foreground">
                   News & Announcements
                 </h2>
                 <Link
                   href="/news"
-                  className="text-blue-600 hover:text-blue-800"
+                  className="text-primary hover:text-primary/80"
                 >
                   Read All
                 </Link>

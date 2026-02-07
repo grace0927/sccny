@@ -73,23 +73,23 @@ export default function Ministries() {
       <Navigation />
       <main className="min-h-screen">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl mb-12">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl mb-12">
             {t("title")}
           </h1>
 
           {/* Introduction */}
           <div className="mb-12 space-y-6">
-            <p className="text-lg text-gray-700 leading-relaxed">
+            <p className="text-lg text-foreground leading-relaxed">
               {t("introduction")}
             </p>
-            <p className="text-lg text-gray-700 leading-relaxed">
+            <p className="text-lg text-foreground leading-relaxed">
               {t("description")}
             </p>
           </div>
 
           {/* Ministry Areas Overview */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+            <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
               {t("ministriesOverview")}
             </h2>
 
@@ -109,26 +109,26 @@ export default function Ministries() {
                   {/* Ministry Table */}
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-muted">
                         <tr>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-foreground border-b border-border">
                             Ministry
                           </th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">
+                          <th className="px-6 py-3 text-left text-sm font-semibold text-foreground border-b border-border">
                             Leadership
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
+                      <tbody className="bg-card divide-y divide-border">
                         {area.ministries.map((ministry, ministryIndex) => (
                           <tr
                             key={ministryIndex}
-                            className="hover:bg-gray-50 transition-colors duration-200"
+                            className="hover:bg-muted transition-colors duration-200"
                           >
-                            <td className="px-6 py-4 text-sm text-gray-900 border-b border-gray-100">
+                            <td className="px-6 py-4 text-sm text-foreground border-b border-border">
                               {ministry.name}
                             </td>
-                            <td className="px-6 py-4 text-sm text-blue-600 font-medium border-b border-gray-100">
+                            <td className="px-6 py-4 text-sm text-primary font-medium border-b border-border">
                               {ministry.leader}
                             </td>
                           </tr>
@@ -142,28 +142,28 @@ export default function Ministries() {
           </div>
 
           {/* Call to Action */}
-          <div className="mt-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-8 border border-blue-200">
+          <div className="mt-16 bg-muted rounded-lg p-8 border border-border">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              <h2 className="text-2xl font-bold text-foreground mb-4">
                 Get Involved
               </h2>
-              <p className="text-gray-700 leading-relaxed mb-6">
+              <p className="text-muted-foreground leading-relaxed mb-6">
                 We invite you to join us in serving the Lord through these
                 various ministries. Each ministry provides opportunities to grow
                 in faith, serve others, and build community.
               </p>
               <div className="flex justify-center space-x-4">
-                <div className="bg-white rounded-lg p-4 shadow-md">
-                  <div className="text-blue-600 font-semibold">Contact Us</div>
-                  <div className="text-gray-600 text-sm">
+                <div className="bg-card rounded-lg p-4 shadow-md">
+                  <div className="text-primary font-semibold">Contact Us</div>
+                  <div className="text-muted-foreground text-sm">
                     Learn more about getting involved
                   </div>
                 </div>
-                <div className="bg-white rounded-lg p-4 shadow-md">
-                  <div className="text-green-600 font-semibold">
+                <div className="bg-card rounded-lg p-4 shadow-md">
+                  <div className="text-primary font-semibold">
                     Join a Ministry
                   </div>
-                  <div className="text-gray-600 text-sm">
+                  <div className="text-muted-foreground text-sm">
                     Find your place to serve
                   </div>
                 </div>

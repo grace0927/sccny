@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { stackClientApp } from "../../stack/client";
+import { cn } from "@/lib/utils";
 import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -41,8 +42,8 @@ export default async function LocaleLayout({
   }
 
   return (
-    <html lang={locale}>
-      <body className={inter.className}>
+    <html lang={locale} className="light">
+      <body className={cn(inter.className, "bg-background text-foreground")}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <StackProvider app={stackClientApp}>
             <StackTheme>{children}</StackTheme>

@@ -5,18 +5,18 @@ export default function Footer() {
   const t = useTranslations("Footer");
 
   return (
-    <footer className="bg-white dark:bg-gray-900">
+    <footer className="bg-card border-t border-border">
       <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div className="md:flex md:justify-between">
           {/* Church Info Section */}
           <div className="mb-6 md:mb-0">
             <Link href="/" className="flex items-center">
-              <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+              <span className="self-center text-2xl font-semibold whitespace-nowrap text-foreground">
                 SCC
               </span>
             </Link>
-            <div className="mt-4 text-gray-500 dark:text-gray-400">
-              <p className="font-semibold text-gray-900 dark:text-white mb-2">
+            <div className="mt-4 text-muted-foreground">
+              <p className="font-semibold text-foreground mb-2">
                 {t("churchName")}
               </p>
               <p className="mb-2">18 Moriches Rd, Lake Grove, NY 11755</p>
@@ -30,14 +30,14 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
             {/* About Us Section */}
             <div>
-              <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+              <h2 className="mb-6 text-sm font-semibold text-foreground uppercase">
                 {t("aboutUs")}
               </h2>
-              <ul className="text-gray-500 dark:text-gray-400 font-medium">
+              <ul className="text-muted-foreground font-medium">
                 <li className="mb-4">
                   <Link
                     href="/about/confession-of-faith"
-                    className="hover:underline"
+                    className="hover:underline hover:text-foreground"
                   >
                     {t("confessionOfFaith")}
                   </Link>
@@ -45,18 +45,18 @@ export default function Footer() {
                 <li className="mb-4">
                   <Link
                     href="/about/historic-creeds"
-                    className="hover:underline"
+                    className="hover:underline hover:text-foreground"
                   >
                     {t("historicCreeds")}
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/about/vision" className="hover:underline">
+                  <Link href="/about/vision" className="hover:underline hover:text-foreground">
                     {t("ourVision")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="hover:underline">
+                  <Link href="/contact" className="hover:underline hover:text-foreground">
                     {t("contactUs")}
                   </Link>
                 </li>
@@ -65,42 +65,42 @@ export default function Footer() {
 
             {/* Ministries Section */}
             <div>
-              <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+              <h2 className="mb-6 text-sm font-semibold text-foreground uppercase">
                 {t("ministries")}
               </h2>
-              <ul className="text-gray-500 dark:text-gray-400 font-medium">
+              <ul className="text-muted-foreground font-medium">
                 <li className="mb-4">
-                  <Link href="/about/ministries" className="hover:underline">
+                  <Link href="/about/ministries" className="hover:underline hover:text-foreground">
                     {t("prayerMeeting")}
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/about/ministries" className="hover:underline">
+                  <Link href="/about/ministries" className="hover:underline hover:text-foreground">
                     {t("familyFellowship")}
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/about/ministries" className="hover:underline">
+                  <Link href="/about/ministries" className="hover:underline hover:text-foreground">
                     {t("sisterFellowship")}
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/about/ministries" className="hover:underline">
+                  <Link href="/about/ministries" className="hover:underline hover:text-foreground">
                     {t("calebFellowship")}
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/about/ministries" className="hover:underline">
+                  <Link href="/about/ministries" className="hover:underline hover:text-foreground">
                     {t("truthPursuitClass")}
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/about/ministries" className="hover:underline">
+                  <Link href="/about/ministries" className="hover:underline hover:text-foreground">
                     {t("youthMinistry")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about/ministries" className="hover:underline">
+                  <Link href="/about/ministries" className="hover:underline hover:text-foreground">
                     {t("childrenMinistry")}
                   </Link>
                 </li>
@@ -109,14 +109,14 @@ export default function Footer() {
 
             {/* Messages Section */}
             <div>
-              <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">
+              <h2 className="mb-6 text-sm font-semibold text-foreground uppercase">
                 {t("sermons")}
               </h2>
-              <ul className="text-gray-500 dark:text-gray-400 font-medium">
+              <ul className="text-muted-foreground font-medium">
                 <li className="mb-4">
                   <Link
                     href="/messages/sermon-recordings"
-                    className="hover:underline"
+                    className="hover:underline hover:text-foreground"
                   >
                     {t("sermonRecordings")}
                   </Link>
@@ -124,7 +124,7 @@ export default function Footer() {
                 <li className="mb-4">
                   <Link
                     href="/messages/sunday-school"
-                    className="hover:underline"
+                    className="hover:underline hover:text-foreground"
                   >
                     {t("lordsDaySchool")}
                   </Link>
@@ -132,7 +132,7 @@ export default function Footer() {
                 <li className="mb-4">
                   <Link
                     href="/messages/special-gathering"
-                    className="hover:underline"
+                    className="hover:underline hover:text-foreground"
                   >
                     {t("specialGathering")}
                   </Link>
@@ -140,7 +140,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/messages/baptism-class"
-                    className="hover:underline"
+                    className="hover:underline hover:text-foreground"
                   >
                     {t("baptismClass")}
                   </Link>
@@ -150,11 +150,11 @@ export default function Footer() {
           </div>
         </div>
 
-        <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+        <hr className="my-6 border-border sm:mx-auto lg:my-8" />
 
         {/* Copyright and Social Media */}
         <div className="sm:flex sm:items-center sm:justify-between">
-          <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+          <span className="text-sm text-muted-foreground sm:text-center">
             © {new Date().getFullYear()}{" "}
             <Link href="/" className="hover:underline">
               {t("churchName")}
@@ -165,7 +165,7 @@ export default function Footer() {
             {/* Facebook */}
             <Link
               href="#"
-              className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+              className="text-muted-foreground hover:text-foreground"
             >
               <svg
                 className="w-4 h-4"
@@ -185,7 +185,7 @@ export default function Footer() {
             {/* YouTube */}
             <Link
               href="#"
-              className="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+              className="text-muted-foreground hover:text-foreground ms-5"
             >
               <svg
                 className="w-4 h-4"
@@ -205,7 +205,7 @@ export default function Footer() {
             {/* Email */}
             <Link
               href="mailto:info@sccny.org"
-              className="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+              className="text-muted-foreground hover:text-foreground ms-5"
             >
               <svg
                 className="w-4 h-4"

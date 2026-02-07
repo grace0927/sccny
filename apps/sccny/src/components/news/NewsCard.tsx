@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Card, CardContent, CardFooter, Button } from "dark-blue";
 
 interface NewsItem {
   id: string;
@@ -27,33 +28,30 @@ function formatDate(dateString: string) {
 
 export default function NewsCard({ item, className = "" }: NewsCardProps) {
   return (
-    <article
-      className={`bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden ${className}`}
-    >
-      <div className="p-6">
+    <Card className={`overflow-hidden ${className}`}>
+      <CardContent className="pt-6">
         <div className="flex items-start justify-between mb-4">
-          <h3 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+          <h3 className="text-xl font-bold text-foreground hover:text-primary transition-colors">
             <Link href={`/news/${item.id}`}>{item.title}</Link>
           </h3>
-          <time className="text-sm text-gray-500 shrink-0 ml-4">
+          <time className="text-sm text-muted-foreground shrink-0 ml-4">
             {formatDate(item.date)}
           </time>
         </div>
 
         {item.excerpt && (
-          <p className="text-gray-600 text-lg leading-relaxed mb-6">
+          <p className="text-muted-foreground text-lg leading-relaxed mb-6">
             {item.excerpt}
           </p>
         )}
+      </CardContent>
 
-        <div className="flex items-center justify-between">
-          <time className="text-sm text-gray-400">
-            Posted on {formatDate(item.createdAt)}
-          </time>
-          <Link
-            href={`/news/${item.id}`}
-            className="inline-flex items-center px-4 py-2 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition-colors duration-200"
-          >
+      <CardFooter className="flex items-center justify-between">
+        <time className="text-sm text-muted-foreground">
+          Posted on {formatDate(item.createdAt)}
+        </time>
+        <Button variant="outline" asChild>
+          <Link href={`/news/${item.id}`}>
             Read More
             <svg
               className="w-4 h-4 ml-2"
@@ -67,8 +65,8 @@ export default function NewsCard({ item, className = "" }: NewsCardProps) {
               />
             </svg>
           </Link>
-        </div>
-      </div>
-    </article>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

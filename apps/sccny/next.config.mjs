@@ -10,6 +10,7 @@ const nextConfig = {
       { hostname: "scc-ny.org" },
     ],
   },
+  transpilePackages: ["dark-blue"],
 };
 
 export default withNextIntl(nextConfig);

@@ -10,17 +10,17 @@ export default function OurVision() {
       <Navigation />
       <main className="min-h-screen">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl mb-12">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl mb-12">
             {t("title")}
           </h1>
 
           {/* Vision Statement */}
           <div className="max-w-4xl mx-auto">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-lg p-12 border border-blue-200">
+            <div className="bg-muted rounded-lg shadow-lg p-12 border border-border">
               <div className="text-center">
                 <div className="mb-8">
                   <svg
-                    className="mx-auto h-16 w-16 text-blue-600"
+                    className="mx-auto h-16 w-16 text-primary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -41,7 +41,7 @@ export default function OurVision() {
                   </svg>
                 </div>
 
-                <blockquote className="text-xl md:text-2xl font-medium text-gray-800 leading-relaxed italic">
+                <blockquote className="text-xl md:text-2xl font-medium text-foreground leading-relaxed italic">
                   &ldquo;{t("visionStatement")}&rdquo;
                 </blockquote>
               </div>
@@ -49,11 +49,11 @@ export default function OurVision() {
 
             {/* Additional Content */}
             <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
+              <div className="bg-card rounded-lg shadow-lg p-8 border border-border">
                 <div className="text-center">
                   <div className="mb-4">
                     <svg
-                      className="mx-auto h-12 w-12 text-green-600"
+                      className="mx-auto h-12 w-12 text-primary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -67,21 +67,21 @@ export default function OurVision() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-3">
+                  <h3 className="text-xl font-bold text-foreground mb-3">
                     Biblical Foundation
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     Our vision is rooted in Scripture, guided by God&apos;s Word
                     and the Holy Spirit in all our endeavors.
                   </p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
+              <div className="bg-card rounded-lg shadow-lg p-8 border border-border">
                 <div className="text-center">
                   <div className="mb-4">
                     <svg
-                      className="mx-auto h-12 w-12 text-purple-600"
+                      className="mx-auto h-12 w-12 text-primary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -95,10 +95,10 @@ export default function OurVision() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-3">
+                  <h3 className="text-xl font-bold text-foreground mb-3">
                     Community & Fellowship
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     We strive to build a loving community united in Christ,
                     serving one another and glorifying God together.
                   </p>

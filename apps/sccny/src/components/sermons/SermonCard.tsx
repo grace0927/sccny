@@ -3,6 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { SermonCardProps } from "./types";
 import { format } from "date-fns";
+import { Card, CardHeader, CardContent, CardFooter, Badge, Button } from "dark-blue";
 
 export default function SermonCard({
   sermon,
@@ -28,63 +29,66 @@ export default function SermonCard({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+    <Card className="hover:shadow-lg transition-shadow duration-200 overflow-hidden">
       {/* Card Header */}
-      <div className="p-6">
+      <CardHeader>
         {/* Sermon Type Badge */}
-        <div className="flex justify-between items-start mb-3">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+        <div className="flex justify-between items-start">
+          <Badge variant="subtle">
             {getSermonTypeLabel(sermon.type)}
-          </span>
-          <span className="text-sm text-gray-500">
+          </Badge>
+          <span className="text-sm text-muted-foreground">
             {formatDate(sermon.date)}
           </span>
         </div>
 
         {/* Title */}
         <h3
-          className={`font-semibold text-gray-900 mb-2 line-clamp-2 ${
+          className={`font-semibold text-foreground line-clamp-2 ${
             compact ? "text-base" : "text-lg"
           }`}
         >
           {sermon.title}
         </h3>
+      </CardHeader>
 
+      <CardContent>
         {/* Speaker */}
-        <p className="text-sm text-gray-600 mb-2">
+        <p className="text-sm text-muted-foreground mb-2">
           <span className="font-medium">Speaker:</span> {sermon.speaker}
         </p>
 
         {/* Series */}
         {sermon.series && (
-          <p className="text-sm text-gray-600 mb-2">
+          <p className="text-sm text-muted-foreground mb-2">
             <span className="font-medium">Series:</span> {sermon.series}
           </p>
         )}
 
         {/* Scripture */}
         {sermon.scripture && (
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-muted-foreground mb-3">
             <span className="font-medium">Scripture:</span> {sermon.scripture}
           </p>
         )}
 
         {/* Description */}
         {sermon.description && !compact && (
-          <p className="text-sm text-gray-700 line-clamp-3 mb-4">
+          <p className="text-sm text-muted-foreground line-clamp-3">
             {sermon.description}
           </p>
         )}
-      </div>
+      </CardContent>
 
       {/* Media Buttons */}
       {showMediaButtons && (
-        <div className="px-6 pb-6">
+        <CardFooter>
           <div className="flex flex-wrap gap-2">
             {sermon.videoUrl && (
-              <button
+              <Button
+                variant="destructive"
+                size="sm"
                 onClick={() => window.open(sermon.videoUrl!, "_blank")}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
                 <svg
                   className="w-4 h-4 mr-2"
@@ -98,13 +102,14 @@ export default function SermonCard({
                   />
                 </svg>
                 Watch Video
-              </button>
+              </Button>
             )}
 
             {sermon.audioUrl && (
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => window.open(sermon.audioUrl!, "_blank")}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 <svg
                   className="w-4 h-4 mr-2"
@@ -115,31 +120,30 @@ export default function SermonCard({
                   <path d="M16 12a1 1 0 011 1v2a1 1 0 01-1 1H7a1 1 0 01-1-1v-2a1 1 0 011-1h9z" />
                 </svg>
                 Listen Audio
-              </button>
+              </Button>
             )}
 
-            <Link
-              href={`/messages/sermon-recordings/${sermon.id}`}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-              View Details
-            </Link>
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/messages/sermon-recordings/${sermon.id}`}>
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+                View Details
+              </Link>
+            </Button>
           </div>
-        </div>
+        </CardFooter>
       )}
-    </div>
+    </Card>
   );
 }
