@@ -21,14 +21,14 @@ A [Turborepo](https://turbo.build/repo) monorepo containing the SCCNY (Suffolk C
 ### Prerequisites
 
 - Node.js 18+
-- npm
+- pnpm (enabled via `corepack enable pnpm`)
 
 ### Installation
 
 1. Install dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Development
@@ -36,7 +36,7 @@ npm install
 Start the development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -46,14 +46,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 Build all applications:
 
 ```bash
-npm run build
+pnpm build
 ```
 
 ### Other Commands
 
 ```bash
-npm run lint    # Lint all apps
-npm run start   # Start production server
+pnpm lint    # Lint all apps
+pnpm start   # Start production server
 ```
 
 ## Tech Stack

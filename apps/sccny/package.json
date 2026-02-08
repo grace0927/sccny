@@ -16,6 +16,7 @@
     "@stackframe/stack": "^2.8.65",
     "axios": "^1.13.4",
     "cheerio": "^1.2.0",
+    "clsx": "^2.1.1",
     "dark-blue": "^0.3.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.4",
@@ -24,6 +25,7 @@
     "prisma": "^7.3.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "tailwind-merge": "^3.4.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

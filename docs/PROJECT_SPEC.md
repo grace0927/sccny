@@ -178,19 +178,19 @@ enum SermonType {
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Development server
-npm run dev
+pnpm dev
 
 # Build for production
-npm run build
+pnpm build
 
 # Start production server
-npm run start
+pnpm start
 
 # Lint code
-npm run lint
+pnpm lint
 ```
 
 ### Development Tools

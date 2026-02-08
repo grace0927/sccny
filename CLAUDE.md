@@ -10,22 +10,22 @@ SCCNY (Suffolk Chinese Christian Church of New York) is a Turborepo monorepo con
 
 ```bash
 # Development
-npm run dev          # Start development server (runs from root)
-npm run build        # Build all apps
-npm run lint         # Lint with ESLint 9
+pnpm dev             # Start development server (runs from root)
+pnpm build           # Build all apps
+pnpm lint            # Lint with ESLint 9
 
 # Database (run from apps/sccny)
-npx prisma generate  # Generate Prisma client
-npx prisma migrate dev --name <migration_name>  # Create migration
-npx prisma db push   # Push schema changes without migration
-npx prisma studio    # Open Prisma Studio GUI
+pnpm exec prisma generate  # Generate Prisma client
+pnpm exec prisma migrate dev --name <migration_name>  # Create migration
+pnpm exec prisma db push   # Push schema changes without migration
+pnpm exec prisma studio    # Open Prisma Studio GUI
 ```
 
 ## Architecture
 
 ### Monorepo Structure
 - `/apps/sccny` - Main Next.js 16 application
-- Root `package.json` uses npm workspaces with Turborepo orchestration
+- Root `package.json` uses pnpm workspaces (`pnpm-workspace.yaml`) with Turborepo orchestration
 
 ### Tech Stack
 - **Framework**: Next.js 16.1.5 with App Router, React 19
