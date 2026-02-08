@@ -18,7 +18,7 @@ This document outlines the comprehensive implementation plan for the News featur
 - **Database**: Neon PostgreSQL with Prisma ORM (consistent with Sermon system)
 - **Validation**: Zod schema validation
 - **Deployment**: Vercel
-- **Styling**: Tailwind CSS with DaisyUI components
+- **Styling**: Tailwind CSS v4 with dark-blue design system components
 - **Internationalization**: next-intl
 
 ## Implementation Phases
@@ -194,13 +194,13 @@ export const NewsUpdateSchema = NewsCreateSchema.partial();
 ```tsx
 <div className="space-y-6">
   {news.map((item) => (
-    <article key={item.id} className="border-b border-gray-200 pb-4">
-      <h3 className="text-lg font-semibold text-gray-800 mb-2">{item.title}</h3>
-      <p className="text-sm text-gray-500 mb-2">{formatDate(item.date)}</p>
-      <p className="text-gray-600 mb-2">{item.excerpt}</p>
+    <article key={item.id} className="border-b border-border pb-4">
+      <h3 className="text-lg font-semibold text-foreground mb-2">{item.title}</h3>
+      <p className="text-sm text-muted-foreground mb-2">{formatDate(item.date)}</p>
+      <p className="text-muted-foreground mb-2">{item.excerpt}</p>
       <Link
         href={`/news/${item.id}`}
-        className="text-blue-600 hover:text-blue-800"
+        className="text-primary hover:text-primary/80"
       >
         Read More
       </Link>

@@ -41,7 +41,7 @@ This document outlines the comprehensive implementation plan for the message pag
   - Support for filtering by type, speaker, and series
   - Sorting options (date, title, speaker)
 - **API Integration**: Uses `/api/sermons` with query parameters
-- **UI Components**: Flowbite pagination, loading states
+- **UI Components**: dark-blue Pagination, loading states (Skeleton)
 
 #### SermonCard Component
 
@@ -51,7 +51,7 @@ This document outlines the comprehensive implementation plan for the message pag
   - Media play buttons for video/audio content
   - Responsive design for mobile and desktop
   - Hover effects and transitions
-- **UI Components**: Flowbite card components
+- **UI Components**: dark-blue Card, CardHeader, CardContent, CardFooter
 
 #### SermonDetail Component
 
@@ -75,7 +75,7 @@ This document outlines the comprehensive implementation plan for the message pag
   - Sermon type dropdown (Sermon, Sunday School, etc.)
   - Series-based filtering
   - Clear filters functionality
-- **UI Components**: Flowbite dropdowns, date pickers, search inputs
+- **UI Components**: dark-blue Input, Select, Label, Button, Badge
 
 ### 3. Media Components
 
@@ -158,10 +158,10 @@ src/components/sermons/
 
 ### Styling Approach
 
-- **Framework**: Tailwind CSS with Flowbite components
-- **Consistency**: Follow existing Navigation component patterns
+- **Framework**: Tailwind CSS v4 with dark-blue design system components
+- **Consistency**: Token-based styling via CSS custom properties (--primary, --muted, etc.)
 - **Responsive**: Mobile-first design approach
-- **Dark Mode**: Support for dark/light theme switching
+- **Dark Mode**: Support for dark/light theme switching via dark-blue token system
 - **Accessibility**: ARIA labels and keyboard navigation
 
 ## Implementation Priority
@@ -211,7 +211,7 @@ src/components/sermons/
 ### Existing Dependencies Utilized
 
 - **next-intl**: For internationalization
-- **flowbite**: For UI components
+- **dark-blue**: For UI components (Card, Button, Badge, Alert, Tabs, Pagination, etc.)
 - **tailwindcss**: For styling
 - **zod**: For validation (already implemented in API)
 

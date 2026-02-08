@@ -28,9 +28,10 @@ sccny-monorepo/
 
 ### Frontend Architecture
 
-- **Styling**: Tailwind CSS v4
+- **Styling**: Tailwind CSS v4 + [dark-blue](https://www.npmjs.com/package/dark-blue) design system
+- **UI Components**: dark-blue (Card, Button, Badge, Alert, Tabs, Pagination, Breadcrumb, etc.)
 - **Icons**: Heroicons
-- **Fonts**: Geist Sans & Geist Mono (Google Fonts)
+- **Fonts**: Inter (via dark-blue tokens), system-ui fallback
 
 ### Internationalization (i18n)
 
@@ -165,7 +166,7 @@ enum SermonType {
 
 ### Advanced Features
 
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Responsive Design**: Mobile-first approach with Tailwind CSS + dark-blue tokens
 - **SEO Optimization**: Next.js metadata API and structured data
 - **Performance**: Image optimization and code splitting
 - **Accessibility**: ARIA labels and keyboard navigation support
@@ -397,7 +398,7 @@ For new feature development, follow this established pattern to ensure consisten
 
 - **TypeScript**: Full type safety with proper interfaces
 - **Internationalization**: Support both English and Chinese languages
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Responsive Design**: Mobile-first approach with Tailwind CSS + dark-blue tokens
 - **Accessibility**: ARIA labels and keyboard navigation support
 
 #### State Management

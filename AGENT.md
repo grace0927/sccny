@@ -32,7 +32,7 @@ npx prisma studio    # Open Prisma Studio GUI
 - **Database**: PostgreSQL with Prisma 7.3.0 using `@prisma/adapter-pg`
 - **Auth**: Stack Auth (`@stackframe/stack`) - configured in `/src/stack/`
 - **i18n**: next-intl with Chinese (zh) as default, English (en) secondary
-- **Styling**: Tailwind CSS v4 + DaisyUI 5
+- **Styling**: Tailwind CSS v4 + [dark-blue](https://www.npmjs.com/package/dark-blue) design system (token-based, light/dark mode)
 - **Validation**: Zod 4
 
 ### Key Directories (apps/sccny/src)
@@ -64,6 +64,16 @@ All API routes in `/api/` follow this pattern:
 - `StackProvider` wraps app in root layout
 - `stackClientApp` for client-side auth operations
 - `stackServerApp` for server-side auth (inherits from client)
+
+### dark-blue Design System Integration
+
+All UI components come from the `dark-blue` npm package (our own design system). Key integration points:
+
+- **CSS**: `src/app/globals.css` imports `dark-blue/styles.css` for token definitions, then uses `@theme` to register tokens with Tailwind v4. A `@config` directive loads `tailwind.config.mjs` for the v3-compatible color palette.
+- **Tailwind config**: `tailwind.config.mjs` maps CSS custom properties (e.g. `--primary`, `--muted`) to Tailwind colors via `hsl(var(--token))`. `important: true` is required to override Stack Auth's scoped CSS utilities.
+- **Components**: Import from `dark-blue` — Button, Card, Badge, Alert, Input, Select, Label, Tabs, Pagination, Breadcrumb, Carousel, Dropdown, Skeleton, Footer, MediaPlayer, etc.
+- **`cn()` utility**: Defined locally in `src/lib/utils.ts` (not re-exported from dark-blue) to avoid client/server boundary issues with Next.js RSC.
+- **Root dependency**: `dark-blue` must be listed in both the root `package.json` and `apps/sccny/package.json` for Turbopack module resolution in the monorepo.
 
 ## Environment Variables
 
