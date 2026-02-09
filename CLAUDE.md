@@ -82,6 +82,19 @@ Required variables (see turbo.json for full list):
 - `STACK_SECRET_SERVER_KEY` - Stack Auth server key
 - `CRON_SECRET` - Secret for cron job endpoints
 
+## Roadmap & Feature Plans
+
+The full roadmap is at [`docs/TODO.md`](docs/TODO.md). Each planned feature has a detailed plan in [`docs/features/`](docs/features/) covering:
+- Functionality description, Prisma schema additions, components, pages, API endpoints, Zod schemas, permissions, and dependencies.
+
+Features are organized in four phases:
+1. **Phase 1** — Admin Infrastructure, Role/Permission Management, Audit Log
+2. **Phase 2** — User Management, Member Management, Member Corner
+3. **Phase 3** — Sermon Admin, Announcements, Events, Content CMS
+4. **Phase 4** — Bible Lookup (enhanced), PPT Generation, Live Translation
+
+When implementing a feature, always read its plan in `docs/features/` first and follow the patterns described there.
+
 ## Deployment
 
 - Hosted on Vercel
