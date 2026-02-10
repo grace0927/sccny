@@ -56,7 +56,7 @@ All API routes in `/api/` follow this pattern:
 - Support query params: `page`, `limit`, `sortBy`, `sortOrder`, plus model-specific filters
 
 ### i18n Routing
-- Middleware in `src/middleware.ts` handles locale detection
+- Proxy in `src/proxy.ts` handles locale detection (renamed from `middleware.ts` per Next.js 16 convention)
 - All public pages nested under `app/[locale]/`
 - Use `useTranslations` hook and translation keys from `messages/*.json`
 
