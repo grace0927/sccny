@@ -14,7 +14,7 @@
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@stackframe/stack": "^2.8.65",
-    "axios": "^1.13.4",
+    "axios": "^1.13.5",
     "cheerio": "^1.2.0",
     "clsx": "^2.1.1",
     "dark-blue": "^0.3.0",
