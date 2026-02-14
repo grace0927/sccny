@@ -314,5 +314,74 @@
       "resultTitle": "Bible Verse",
       "loading": "Loading..."
     }
+  },
+  "Admin": {
+    "title": "Admin Portal",
+    "backToSite": "Back to Site",
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "roles": "Roles",
+      "auditLog": "Audit Log"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "sermons": "Sermons",
+      "news": "News",
+      "recentActivity": "Recent Activity",
+      "noActivity": "No recent activity."
+    },
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "create": "Create",
+      "confirm": "Confirm"
+    }
+  },
+  "RoleManagement": {
+    "title": "Role Management",
+    "createRole": "Create Role",
+    "editRole": "Edit Role",
+    "name": "Name",
+    "description": "Description",
+    "permissions": "Permissions",
+    "users": "Users",
+    "actions": "Actions",
+    "system": "System",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Delete Role",
+    "confirmDeleteDescription": "Are you sure you want to delete the role \"{name}\"? This action cannot be undone.",
+    "details": "Role Details",
+    "permissionsTitle": "Permissions",
+    "savePermissions": "Save Permissions",
+    "assignedUsers": "Assigned Users",
+    "noUsers": "No users assigned to this role.",
+    "noPermissions": "No permissions available. Run the seed script first.",
+    "save": "Save",
+    "saving": "Saving...",
+    "create": "Create",
+    "cancel": "Cancel"
+  },
+  "AuditLog": {
+    "title": "Audit Log",
+    "filterAction": "Filter by action",
+    "allActions": "All Actions",
+    "filterResource": "Resource type...",
+    "export": "Export CSV",
+    "loading": "Loading...",
+    "noLogs": "No audit log entries found.",
+    "time": "Time",
+    "user": "User",
+    "action": "Action",
+    "resource": "Resource",
+    "details": "Details",
+    "oldValues": "Previous Values",
+    "newValues": "New Values",
+    "page": "Page",
+    "total": "total",
+    "previous": "Previous",
+    "next": "Next"
   }
 }

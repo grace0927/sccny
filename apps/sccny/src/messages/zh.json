@@ -314,5 +314,74 @@
       "resultTitle": "圣经经文",
       "loading": "加载中..."
     }
+  },
+  "Admin": {
+    "title": "管理后台",
+    "backToSite": "返回网站",
+    "sidebar": {
+      "dashboard": "仪表盘",
+      "roles": "角色管理",
+      "auditLog": "审计日志"
+    },
+    "dashboard": {
+      "title": "仪表盘",
+      "sermons": "讲道",
+      "news": "新闻",
+      "recentActivity": "最近活动",
+      "noActivity": "暂无活动记录。"
+    },
+    "actions": {
+      "save": "保存",
+      "cancel": "取消",
+      "delete": "删除",
+      "edit": "编辑",
+      "create": "创建",
+      "confirm": "确认"
+    }
+  },
+  "RoleManagement": {
+    "title": "角色管理",
+    "createRole": "创建角色",
+    "editRole": "编辑角色",
+    "name": "名称",
+    "description": "描述",
+    "permissions": "权限",
+    "users": "用户",
+    "actions": "操作",
+    "system": "系统",
+    "edit": "编辑",
+    "delete": "删除",
+    "confirmDelete": "删除角色",
+    "confirmDeleteDescription": "确定要删除角色 \"{name}\" 吗？此操作不可撤销。",
+    "details": "角色详情",
+    "permissionsTitle": "权限设置",
+    "savePermissions": "保存权限",
+    "assignedUsers": "已分配用户",
+    "noUsers": "此角色暂无已分配的用户。",
+    "noPermissions": "暂无可用权限，请先运行种子脚本。",
+    "save": "保存",
+    "saving": "保存中...",
+    "create": "创建",
+    "cancel": "取消"
+  },
+  "AuditLog": {
+    "title": "审计日志",
+    "filterAction": "按操作筛选",
+    "allActions": "所有操作",
+    "filterResource": "资源类型...",
+    "export": "导出 CSV",
+    "loading": "加载中...",
+    "noLogs": "未找到审计日志记录。",
+    "time": "时间",
+    "user": "用户",
+    "action": "操作",
+    "resource": "资源",
+    "details": "详情",
+    "oldValues": "旧值",
+    "newValues": "新值",
+    "page": "页",
+    "total": "总计",
+    "previous": "上一页",
+    "next": "下一页"
   }
 }
