@@ -1,32 +1,65 @@
 
 
-> sccny@0.2.0 build
+> sccny@0.2.0 build /Users/feng/Documents/Workspace/sccny/apps/sccny
 > next build
 
-[1G[0K   [1m[38;2;173;127;168m▲ Next.js 15.5.7[39m[22m
-   - Environments: .env.local, .env
+[1m[38;2;173;127;168m▲ Next.js 16.1.6[39m[22m (Turbopack)
+- Environments: .env.local, .env
 
- [37m[1m [22m[39m Creating an optimized production build ...
-/*! 🌼 daisyUI 5.5.8 */
- [32m[1m✓[22m[39m Compiled successfully in 18.4s
-[?25l [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39mFailed to compile.
+[37m[1m [22m[39m Creating an optimized production build ...
+[32m[1m✓[22m[39m Compiled successfully in 3.6s
+[?25l[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[?25h[?25l[37m[1m [22m[39m Finished TypeScript in 2.2s  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Finished TypeScript in 2.2s    [32m[1m✓[22m[39m Finished TypeScript in 2.2s 
+[?25l[37m[1m [22m[39m Collecting page data using 9 workers  [36m.[39m[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m..[39m[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m...[39m[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Collecting page data using 9 workers in 654.7ms    [32m[1m✓[22m[39m Collecting page data using 9 workers in 654.7ms 
+[?25l[37m[1m [22m[39m Generating static pages using 9 workers (0/54)  [36m[    ][39m[2K[1G[37m[1m [22m[39m Generating static pages using 9 workers (24/54)  [36m[=   ][39m[2K[1G[?25h[32m[1m✓[22m[39m Generating static pages using 9 workers (54/54) in 276.7ms
+[?25l[37m[1m [22m[39m Finalizing page optimization  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Finalizing page optimization in 13.5ms    [32m[1m✓[22m[39m Finalizing page optimization in 13.5ms 
 
-./src/app/handler/[...stack]/page.tsx:5:24
-Type error: Type 'StackClientApp<true, string>' is not assignable to type 'StackServerApp<true>'.
-  Type 'StackClientApp<true, string>' is missing the following properties from type '{ createTeam(data: ServerOrglikeCustomizableJson): Promise<ServerTeam>; createPermissionDefinition(data: ServerPermissionDefinitionCustomizableJson): Promise<...>; updatePermissionDefinition(permissionId: string, data: Partial<...>): Promise<...>; deletePermissionDefinition(permissionId: string): Promise<...>; listP...': createTeam, createPermissionDefinition, updatePermissionDefinition, deletePermissionDefinition, and 2 more.
+[4mRoute (app)[24m
+┌ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/about
+├ ƒ /[locale]/about/confession-of-faith
+├ ƒ /[locale]/about/historic-creeds
+├ ƒ /[locale]/about/ministries
+├ ƒ /[locale]/about/vision
+├ ƒ /[locale]/admin
+├ ƒ /[locale]/admin/audit-log
+├ ƒ /[locale]/admin/roles
+├ ƒ /[locale]/admin/roles/[id]
+├ ƒ /[locale]/contact
+├ ƒ /[locale]/meeting-times
+├ ƒ /[locale]/messages
+├ ƒ /[locale]/messages/baptism-class
+├ ƒ /[locale]/messages/sermon-recordings
+├ ƒ /[locale]/messages/sermon-recordings/[id]
+├ ƒ /[locale]/messages/special-gathering
+├ ƒ /[locale]/messages/sunday-school
+├ ƒ /[locale]/news
+├ ƒ /[locale]/news/[id]
+├ ƒ /[locale]/pastoral-search
+├ ƒ /[locale]/tools
+├ ƒ /[locale]/tools/bible
+├ ƒ /[locale]/tools/bible/result
+├ ƒ /api/admin/audit-log
+├ ƒ /api/admin/audit-log/export
+├ ƒ /api/admin/permissions
+├ ƒ /api/admin/permissions/mine
+├ ƒ /api/admin/roles
+├ ƒ /api/admin/roles/[id]
+├ ƒ /api/admin/roles/[id]/permissions
+├ ƒ /api/admin/roles/[id]/users
+├ ƒ /api/admin/roles/[id]/users/[userId]
+├ ƒ /api/news
+├ ƒ /api/news/[id]
+├ ƒ /api/sermons
+├ ƒ /api/sermons/[id]
+├ ƒ /api/tasks/sync-news
+├ ƒ /api/tasks/sync-sermons
+└ ƒ /handler/[...stack]
 
-[0m [90m 3 |[39m
- [90m 4 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mHandler[39m() {
-[31m[1m>[22m[39m[90m 5 |[39m   [36mreturn[39m [33m<[39m[33mStackHandler[39m app[33m=[39m{stackClientApp} fullPage [33m/[39m[33m>[39m[33m;[39m
- [90m   |[39m                        [31m[1m^[22m[39m
- [90m 6 |[39m }
- [90m 7 |[39m[0m
-[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[?25h[31mNext.js build worker exited with code: 1 and signal: null[39m
-[?25l [36m.[39m [?25h[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m Lifecycle script `build` failed with error:
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcode[39m [33m1[39m
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mpath[39m /Volumes/WorkSpace/WorkSpace/Development/sccny/apps/sccny
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mworkspace[39m sccny@0.2.0
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mlocation[39m /Volumes/WorkSpace/WorkSpace/Development/sccny/apps/sccny
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m command failed
-[1G[0K⠙[1G[0K[1mnpm[22m [31merror[39m [94mcommand[39m sh -c next build
-[1G[0K⠙[1G[0K
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+[?25h
