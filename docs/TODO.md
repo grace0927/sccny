@@ -27,10 +27,10 @@ These are prerequisites for all admin features. Build first.
 
 | Status | Feature | Plan | Dependencies |
 |--------|---------|------|--------------|
-| :clipboard: | Admin Portal Infrastructure | [admin-infrastructure.md](./features/admin-infrastructure.md) | — |
-| :clipboard: | Role Management | [role-management.md](./features/role-management.md) | Admin Infrastructure |
-| :clipboard: | Permission Management | [permission-management.md](./features/permission-management.md) | Role Management |
-| :clipboard: | Audit Log | [audit-log.md](./features/audit-log.md) | Admin Infrastructure |
+| :white_check_mark: | Admin Portal Infrastructure | [admin-infrastructure.md](./features/admin-infrastructure.md) | — |
+| :white_check_mark: | Role Management | [role-management.md](./features/role-management.md) | Admin Infrastructure |
+| :white_check_mark: | Permission Management | [permission-management.md](./features/permission-management.md) | Role Management |
+| :white_check_mark: | Audit Log | [audit-log.md](./features/audit-log.md) | Admin Infrastructure |
 
 ## Phase 2: User & Member System
 
