@@ -15,7 +15,7 @@ export default async function AdminLayout({
   const user = await stackServerApp.getUser();
 
   if (!user) {
-    redirect(`/${locale}/handler/sign-in?after_auth_return_to=/${locale}/admin`);
+    redirect(`/handler/sign-in?after_auth_return_to=/${locale}/admin`);
   }
 
   const permissions = await getUserPermissions(user.id);
