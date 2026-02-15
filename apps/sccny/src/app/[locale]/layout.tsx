@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/next";
 import { stackClientApp } from "../../stack/client";
 import { cn } from "@/lib/utils";
 import "../globals.css";
@@ -49,6 +50,7 @@ export default async function LocaleLayout({
             <StackTheme>{children}</StackTheme>
           </StackProvider>
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
