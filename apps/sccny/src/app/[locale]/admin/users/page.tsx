@@ -27,7 +27,7 @@ export default async function UsersPage() {
     id: su.id,
     displayName: su.displayName,
     primaryEmail: su.primaryEmail,
-    createdAt: su.createdAtMillis ? new Date(su.createdAtMillis).toISOString() : null,
+    createdAt: su.signedUpAt ? su.signedUpAt.toISOString() : null,
     memberStatus: memberMap.get(su.id) || null,
     roles: roleMap.get(su.id) || [],
   }));

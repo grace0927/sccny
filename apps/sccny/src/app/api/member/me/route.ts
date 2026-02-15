@@ -61,7 +61,6 @@ export async function PATCH(request: NextRequest) {
     if (validated.name !== undefined) updateData.name = validated.name;
     if (validated.nameZh !== undefined) updateData.nameZh = validated.nameZh;
     if (validated.phone !== undefined) updateData.phone = validated.phone;
-    if (validated.email !== undefined) updateData.email = validated.email || null;
     if (validated.address !== undefined) updateData.address = validated.address;
     if (validated.birthday !== undefined) updateData.birthday = validated.birthday ? new Date(validated.birthday) : null;
 

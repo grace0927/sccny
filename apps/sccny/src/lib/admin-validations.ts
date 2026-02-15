@@ -49,6 +49,8 @@ export const GetUsersQuerySchema = z.object({
   page: z.string().optional().default("1").transform((val) => parseInt(val)),
   limit: z.string().optional().default("20").transform((val) => Math.min(parseInt(val), 100)),
   search: z.string().optional(),
+  memberStatus: z.enum(["PENDING", "ACTIVE", "INACTIVE", "REJECTED"]).optional(),
+  sortBy: z.enum(["displayName", "email", "createdAt"]).optional().default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
 });
 
@@ -101,8 +103,12 @@ export const MemberUpdateSchema = z.object({
   ministryAssignments: z.array(z.string()).optional(),
 });
 
+export const MemberApproveSchema = z.object({
+  fellowshipGroup: z.string().max(100).optional(),
+});
+
 export const MemberRejectSchema = z.object({
-  reason: z.string().min(1, "Rejection reason is required").max(500),
+  rejectionReason: z.string().min(1, "Rejection reason is required").max(500),
 });
 
 // ── Phase 2: Member Corner ──

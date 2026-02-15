@@ -35,7 +35,7 @@ export async function GET(
         id: stackUser.id,
         displayName: stackUser.displayName,
         primaryEmail: stackUser.primaryEmail,
-        createdAt: stackUser.createdAtMillis ? new Date(stackUser.createdAtMillis).toISOString() : null,
+        createdAt: stackUser.signedUpAt ? stackUser.signedUpAt.toISOString() : null,
         member: member || null,
         roles: userRoles.map((ur) => ur.role),
       },

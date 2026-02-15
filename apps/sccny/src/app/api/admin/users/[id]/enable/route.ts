@@ -20,7 +20,7 @@ export async function POST(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    await stackUser.update({ disabled: false });
+    await stackUser.update({ restrictedByAdmin: false, restrictedByAdminReason: null });
 
     await logAction({
       userId: user.id,
@@ -28,7 +28,7 @@ export async function POST(
       action: "ENABLE",
       resourceType: "user",
       resourceId: id,
-      newValues: { disabled: false },
+      newValues: { restrictedByAdmin: false },
     });
 
     return NextResponse.json({ data: { success: true } });
