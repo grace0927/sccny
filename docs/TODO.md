@@ -38,9 +38,9 @@ User accounts and church member data.
 
 | Status | Feature | Plan | Dependencies |
 |--------|---------|------|--------------|
-| :clipboard: | User Management | [user-management.md](./features/user-management.md) | Phase 1 |
-| :clipboard: | Member Management | [member-management.md](./features/member-management.md) | Phase 1, User Management |
-| :clipboard: | Member Corner | [member-corner.md](./features/member-corner.md) | Member Management |
+| :white_check_mark: | User Management | [user-management.md](./features/user-management.md) | Phase 1 |
+| :white_check_mark: | Member Management | [member-management.md](./features/member-management.md) | Phase 1, User Management |
+| :white_check_mark: | Member Corner | [member-corner.md](./features/member-corner.md) | Member Management |
 
 ## Phase 3: Content & Sermon Admin
 
