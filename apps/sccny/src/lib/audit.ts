@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 interface AuditLogInput {
   userId: string;
   userName: string;
-  action: "CREATE" | "UPDATE" | "DELETE" | "LOGIN" | "EXPORT" | "SYNC";
+  action: "CREATE" | "UPDATE" | "DELETE" | "LOGIN" | "EXPORT" | "SYNC" | "APPROVE" | "REJECT" | "DEACTIVATE" | "REACTIVATE" | "INVITE" | "DISABLE" | "ENABLE";
   resourceType: string;
   resourceId?: string;
   oldValues?: Record<string, unknown>;

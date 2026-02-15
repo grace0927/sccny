@@ -7,9 +7,11 @@ import { format } from "date-fns";
 export default async function AdminDashboard() {
   const t = await getTranslations("Admin");
 
-  const [sermonCount, newsCount, recentLogs] = await Promise.all([
+  const [sermonCount, newsCount, memberCount, pendingMemberCount, recentLogs] = await Promise.all([
     prisma.sermon.count(),
     prisma.news.count(),
+    prisma.member.count({ where: { status: "ACTIVE" } }),
+    prisma.member.count({ where: { status: "PENDING" } }),
     prisma.auditLog.findMany({
       orderBy: { createdAt: "desc" },
       take: 10,
@@ -19,6 +21,7 @@ export default async function AdminDashboard() {
   const stats = [
     { label: t("dashboard.sermons"), value: sermonCount },
     { label: t("dashboard.news"), value: newsCount },
+    { label: t("dashboard.members"), value: memberCount },
   ];
 
   return (
@@ -44,6 +47,17 @@ export default async function AdminDashboard() {
           </Card>
         ))}
       </div>
+
+      {/* Pending member requests notice */}
+      {pendingMemberCount > 0 && (
+        <Card className="border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/20">
+          <CardContent className="pt-4">
+            <p className="text-sm text-yellow-800 dark:text-yellow-200">
+              {pendingMemberCount} {t("dashboard.pendingRequests")}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Recent activity */}
       <Card>
