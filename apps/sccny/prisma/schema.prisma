@@ -173,3 +173,162 @@ enum PrayerRequestStatus {
   PENDING
   PRAYED
 }
+
+// ── Phase 3: Announcement Management ──
+
+model Announcement {
+  id        String               @id @default(cuid())
+  titleEn   String
+  titleZh   String
+  contentEn String
+  contentZh String
+  priority  AnnouncementPriority @default(NORMAL)
+  audience  AnnouncementAudience @default(ALL)
+  startDate DateTime
+  endDate   DateTime
+  isPinned  Boolean              @default(false)
+  status    AnnouncementStatus   @default(DRAFT)
+  createdBy String?
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@index([status])
+  @@index([startDate, endDate])
+  @@map("announcements")
+}
+
+enum AnnouncementPriority {
+  NORMAL
+  IMPORTANT
+  URGENT
+}
+
+enum AnnouncementAudience {
+  ALL
+  MEMBERS_ONLY
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// ── Phase 3: Event Management ──
+
+model Event {
+  id              String              @id @default(cuid())
+  titleEn         String
+  titleZh         String
+  descriptionEn   String?
+  descriptionZh   String?
+  startDate       DateTime
+  endDate         DateTime
+  location        String?
+  type            EventType           @default(OTHER)
+  isRecurring     Boolean             @default(false)
+  recurrenceRule  String?
+  registrationUrl String?
+  coverImage      String?
+  status          EventStatus         @default(DRAFT)
+  createdBy       String?
+  registrations   EventRegistration[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([status])
+  @@index([startDate])
+  @@index([type])
+  @@map("events")
+}
+
+enum EventType {
+  WORSHIP
+  FELLOWSHIP
+  RETREAT
+  CONFERENCE
+  HOLIDAY
+  OTHER
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  ARCHIVED
+}
+
+model EventRegistration {
+  id        String                  @id @default(cuid())
+  eventId   String
+  event     Event                   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  memberId  String?
+  name      String
+  email     String?
+  phone     String?
+  status    EventRegistrationStatus @default(REGISTERED)
+  createdAt DateTime                @default(now())
+
+  @@index([eventId])
+  @@index([memberId])
+  @@map("event_registrations")
+}
+
+enum EventRegistrationStatus {
+  REGISTERED
+  CANCELLED
+  ATTENDED
+}
+
+// ── Phase 3: Content Management (CMS) ──
+
+model ContentPage {
+  id          String            @id @default(cuid())
+  slug        String            @unique
+  titleEn     String
+  titleZh     String
+  contentEn   String
+  contentZh   String
+  status      ContentStatus     @default(DRAFT)
+  publishedAt DateTime?
+  authorId    String?
+  revisions   ContentRevision[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([status])
+  @@map("content_pages")
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model ContentRevision {
+  id          String      @id @default(cuid())
+  pageId      String
+  page        ContentPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  titleEn     String
+  titleZh     String
+  contentEn   String
+  contentZh   String
+  editedById  String?
+  createdAt   DateTime    @default(now())
+
+  @@index([pageId])
+  @@map("content_revisions")
+}
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  url          String
+  altText      String?
+  fileName     String
+  fileType     String
+  fileSize     Int
+  uploadedById String?
+  createdAt    DateTime @default(now())
+
+  @@map("media_assets")
+}
