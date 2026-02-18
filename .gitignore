@@ -66,3 +66,4 @@ apps/sccny/.turbo/*
 .env
 .env.local
 .env.*.local
+!.env.*.example
