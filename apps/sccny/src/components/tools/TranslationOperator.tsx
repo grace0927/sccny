@@ -11,10 +11,6 @@ import {
   Input,
   Label,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Badge,
   Alert,
   AlertTitle,
@@ -155,14 +151,13 @@ export default function TranslationOperator({
             </div>
             <div>
               <Label htmlFor="session-language">{t("defaultLanguage")}</Label>
-              <Select value={newLanguage} onValueChange={setNewLanguage}>
-                <SelectTrigger id="session-language">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="zh">{t("chinese")}</SelectItem>
-                  <SelectItem value="en">{t("english")}</SelectItem>
-                </SelectContent>
+              <Select
+                id="session-language"
+                value={newLanguage}
+                onChange={(e) => setNewLanguage(e.target.value)}
+              >
+                <option value="zh">{t("chinese")}</option>
+                <option value="en">{t("english")}</option>
               </Select>
             </div>
             <Button
@@ -213,14 +208,13 @@ export default function TranslationOperator({
               <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <Label htmlFor="entry-language">{t("language")}</Label>
-                  <Select value={language} onValueChange={setLanguage}>
-                    <SelectTrigger id="entry-language">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="zh">{t("chinese")}</SelectItem>
-                      <SelectItem value="en">{t("english")}</SelectItem>
-                    </SelectContent>
+                  <Select
+                    id="entry-language"
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                  >
+                    <option value="zh">{t("chinese")}</option>
+                    <option value="en">{t("english")}</option>
                   </Select>
                 </div>
                 <div>
