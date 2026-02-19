@@ -48,10 +48,10 @@ Admin CRUD for existing and new content types.
 
 | Status | Feature | Plan | Dependencies |
 |--------|---------|------|--------------|
-| :clipboard: | Sermon Management (Admin) | [sermon-management.md](./features/sermon-management.md) | Phase 1 |
-| :clipboard: | Announcement Management | [announcement-management.md](./features/announcement-management.md) | Phase 1 |
-| :clipboard: | Event Management | [event-management.md](./features/event-management.md) | Phase 1 |
-| :clipboard: | Content Management (CMS) | [content-management.md](./features/content-management.md) | Phase 1 |
+| :white_check_mark: | Sermon Management (Admin) | [sermon-management.md](./features/sermon-management.md) | Phase 1 |
+| :white_check_mark: | Announcement Management | [announcement-management.md](./features/announcement-management.md) | Phase 1 |
+| :white_check_mark: | Event Management | [event-management.md](./features/event-management.md) | Phase 1 |
+| :white_check_mark: | Content Management (CMS) | [content-management.md](./features/content-management.md) | Phase 1 |
 
 ## Phase 4: Tool Portal
 
@@ -60,8 +60,8 @@ Standalone tools for ministry support.
 | Status | Feature | Plan | Dependencies |
 |--------|---------|------|--------------|
 | :clipboard: | Bible Lookup (Enhanced) | [bible-lookup.md](./features/bible-lookup.md) | — |
-| :clipboard: | PPT Generation | [ppt-generation.md](./features/ppt-generation.md) | Bible Lookup (for scripture items) |
-| :clipboard: | Live Translation | [live-translation.md](./features/live-translation.md) | Admin Infrastructure (for operator auth) |
+| :white_check_mark: | PPT Generation | [ppt-generation.md](./features/ppt-generation.md) | Bible Lookup (for scripture items) |
+| :white_check_mark: | Live Translation | [live-translation.md](./features/live-translation.md) | Admin Infrastructure (for operator auth) |
 
 ---
 
@@ -92,11 +92,11 @@ New models required across all features (cumulative):
 | `WorshipOrderItem` | PPT Generation |
 | `BibleVerse` | Bible Lookup (if local DB approach) |
 
-## New Package Dependencies
+## Package Dependencies
 
-| Package | Used By |
-|---------|---------|
-| `@tiptap/react` + `@tiptap/starter-kit` | Content Management (rich text editor) |
-| `@vercel/blob` | Content Management (media upload) |
-| `pptxgenjs` | PPT Generation |
-| `@hello-pangea/dnd` | PPT Generation (drag-and-drop) |
+| Package | Used By | Status |
+|---------|---------|--------|
+| `@tiptap/react` + `@tiptap/starter-kit` | Content Management (rich text editor) | Planned |
+| `@vercel/blob` | Content Management (media upload) | Planned |
+| `pptxgenjs` | PPT Generation | ✅ Installed |
+| `@hello-pangea/dnd` | PPT Generation (drag-and-drop) | ✅ Installed |

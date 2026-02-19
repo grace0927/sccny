@@ -1,10 +1,10 @@
-# CLAUDE.md
+# AGENT.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents (GitHub Copilot, Cursor, etc.) when working with code in this repository. See [CLAUDE.md](CLAUDE.md) for Claude-specific instructions.
 
 ## Project Overview
 
-SCCNY (Suffolk Chinese Christian Church of New York) is a Turborepo monorepo containing a Next.js 16 church website with bilingual support (English/Chinese), sermon management, and news content scraped from the legacy church website.
+SCCNY (Suffolk Chinese Christian Church of New York) is a Turborepo monorepo containing a Next.js 16 church website with bilingual support (English/Chinese), full admin portal, sermon management, member management, content CMS, and ministry tools.
 
 ## Commands
 
@@ -15,74 +15,119 @@ pnpm build           # Build all apps
 pnpm lint            # Lint with ESLint 9
 
 # Database (run from apps/sccny)
-pnpm exec prisma generate  # Generate Prisma client
-pnpm exec prisma migrate dev --name <migration_name>  # Create migration
-pnpm exec prisma db push   # Push schema changes without migration
-pnpm exec prisma studio    # Open Prisma Studio GUI
+pnpm exec prisma generate                        # Generate Prisma client
+pnpm exec prisma migrate dev --name <name>       # Create migration
+pnpm exec prisma db push                         # Push schema without migration
+pnpm exec prisma studio                          # Open Prisma Studio GUI
 ```
 
 ## Architecture
 
 ### Monorepo Structure
-- `/apps/sccny` - Main Next.js 16 application
-- Root `package.json` uses pnpm workspaces (`pnpm-workspace.yaml`) with Turborepo orchestration
+- `/apps/sccny` — Main Next.js 16 application
+- Root `package.json` uses pnpm workspaces (`pnpm-workspace.yaml`) with Turborepo
 
 ### Tech Stack
-- **Framework**: Next.js 16.1.5 with App Router, React 19
-- **Database**: PostgreSQL with Prisma 7.3.0 using `@prisma/adapter-pg`
-- **Auth**: Stack Auth (`@stackframe/stack`) - configured in `/src/stack/`
-- **i18n**: next-intl with Chinese (zh) as default, English (en) secondary
-- **Styling**: Tailwind CSS v4 + [dark-blue](https://www.npmjs.com/package/dark-blue) design system (token-based, light/dark mode)
-- **Validation**: Zod 4
+- **Framework**: Next.js 16.1.6 with App Router, React 19
+- **Database**: PostgreSQL (Neon) with Prisma 7.4.0 using `@prisma/adapter-pg`
+- **Auth**: Stack Auth (`@stackframe/stack` v2.8.69) — configured in `src/stack/`
+- **i18n**: next-intl v4.8.3 — Chinese (`zh`) is default, English (`en`) secondary
+- **Styling**: Tailwind CSS v4 + [dark-blue](https://www.npmjs.com/package/dark-blue) design system
+- **Validation**: Zod 4.3.6
 
-### Key Directories (apps/sccny/src)
-- `app/api/` - REST API routes for sermons and news
-- `app/[locale]/` - Localized pages (en/zh)
-- `components/` - React components including `sermons/` and `news/` subdirectories
-- `lib/db.ts` - Prisma singleton with connection pooling
-- `lib/sermon-scraper.ts`, `lib/news-scraper.ts` - Content scrapers for scc-ny.org
-- `stack/` - Stack Auth client and server configuration
-- `messages/` - Translation JSON files (en.json, zh.json)
-- `generated/` - Prisma generated types (excluded from linting)
+### Key Directories (`apps/sccny/src`)
+
+| Directory | Purpose |
+|-----------|---------|
+| `app/api/` | REST API routes (public + admin) |
+| `app/[locale]/` | Localized pages (en/zh) |
+| `app/[locale]/admin/` | Admin portal pages |
+| `components/admin/` | Admin UI components (tables, forms, dialogs) |
+| `components/sermons/` | Sermon display components |
+| `components/news/` | News display components |
+| `components/member-corner/` | Member self-service components |
+| `components/tools/` | Ministry tool components (translation, PPT) |
+| `lib/db.ts` | Prisma singleton with connection pooling |
+| `lib/validations.ts` | Zod schemas for public API |
+| `lib/admin-validations.ts` | Zod schemas for admin API |
+| `lib/permissions.ts` | Server-side RBAC helpers |
+| `lib/permissions-client.ts` | Client-side permission helpers |
+| `lib/admin-auth.ts` | Admin authentication middleware |
+| `lib/audit.ts` | Audit logging helpers |
+| `lib/sermon-scraper.ts` | Web scraper for legacy sermon content |
+| `lib/news-scraper.ts` | Web scraper for legacy news content |
+| `stack/` | Stack Auth client and server configuration |
+| `messages/` | Translation JSON files (`en.json`, `zh.json`) |
+| `generated/` | Prisma generated types (excluded from linting) |
 
 ### Database Models
-- **Sermon**: title, speaker, date, type (SERMON|SUNDAY_SCHOOL|RETREAT_MESSAGE|BAPTISM_CLASS), series, scripture, video/audio URLs
-- **News**: title, date, content, excerpt, status (DRAFT|PUBLISHED|ARCHIVED)
+
+**Content:**
+- `Sermon` — title, speaker, date, type (SERMON|SUNDAY_SCHOOL|RETREAT_MESSAGE|BAPTISM_CLASS), series, scripture, video/audio URLs
+- `News` — title, date, content, excerpt, status (DRAFT|PUBLISHED|ARCHIVED)
+- `Announcement` — bilingual title/content, priority, audience, status, schedule
+- `Event` — bilingual, type, recurrence, status; has `EventRegistration`
+- `ContentPage` — slug-based bilingual CMS pages with `ContentRevision` and `MediaAsset`
+
+**Users & Access:**
+- `User` — mirrors Stack Auth user; stores userId, email, name, status
+- `Role` — named roles with description
+- `Permission` — resource+action permissions
+- `RolePermission` — join: roles ↔ permissions
+- `UserRole` — join: users ↔ roles
+- `AuditLog` — full audit trail of admin actions
+
+**Members:**
+- `Member` — church member profile, status (PENDING|ACTIVE|INACTIVE|REJECTED)
+- `PrayerRequest` — member prayer requests, status (PENDING|PRAYED)
+
+**Tools:**
+- `Hymn` — bilingual hymn lyrics for PPT generation
+- `PptTemplate` — PPT styling templates
+- `WorshipOrder` / `WorshipOrderItem` — worship order builder
+- `TranslationSession` / `TranslationEntry` — live translation sessions
 
 ### API Patterns
-All API routes in `/api/` follow this pattern:
-- Use Zod schemas from `lib/validations.ts` for request/response validation
-- Return paginated responses with `{ data, pagination }` structure
-- Support query params: `page`, `limit`, `sortBy`, `sortOrder`, plus model-specific filters
+
+All API routes follow this pattern:
+- Zod schemas from `lib/validations.ts` (public) or `lib/admin-validations.ts` (admin)
+- Paginated responses: `{ data, pagination: { page, limit, total, totalPages } }`
+- Query params: `page`, `limit`, `sortBy`, `sortOrder`, plus model-specific filters
+- Admin routes check permissions via `lib/permissions.ts` and log actions via `lib/audit.ts`
 
 ### i18n Routing
-- Proxy in `src/proxy.ts` handles locale detection (renamed from `middleware.ts` per Next.js 16 convention)
-- All public pages nested under `app/[locale]/`
-- Use `useTranslations` hook and translation keys from `messages/*.json`
+- `src/proxy.ts` handles locale detection (Next.js 16 middleware convention)
+- All public pages under `app/[locale]/`
+- Use `useTranslations` hook; translation keys in `messages/*.json`
 
-### Authentication Flow
+### Authentication & Authorization
 - `StackProvider` wraps app in root layout
-- `stackClientApp` for client-side auth operations
-- `stackServerApp` for server-side auth (inherits from client)
+- `stackClientApp` for client-side, `stackServerApp` for server-side
+- RBAC: users have roles → roles have permissions
+- Permission key format: `resource:action` (e.g. `sermons:write`, `members:read`)
+- `requirePermission()` in `lib/admin-auth.ts` guards admin API routes
 
-### dark-blue Design System Integration
+### dark-blue Design System
 
-All UI components come from the `dark-blue` npm package (our own design system). Key integration points:
-
-- **CSS**: `src/app/globals.css` imports `dark-blue/styles.css` for token definitions, then uses `@theme` to register tokens with Tailwind v4. A `@config` directive loads `tailwind.config.mjs` for the v3-compatible color palette.
-- **Tailwind config**: `tailwind.config.mjs` maps CSS custom properties (e.g. `--primary`, `--muted`) to Tailwind colors via `hsl(var(--token))`. `important: true` is required to override Stack Auth's scoped CSS utilities.
-- **Components**: Import from `dark-blue` — Button, Card, Badge, Alert, Input, Select, Label, Tabs, Pagination, Breadcrumb, Carousel, Dropdown, Skeleton, Footer, MediaPlayer, etc.
-- **`cn()` utility**: Defined locally in `src/lib/utils.ts` (not re-exported from dark-blue) to avoid client/server boundary issues with Next.js RSC.
-- **Root dependency**: `dark-blue` must be listed in both the root `package.json` and `apps/sccny/package.json` for Turbopack module resolution in the monorepo.
+- **CSS**: `globals.css` imports `dark-blue/styles.css`, then `@theme` registers tokens with Tailwind v4
+- **Tailwind config**: `tailwind.config.mjs` maps `--primary`, `--muted`, etc. to Tailwind colors; `important: true` overrides Stack Auth styles
+- **Components**: Button, Card, Badge, Alert, Input, Select, Label, Tabs, Pagination, Breadcrumb, Carousel, Dropdown, Skeleton, Footer, MediaPlayer, etc.
+- **`cn()` utility**: defined locally in `src/lib/utils.ts` (not from dark-blue)
+- **Root dep**: `dark-blue` must be in both root and `apps/sccny/package.json`
 
 ## Environment Variables
 
-Required variables (see turbo.json for full list):
-- `DATABASE_URL` - PostgreSQL connection string
-- `STACK_SECRET_SERVER_KEY` - Stack Auth server key
-- `CRON_SECRET` - Secret for cron job endpoints
+```bash
+DATABASE_URL                              # Pooled connection string
+DATABASE_URL_UNPOOLED                     # Unpooled (for migrations)
+NEXT_PUBLIC_STACK_PROJECT_ID              # Stack Auth project ID
+NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY  # Stack Auth public key
+STACK_SECRET_SERVER_KEY                   # Stack Auth server key
+CRON_SECRET                               # Secret for cron endpoints
+```
 
 ## Deployment
 
 - Hosted on Vercel
-- Cron job runs weekly (Friday 2 AM UTC) to sync sermons via `/api/tasks/sync-sermons`
+- Weekly cron (Friday 2 AM UTC): `/api/tasks/sync-sermons` syncs sermons from legacy site
+- News sync available via `/api/tasks/sync-news`

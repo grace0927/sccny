@@ -1,8 +1,8 @@
-# SCCNY Website - Project Specification
+# SCCNY Website — Project Specification
 
 ## Overview
 
-The SCCNY (Suffolk Chinese Christian Church of New York) website is a modern, multilingual web application built as a Turborepo monorepo. This specification document provides a comprehensive overview of the project architecture, technical decisions, features, and implementation details.
+The SCCNY (Suffolk Chinese Christian Church of New York) website is a full-stack church platform built as a Turborepo monorepo. It provides a bilingual public website, an admin portal with RBAC, a member management system, a content CMS, and ministry tools (live translation, PPT generation).
 
 ## Project Structure
 
@@ -13,6 +13,8 @@ sccny-monorepo/
 │   ├── prisma/              # Database schema and migrations
 │   └── package.json         # App-specific dependencies
 ├── docs/                    # Documentation
+│   ├── TODO.md              # Phased roadmap
+│   └── features/            # Per-feature implementation plans
 ├── turbo.json               # Turborepo configuration
 └── package.json             # Root workspace configuration
 ```
@@ -21,38 +23,27 @@ sccny-monorepo/
 
 ### Core Framework
 
-- **Framework**: Next.js 15 with App Router
+- **Framework**: Next.js 16.1.6 with App Router
 - **Language**: TypeScript
-- **Build Tool**: Turborepo for monorepo management
+- **Build Tool**: Turborepo + pnpm workspaces
 - **Runtime**: Node.js 18+
 
 ### Frontend Architecture
 
 - **Styling**: Tailwind CSS v4 + [dark-blue](https://www.npmjs.com/package/dark-blue) design system
-- **UI Components**: dark-blue (Card, Button, Badge, Alert, Tabs, Pagination, Breadcrumb, etc.)
-- **Icons**: Heroicons
+- **UI Components**: dark-blue — Card, Button, Badge, Alert, Input, Select, Label, Tabs, Pagination, Breadcrumb, Carousel, Dropdown, Skeleton, Footer, MediaPlayer, etc.
+- **Icons**: Heroicons (`@heroicons/react`)
 - **Fonts**: Inter (via dark-blue tokens), system-ui fallback
+- **Drag-and-drop**: `@hello-pangea/dnd` (worship order builder)
 
 ### Internationalization (i18n)
 
-#### Supported Locales
-
-- **English** (`en`) - Secondary language
-- **Chinese** (`zh`) - Primary language (default)
-
-#### Implementation
-
-- **Library**: next-intl v4.3.4
-- **Message Files**: Located in `src/messages/`
-- **Routing**: Dynamic locale routing with `[locale]` segments
-- **Time Zone**: America/New_York (UTC-4:00)
-
-#### Features
-
-- Automatic locale detection
-- SEO-friendly URLs with locale prefixes
-- Message translation with fallback support
-- Date/time localization
+- **Library**: next-intl v4.8.3
+- **Default locale**: Chinese (`zh`)
+- **Secondary locale**: English (`en`)
+- **Message files**: `src/messages/en.json`, `src/messages/zh.json`
+- **Routing**: `app/[locale]/` with locale detection in `src/proxy.ts`
+- **Time zone**: America/New_York
 
 ## Database Architecture
 
@@ -60,11 +51,12 @@ sccny-monorepo/
 
 - **Type**: PostgreSQL
 - **Provider**: Neon (serverless PostgreSQL)
-- **ORM**: Prisma v6.16.2
+- **ORM**: Prisma 7.4.0 with `@prisma/adapter-pg`
+- **Connection**: pooled `DATABASE_URL` for queries; `DATABASE_URL_UNPOOLED` for migrations
 
-### Schema Design
+### Schema Models
 
-#### Sermon Model
+#### Content
 
 ```prisma
 model Sermon {
@@ -80,345 +72,281 @@ model Sermon {
   description String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-
   @@map("sermons")
 }
 
-enum SermonType {
-  SERMON           // Main sermon recordings
-  SUNDAY_SCHOOL    // Sunday school teachings
-  RETREAT_MESSAGE  // Special retreat messages
-  BAPTISM_CLASS    // Baptism preparation classes
+// SermonType: SERMON | SUNDAY_SCHOOL | RETREAT_MESSAGE | BAPTISM_CLASS
+
+model News {
+  id        String     @id @default(cuid())
+  title     String
+  date      DateTime
+  content   String
+  excerpt   String?
+  status    NewsStatus @default(DRAFT)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  @@map("news")
+}
+
+// NewsStatus: DRAFT | PUBLISHED | ARCHIVED
+
+model Announcement {
+  // bilingual title/content, priority, audience, status, publishAt/expiresAt
+  @@map("announcements")
+}
+
+model Event {
+  // bilingual, type, recurrence, status; has EventRegistration join
+  @@map("events")
+}
+
+model ContentPage {
+  // slug-based bilingual pages; has ContentRevision and MediaAsset
+  @@map("content_pages")
 }
 ```
 
-#### Database Features
+#### Users & Access Control
 
-- **Indexes**: Optimized for date, speaker, and type filtering
-- **Constraints**: Unique constraint on title + date to prevent duplicates
-- **Migrations**: Automated with Prisma migration system
-- **Connection**: Environment-based configuration with DATABASE_URL
+```prisma
+model User {
+  // userId (Stack Auth), email, name, status; has UserRole
+  @@map("users")
+}
+
+model Role {
+  // name, description; has RolePermission, UserRole
+  @@map("roles")
+}
+
+model Permission {
+  // resource, action, key, name, description; has RolePermission
+  @@map("permissions")
+}
+
+model RolePermission { /* roles ↔ permissions */ }
+model UserRole       { /* users ↔ roles       */ }
+
+model AuditLog {
+  // userId, userName, action, resourceType, resourceId,
+  // oldValues (JSON), newValues (JSON), ipAddress, userAgent, createdAt
+  @@map("audit_logs")
+}
+```
+
+#### Members
+
+```prisma
+model Member {
+  // userId, profile fields, status (PENDING|ACTIVE|INACTIVE|REJECTED)
+  @@map("members")
+}
+
+model PrayerRequest {
+  // memberId, content, status (PENDING|PRAYED)
+  @@map("prayer_requests")
+}
+```
+
+#### Tools
+
+```prisma
+model Hymn            { /* bilingual lyrics */ }
+model PptTemplate     { /* PPT styling options */ }
+model WorshipOrder    { /* header + WorshipOrderItem list */ }
+model WorshipOrderItem { /* type, content, order */ }
+model TranslationSession { /* live sessions */ }
+model TranslationEntry   { /* per-entry transcript */ }
+```
 
 ## API Architecture
 
-### REST API Endpoints
+### REST API Overview
 
-#### Sermon Management (`/api/sermons`)
+All responses are JSON. Paginated responses use `{ data: [...], pagination: { page, limit, total, totalPages } }`. All inputs are validated with Zod.
 
-- **GET** `/api/sermons` - List sermons with pagination and filtering
-- **GET** `/api/sermons/[id]` - Get single sermon
-- **POST** `/api/sermons` - Create new sermon
-- **PUT** `/api/sermons/[id]` - Update sermon
-- **DELETE** `/api/sermons/[id]` - Delete sermon
+### Public Endpoints
 
-#### Task Management (`/api/tasks`)
+| Method | Path | Description |
+|--------|------|-------------|
+| GET/POST | `/api/sermons` | List / create sermons |
+| GET | `/api/sermons/[id]` | Get single sermon |
+| GET/POST | `/api/news` | List / create news |
+| GET | `/api/news/[id]` | Get single news item |
+| GET | `/api/events` | List events |
+| GET | `/api/events/[id]` | Get single event |
+| POST | `/api/events/[id]/register` | Register for event |
+| GET | `/api/announcements` | List announcements |
+| GET/POST | `/api/member/me/*` | Member profile & prayer requests |
+| GET/POST | `/api/tools/bible/search` | Bible lookup |
+| GET | `/api/tools/ppt/generate` | Generate PPT |
+| GET/POST | `/api/tools/translation/sessions` | Translation session management |
+| GET/PUT | `/api/tools/translation/sessions/[id]` | Session detail |
+| GET | `/api/tools/translation/sessions/[id]/stream` | SSE stream |
 
-- **POST** `/api/tasks/sync-sermons` - Trigger sermon synchronization
+### Admin Endpoints (`/api/admin/`)
 
-### API Features
+All admin routes require authentication and resource-action permissions.
 
-- **Validation**: Zod schema validation for all inputs
-- **Error Handling**: Comprehensive error responses with proper HTTP codes
-- **Pagination**: Configurable page size with metadata
-- **Filtering**: By speaker, series, type, and date range
-- **Sorting**: By date, title, or speaker (ascending/descending)
+| Resource | Operations |
+|----------|-----------|
+| `sermons` | CRUD + bulk import + sync from legacy site |
+| `users` | List, detail, invite, enable, disable; assign roles |
+| `roles` | CRUD; manage role permissions and role members |
+| `members` | CRUD + approve / reject / deactivate / reactivate + export |
+| `announcements` | CRUD |
+| `events` | CRUD + list registrations |
+| `content` | CRUD by slug + publish + revision history |
+| `hymns` | CRUD |
+| `templates` | PPT template CRUD |
+| `worship-orders` | CRUD |
+| `permissions` | List all; list mine |
+| `audit-log` | List + export |
 
-### Data Synchronization
+### Cron Tasks
 
-#### Web Scraping System
-
-- **Sources**: 4 different sermon content types from church website
-- **Technology**: Cheerio for HTML parsing, Axios for HTTP requests
-- **Schedule**: Daily cron job at 2:00 AM UTC
-- **Language Support**: Automatic Chinese and English content parsing
-
-#### Cron Job Configuration
-
-```json
-{
-  "crons": [
-    {
-      "path": "/api/tasks/sync-sermons",
-      "schedule": "0 2 * * *"
-    }
-  ]
-}
-```
+| Path | Schedule | Description |
+|------|----------|-------------|
+| `/api/tasks/sync-sermons` | Weekly, Fri 2 AM UTC | Scrape sermons from legacy site |
+| `/api/tasks/sync-news` | On-demand | Scrape news from legacy site |
 
 ## Application Features
 
-### Core Pages
+### Public Pages (`/[locale]/`)
 
-- **Home** (`/`) - Main landing page
-- **About** (`/about`) - Church information
-  - Confession of Faith
-  - Historic Creeds
-  - Ministries
-  - Vision
-- **Contact** (`/contact`) - Contact information
-- **Meeting Times** (`/meeting-times`) - Service schedules
-- **Messages** (`/messages`) - Sermon content
-  - Sermon Recordings
-  - Baptism Class
-  - Special Gathering
-  - Sunday School
-- **Pastoral Search** (`/pastoral-search`) - Pastoral search information
+- **Home** — Landing page
+- **About** — Confession of faith, creeds, ministries, vision
+- **Contact** — Contact information
+- **Meeting Times** — Service schedules
+- **Messages** — Sermon recordings, Sunday School, Baptism Class, Special Gathering
+- **News** — Church news listings and detail
+- **Events** — Upcoming events and registration
+- **Announcements** — Church announcements
+- **Pastoral Search** — Pastoral search information
+- **Tools** — Live translation viewer (`/tools/translation/[id]`)
 
-### Advanced Features
+### Admin Portal (`/[locale]/admin/`)
 
-- **Responsive Design**: Mobile-first approach with Tailwind CSS + dark-blue tokens
-- **SEO Optimization**: Next.js metadata API and structured data
-- **Performance**: Image optimization and code splitting
-- **Accessibility**: ARIA labels and keyboard navigation support
-- **Progressive Web App**: Service worker and offline capabilities
+- **Dashboard** — Overview and quick links
+- **Sermons** — CRUD table with bulk import and legacy sync
+- **Announcements** — CRUD with priority and audience filtering
+- **Events** — CRUD with registration management
+- **Content** — CMS page editor with bilingual support and revision history
+- **Users** — User list, invite, role assignment, enable/disable
+- **Roles** — Role CRUD with permission matrix
+- **Members** — Approval workflow, status management, export
+- **Hymns** — Bilingual hymn library for PPT generation
+- **Templates** — PPT template management
+- **Worship Orders** — Drag-and-drop worship order builder
+- **Translation** — Live translation operator interface
+- **Audit Log** — Searchable and exportable audit trail
+
+### Member Corner (`/[locale]/my-account/`)
+
+- Profile management
+- Prayer request submission and history
+
+## Authentication & Authorization
+
+### Authentication
+
+Stack Auth (`@stackframe/stack` v2.8.69) handles all user authentication.
+
+- `StackProvider` wraps the root layout
+- `stackClientApp` (`src/stack/client.jsx`) — client-side operations
+- `stackServerApp` (`src/stack/server.jsx`) — server-side operations (inherits from client)
+- `User` model in Prisma mirrors Stack Auth users for RBAC
+
+### Authorization (RBAC)
+
+- **Permission key format**: `resource:action` (e.g. `sermons:write`, `members:read`)
+- Users have roles via `UserRole`; roles have permissions via `RolePermission`
+- Server: `requirePermission(userId, key)` in `lib/admin-auth.ts` guards API routes
+- Client: `PermissionGate` component controls UI visibility; `usePermissions()` hook
+- All admin actions are written to `AuditLog`
+
+## dark-blue Design System Integration
+
+- **CSS**: `globals.css` imports `dark-blue/styles.css`, then `@theme` registers tokens with Tailwind v4
+- **Tailwind config** (`tailwind.config.mjs`): maps `--primary`, `--muted`, `--accent`, etc. to Tailwind color utilities; `important: true` overrides Stack Auth scoped styles
+- **`cn()` utility**: defined in `src/lib/utils.ts` (not re-exported from dark-blue) to avoid RSC boundary issues
+- **Root dependency**: `dark-blue` must appear in both root `package.json` and `apps/sccny/package.json` for Turbopack resolution
 
 ## Development Workflow
 
-### Environment Setup
-
 ```bash
-# Install dependencies
-pnpm install
+pnpm install                                       # Install all dependencies
+pnpm dev                                           # Start dev server
+pnpm build                                         # Production build
+pnpm lint                                          # ESLint 9
 
-# Development server
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Start production server
-pnpm start
-
-# Lint code
-pnpm lint
+# From apps/sccny:
+pnpm exec prisma generate                          # Regenerate client after schema change
+pnpm exec prisma migrate dev --name <migration>    # Create + apply migration
+pnpm exec prisma db push                           # Push schema (no migration file)
+pnpm exec prisma studio                            # GUI for database inspection
 ```
 
-### Development Tools
+## Environment Variables
 
-- **ESLint**: Code linting and formatting
-- **TypeScript**: Type checking and IntelliSense
-- **PostCSS**: CSS processing and optimization
-- **Tailwind CSS**: Utility-first CSS framework
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | Pooled PostgreSQL connection string |
+| `DATABASE_URL_UNPOOLED` | Unpooled connection (for migrations) |
+| `NEXT_PUBLIC_STACK_PROJECT_ID` | Stack Auth project ID |
+| `NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY` | Stack Auth public key |
+| `STACK_SECRET_SERVER_KEY` | Stack Auth server key |
+| `CRON_SECRET` | Bearer token for cron endpoints |
 
-### Code Organization
-
-```
-src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-├── lib/                 # Utility functions and configurations
-├── messages/            # Internationalization messages
-├── generated/           # Generated files (Prisma client)
-└── config.ts           # Application configuration
-```
+See `turbo.json` for the full list used in the Turborepo build pipeline.
 
 ## Deployment & Infrastructure
 
-### Deployment Platform
+- **Platform**: Vercel — automatic deployments from `main` branch
+- **Preview environments**: auto-generated per PR
+- **Analytics**: `@vercel/analytics` integrated in root layout
+- **Monitoring**: Vercel Error Tracking, Prisma query monitoring, Cron monitoring
 
-- **Platform**: Vercel
-- **Configuration**: Automated deployments from Git
-- **Environment**: Production and preview environments
-- **Domains**: Automatic domain assignment
+## Security
 
-### Environment Variables
-
-```bash
-DATABASE_URL="postgresql://..."
-NEXT_PUBLIC_BASE_URL="https://sccny.vercel.app"
-```
-
-### Build Process
-
-- **Triggers**: Git push to main branch
-- **Steps**:
-  1. Install dependencies
-  2. Run Prisma migrations
-  3. Build Next.js application
-  4. Deploy to Vercel edge network
-
-### Monitoring & Analytics
-
-- **Performance**: Vercel Analytics
-- **Errors**: Vercel Error Tracking
-- **Database**: Prisma query monitoring
-- **Cron Jobs**: Vercel Cron monitoring
-
-## Security Considerations
-
-### Current Implementation
-
-- **Database**: Environment-based credentials
-- **API**: Input validation with Zod schemas
-- **Dependencies**: Regular security updates
-- **HTTPS**: Automatic with Vercel deployment
-
-### Future Enhancements
-
-- API authentication and authorization
-- Rate limiting for API endpoints
-- Content Security Policy (CSP)
-- Input sanitization for rich text content
-
-## Performance Optimization
-
-### Current Optimizations
-
-- **Images**: Next.js Image component with automatic optimization
-- **Fonts**: Google Fonts with display=swap for better loading
-- **Code Splitting**: Automatic code splitting by Next.js
-- **Caching**: Vercel edge caching for static content
-
-### Bundle Analysis
-
-- **Tool**: Next.js bundle analyzer
-- **Strategy**: Tree shaking and dead code elimination
-- **Monitoring**: Regular bundle size monitoring
-
-## Testing Strategy
-
-### Unit Tests
-
-- **Framework**: Jest with React Testing Library
-- **Coverage**: API endpoints, utility functions, components
-- **Mocks**: Database connections and external API calls
-
-### Integration Tests
-
-- **API Testing**: Full request/response cycles
-- **Database Testing**: Migration and query testing
-- **E2E Testing**: Critical user paths
-
-### Manual Testing
-
-- **Cross-browser**: Chrome, Firefox, Safari, Edge
-- **Responsive**: Mobile, tablet, desktop breakpoints
-- **Accessibility**: Screen readers and keyboard navigation
-- **Internationalization**: Both English and Chinese content
-
-## Future Roadmap
-
-### Phase 1 (Current)
-
-- ✅ Sermon API implementation
-- ✅ Database schema and migrations
-- ✅ Web scraping and cron jobs
-- ✅ Internationalization setup
-
-### Phase 2 (Next)
-
-- [ ] User authentication system
-- [ ] Admin dashboard for content management
-- [ ] Advanced search and filtering
-- [ ] Sermon series organization
-- [ ] Analytics and reporting
-
-### Phase 3 (Future)
-
-- [ ] Mobile application
-- [ ] Live streaming integration
-- [ ] Event management system
-- [ ] Donation/payment processing
-- [ ] Multi-church network support
-
-## Maintenance & Support
-
-### Regular Tasks
-
-- **Dependencies**: Monthly security updates
-- **Database**: Regular backup verification
-- **Performance**: Monthly performance audits
-- **SEO**: Quarterly content and metadata review
-
-### Monitoring
-
-- **Uptime**: Vercel uptime monitoring
-- **Performance**: Core Web Vitals tracking
-- **Errors**: Error rate monitoring and alerting
-- **Analytics**: User engagement metrics
-
-### Documentation
-
-- **API Documentation**: OpenAPI/Swagger documentation
-- **Component Library**: Storybook for component documentation
-- **Deployment Guide**: Step-by-step deployment procedures
-- **Troubleshooting**: Common issues and solutions
+- **Authentication**: Stack Auth with project-scoped credentials
+- **Authorization**: RBAC with per-resource permissions; all admin routes protected
+- **Validation**: Zod schemas on all API inputs; separate schemas for public vs. admin
+- **Audit trail**: All admin write operations logged to `AuditLog`
+- **HTTPS**: Automatic via Vercel
+- **Secrets**: Environment variables; never committed to source
 
 ## Feature Development Process
 
-### Design-Implementation Pattern
+When implementing a new feature:
 
-For new feature development, follow this established pattern to ensure consistency and maintainability:
+1. **Read the feature plan** in `docs/features/<feature>.md` — covers schema, components, API, Zod schemas, and permissions
+2. **Update the Prisma schema** and create a migration
+3. **Add Zod schemas** to `lib/validations.ts` or `lib/admin-validations.ts`
+4. **Build API routes** following the existing patterns in `app/api/`
+5. **Build components** following patterns in `components/admin/` or `components/`
+6. **Add i18n keys** to both `messages/en.json` and `messages/zh.json`
+7. **Update `docs/TODO.md`** to mark the feature complete
 
-#### 1. Analysis Phase
+### Component Standards
 
-- **Current State Assessment**: Analyze existing codebase, APIs, and infrastructure
-- **Requirements Gathering**: Document functional and non-functional requirements
-- **Gap Analysis**: Identify what exists vs. what needs to be built
-- **Technical Feasibility**: Assess integration points and potential challenges
+- Full TypeScript with proper interfaces
+- Both English and Chinese i18n support
+- Mobile-first responsive design using dark-blue tokens
+- ARIA labels and keyboard navigation
 
-#### 2. Documentation Phase
+## Current Status
 
-- **Feature Specification**: Create detailed implementation plan in `/docs/features/`
-- **Component Architecture**: Define component structure and responsibilities
-- **API Integration Strategy**: Document how the feature will integrate with existing APIs
-- **UI/UX Design**: Specify user interface patterns and responsive design approach
-- **Testing Strategy**: Outline unit, integration, and manual testing approaches
+As of February 2026, all features through Phase 3 and partial Phase 4 are implemented:
 
-#### 3. Implementation Phase
+| Phase | Status |
+|-------|--------|
+| Phase 0 — Infrastructure (Sermon API, News API, Message Pages) | ✅ Complete |
+| Phase 1 — Admin Infrastructure, RBAC, Audit Log | ✅ Complete |
+| Phase 2 — User Management, Member Management, Member Corner | ✅ Complete |
+| Phase 3 — Sermon Admin, Announcements, Events, Content CMS | ✅ Complete |
+| Phase 4 — Live Translation, PPT Generation | ✅ Complete |
+| Phase 4 — Bible Lookup (Enhanced) | Planned |
 
-- **Incremental Development**: Build features step-by-step with regular updates
-- **Component-First Approach**: Develop reusable components following established patterns
-- **Integration Testing**: Test integration with existing systems at each step
-- **Documentation Updates**: Update feature documentation after each implementation step
-
-#### 4. Quality Assurance Phase
-
-- **Code Review**: Follow established coding standards and patterns
-- **Testing**: Execute comprehensive testing strategy
-- **Performance**: Ensure feature meets performance requirements
-- **Accessibility**: Verify ARIA compliance and keyboard navigation
-
-#### 5. Deployment Phase
-
-- **Documentation**: Update user-facing documentation
-- **Monitoring**: Set up monitoring and analytics for the new feature
-- **Feedback Loop**: Establish process for user feedback and iteration
-
-#### Example Implementation: Message Pages Feature
-
-- **Location**: `/docs/features/message-pages-implementation.md`
-- **Pattern**: Analysis → Documentation → Incremental Implementation → Updates
-- **Components**: SermonList, SermonCard, SermonDetail, MediaPlayer, etc.
-- **Integration**: Uses existing sermon API
-
-### Component Development Guidelines
-
-#### Reusable Component Standards
-
-- **TypeScript**: Full type safety with proper interfaces
-- **Internationalization**: Support both English and Chinese languages
-- **Responsive Design**: Mobile-first approach with Tailwind CSS + dark-blue tokens
-- **Accessibility**: ARIA labels and keyboard navigation support
-
-#### State Management
-
-- **Server State**: Use SWR for API data fetching and caching
-- **Local State**: React useState for UI state management
-- **Global State**: Context API for shared state across components
-- **URL State**: Next.js router for shareable URLs
-
-#### Performance Considerations
-
-- **Code Splitting**: Lazy load components and routes
-- **Image Optimization**: Use Next.js Image component
-- **Bundle Analysis**: Monitor bundle size and tree shaking
-- **Caching**: Implement appropriate caching strategies
-
----
-
-## Conclusion
-
-This specification document provides a comprehensive overview of the SCCNY website project, covering its architecture, technical decisions, features, and implementation details. The project represents a modern, scalable web application built with best practices in mind, featuring a robust sermon management system, internationalization support, and automated content synchronization.
-
-The architecture is designed to be maintainable, performant, and extensible, with clear separation of concerns and adherence to modern web development standards. The project is well-positioned for future enhancements and scaling as the church's needs evolve.
+See [TODO.md](TODO.md) for the full per-feature breakdown.
