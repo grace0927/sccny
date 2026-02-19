@@ -69,10 +69,22 @@ model Role {
   @@map("roles")
 }
 
+model User {
+  id        String     @id  // Stack Auth user ID (externally managed)
+  email     String?
+  name      String?
+  roles     UserRole[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("users")
+}
+
 model UserRole {
   id         String   @id @default(cuid())
   userId     String
   roleId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   role       Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
   assignedBy String?
   assignedAt DateTime @default(now())
