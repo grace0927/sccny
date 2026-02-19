@@ -1,65 +1,30 @@
 
-
 > sccny@0.2.0 build /Users/feng/Documents/Workspace/sccny/apps/sccny
-> next build
+> prisma generate && node -e "require('fs').writeFileSync('src/generated/prisma/index.ts', '/* Re-export from client */\nexport * from \'./client\'\n')" && next build
 
-[1m[38;2;173;127;168m▲ Next.js 16.1.6[39m[22m (Turbopack)
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.
+
+✔ Generated Prisma Client (7.4.0) to ./src/generated/prisma in 81ms
+
+▲ Next.js 16.1.6 (Turbopack)
 - Environments: .env.local, .env
 
-[37m[1m [22m[39m Creating an optimized production build ...
-[32m[1m✓[22m[39m Compiled successfully in 3.6s
-[?25l[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[?25h[?25l[37m[1m [22m[39m Finished TypeScript in 2.2s  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Finished TypeScript in 2.2s    [32m[1m✓[22m[39m Finished TypeScript in 2.2s 
-[?25l[37m[1m [22m[39m Collecting page data using 9 workers  [36m.[39m[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m..[39m[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m...[39m[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Collecting page data using 9 workers in 654.7ms    [32m[1m✓[22m[39m Collecting page data using 9 workers in 654.7ms 
-[?25l[37m[1m [22m[39m Generating static pages using 9 workers (0/54)  [36m[    ][39m[2K[1G[37m[1m [22m[39m Generating static pages using 9 workers (24/54)  [36m[=   ][39m[2K[1G[?25h[32m[1m✓[22m[39m Generating static pages using 9 workers (54/54) in 276.7ms
-[?25l[37m[1m [22m[39m Finalizing page optimization  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Finalizing page optimization in 13.5ms    [32m[1m✓[22m[39m Finalizing page optimization in 13.5ms 
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.7s
+  Running TypeScript ...
+Failed to compile.
 
-[4mRoute (app)[24m
-┌ ○ /_not-found
-├ ƒ /[locale]
-├ ƒ /[locale]/about
-├ ƒ /[locale]/about/confession-of-faith
-├ ƒ /[locale]/about/historic-creeds
-├ ƒ /[locale]/about/ministries
-├ ƒ /[locale]/about/vision
-├ ƒ /[locale]/admin
-├ ƒ /[locale]/admin/audit-log
-├ ƒ /[locale]/admin/roles
-├ ƒ /[locale]/admin/roles/[id]
-├ ƒ /[locale]/contact
-├ ƒ /[locale]/meeting-times
-├ ƒ /[locale]/messages
-├ ƒ /[locale]/messages/baptism-class
-├ ƒ /[locale]/messages/sermon-recordings
-├ ƒ /[locale]/messages/sermon-recordings/[id]
-├ ƒ /[locale]/messages/special-gathering
-├ ƒ /[locale]/messages/sunday-school
-├ ƒ /[locale]/news
-├ ƒ /[locale]/news/[id]
-├ ƒ /[locale]/pastoral-search
-├ ƒ /[locale]/tools
-├ ƒ /[locale]/tools/bible
-├ ƒ /[locale]/tools/bible/result
-├ ƒ /api/admin/audit-log
-├ ƒ /api/admin/audit-log/export
-├ ƒ /api/admin/permissions
-├ ƒ /api/admin/permissions/mine
-├ ƒ /api/admin/roles
-├ ƒ /api/admin/roles/[id]
-├ ƒ /api/admin/roles/[id]/permissions
-├ ƒ /api/admin/roles/[id]/users
-├ ƒ /api/admin/roles/[id]/users/[userId]
-├ ƒ /api/news
-├ ƒ /api/news/[id]
-├ ƒ /api/sermons
-├ ƒ /api/sermons/[id]
-├ ƒ /api/tasks/sync-news
-├ ƒ /api/tasks/sync-sermons
-└ ƒ /handler/[...stack]
+./prisma/assign-admin.ts:17:30
+Type error: Property 'user' does not exist on type 'PrismaClient<never, GlobalOmitConfig | undefined, DefaultArgs>'.
 
-
-ƒ Proxy (Middleware)
-
-○  (Static)   prerendered as static content
-ƒ  (Dynamic)  server-rendered on demand
-
-[?25h
+[0m [90m 15 |[39m   }
+ [90m 16 |[39m
+[31m[1m>[22m[39m[90m 17 |[39m   [36mconst[39m users [33m=[39m [36mawait[39m prisma[33m.[39muser[33m.[39mfindMany({ select[33m:[39m { id[33m:[39m [36mtrue[39m[33m,[39m email[33m:[39m [36mtrue[39m } })[33m;[39m
+ [90m    |[39m                              [31m[1m^[22m[39m
+ [90m 18 |[39m   console[33m.[39mlog([32m`Found ${users.length} users`[39m)[33m;[39m
+ [90m 19 |[39m
+ [90m 20 |[39m   [36mconst[39m existing [33m=[39m [36mawait[39m prisma[33m.[39muserRole[33m.[39mfindMany({[0m
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.

@@ -94,6 +94,26 @@ const sidebarItems: SidebarItem[] = [
     ),
   },
   {
+    key: "hymns",
+    href: "/admin/hymns",
+    permission: "hymns.view",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+      </svg>
+    ),
+  },
+  {
+    key: "templates",
+    href: "/admin/templates",
+    permission: "templates.view",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+      </svg>
+    ),
+  },
+  {
     key: "auditLog",
     href: "/admin/audit-log",
     permission: "audit.view",
@@ -131,7 +151,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 bg-card border-r border-border transition-transform duration-200 lg:relative lg:translate-x-0",
+          "fixed top-0 left-0 z-50 h-full w-64 shrink-0 bg-card border-r border-border transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
