@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
 
     const buffer = (await pptx.write({ outputType: "nodebuffer" })) as Buffer;
 
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.presentationml.presentation",

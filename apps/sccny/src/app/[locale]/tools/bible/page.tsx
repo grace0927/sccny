@@ -7,8 +7,9 @@ import { useState, useCallback } from "react";
 import {
   MagnifyingGlassIcon,
   BookOpenIcon,
-  ClipboardDocumentIcon,
 } from "@heroicons/react/24/outline";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { DocumentDuplicateIcon } = require("@heroicons/react/24/outline");
 import {
   Card,
   CardContent,
@@ -172,7 +173,7 @@ export default function BiblePage() {
                   <h2 className="text-xl font-semibold text-foreground">
                     {t("resultTitle")}
                   </h2>
-                  <Badge variant="secondary">
+                  <Badge variant="outline">
                     {results.length} {t("versesFound")}
                   </Badge>
                 </div>
@@ -243,7 +244,7 @@ export default function BiblePage() {
                             onClick={() => handleCopyVerse(verse, index)}
                             aria-label={t("copyVerse")}
                           >
-                            <ClipboardDocumentIcon className="h-4 w-4" />
+                            <DocumentDuplicateIcon className="h-4 w-4" />
                             {copiedIndex === index && (
                               <span className="text-xs ml-1 text-green-600">
                                 {t("copied")}

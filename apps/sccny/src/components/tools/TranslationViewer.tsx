@@ -134,7 +134,7 @@ export default function TranslationViewer({
           {isConnected ? t("connected") : isEnded ? t("sessionEnded") : t("disconnected")}
         </span>
         {isEnded && (
-          <Badge variant="secondary">{t("ended")}</Badge>
+          <Badge variant="outline">{t("ended")}</Badge>
         )}
       </div>
 
