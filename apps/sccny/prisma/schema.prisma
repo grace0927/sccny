@@ -69,10 +69,22 @@ model Role {
   @@map("roles")
 }
 
+model User {
+  id        String     @id  // Stack Auth user ID (externally managed)
+  email     String?
+  name      String?
+  roles     UserRole[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("users")
+}
+
 model UserRole {
   id         String   @id @default(cuid())
   userId     String
   roleId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   role       Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
   assignedBy String?
   assignedAt DateTime @default(now())
@@ -331,4 +343,122 @@ model MediaAsset {
   createdAt    DateTime @default(now())
 
   @@map("media_assets")
+}
+
+// ── Phase 4: PPT Generation ──
+
+model Hymn {
+  id        String   @id @default(cuid())
+  number    Int?
+  titleEn   String
+  titleZh   String
+  lyricsEn  String
+  lyricsZh  String
+  author    String?
+  composer  String?
+  category  String?
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([titleEn])
+  @@index([titleZh])
+  @@map("hymns")
+}
+
+model PptTemplate {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  backgroundColor String   @default("#000000")
+  textColor       String   @default("#FFFFFF")
+  titleFontSize   Int      @default(36)
+  bodyFontSize    Int      @default(24)
+  fontFamily      String   @default("Arial")
+  backgroundImage String?
+  isDefault       Boolean  @default(false)
+  createdBy       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("ppt_templates")
+}
+
+model WorshipOrder {
+  id         String             @id @default(cuid())
+  name       String
+  date       DateTime
+  templateId String?
+  items      WorshipOrderItem[]
+  createdBy  String?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@index([date])
+  @@map("worship_orders")
+}
+
+model WorshipOrderItem {
+  id             String       @id @default(cuid())
+  orderId        String
+  order          WorshipOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type           OrderItemType
+  sortOrder      Int
+  title          String?
+  titleZh        String?
+  content        String?
+  contentZh      String?
+  hymnId         String?
+  scriptureRef   String?
+  createdAt      DateTime     @default(now())
+
+  @@index([orderId])
+  @@map("worship_order_items")
+}
+
+enum OrderItemType {
+  HYMN
+  SCRIPTURE_READING
+  SERMON_TITLE
+  ANNOUNCEMENT
+  CUSTOM_TEXT
+  RESPONSIVE_READING
+  PRAYER
+  OFFERING
+  BENEDICTION
+}
+
+// ── Phase 4: Live Translation ──
+
+model TranslationSession {
+  id        String             @id @default(cuid())
+  title     String
+  status    TranslationSessionStatus @default(ACTIVE)
+  language  String             @default("zh")
+  createdBy String?
+  entries   TranslationEntry[]
+  startedAt DateTime           @default(now())
+  endedAt   DateTime?
+
+  @@index([status])
+  @@index([startedAt])
+  @@map("translation_sessions")
+}
+
+enum TranslationSessionStatus {
+  ACTIVE
+  ENDED
+}
+
+model TranslationEntry {
+  id        String             @id @default(cuid())
+  sessionId String
+  session   TranslationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  text      String
+  language  String             @default("zh")
+  createdAt DateTime           @default(now())
+
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("translation_entries")
 }

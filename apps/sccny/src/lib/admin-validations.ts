@@ -288,7 +288,122 @@ export const ContentPageUpdateSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED"]).optional(),
 });
 
+// ── Phase 4: Hymn Management ──
+
+export const GetHymnsQuerySchema = z.object({
+  page: z.string().optional().default("1").transform((val) => parseInt(val)),
+  limit: z.string().optional().default("20").transform((val) => Math.min(parseInt(val), 100)),
+  search: z.string().optional(),
+  category: z.string().optional(),
+  sortBy: z.enum(["titleEn", "number", "createdAt"]).optional().default("createdAt"),
+  sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
+});
+
+export const HymnCreateSchema = z.object({
+  number: z.number().int().positive().optional(),
+  titleEn: z.string().min(1, "English title is required").max(500),
+  titleZh: z.string().min(1, "Chinese title is required").max(500),
+  lyricsEn: z.string().min(1, "English lyrics are required"),
+  lyricsZh: z.string().min(1, "Chinese lyrics are required"),
+  author: z.string().max(200).optional(),
+  composer: z.string().max(200).optional(),
+  category: z.string().max(100).optional(),
+});
+
+export const HymnUpdateSchema = z.object({
+  number: z.number().int().positive().optional().nullable(),
+  titleEn: z.string().min(1).max(500).optional(),
+  titleZh: z.string().min(1).max(500).optional(),
+  lyricsEn: z.string().min(1).optional(),
+  lyricsZh: z.string().min(1).optional(),
+  author: z.string().max(200).optional().nullable(),
+  composer: z.string().max(200).optional().nullable(),
+  category: z.string().max(100).optional().nullable(),
+});
+
+// ── Phase 4: PPT Template Management ──
+
+export const PptTemplateCreateSchema = z.object({
+  name: z.string().min(1, "Template name is required").max(200),
+  description: z.string().max(500).optional(),
+  backgroundColor: z.string().max(20).optional().default("#000000"),
+  textColor: z.string().max(20).optional().default("#FFFFFF"),
+  titleFontSize: z.number().int().min(10).max(120).optional().default(36),
+  bodyFontSize: z.number().int().min(10).max(80).optional().default(24),
+  fontFamily: z.string().max(100).optional().default("Arial"),
+  backgroundImage: z.string().url().optional().or(z.literal("")),
+  isDefault: z.boolean().optional().default(false),
+});
+
+export const PptTemplateUpdateSchema = z.object({
+  name: z.string().min(1).max(200).optional(),
+  description: z.string().max(500).optional().nullable(),
+  backgroundColor: z.string().max(20).optional(),
+  textColor: z.string().max(20).optional(),
+  titleFontSize: z.number().int().min(10).max(120).optional(),
+  bodyFontSize: z.number().int().min(10).max(80).optional(),
+  fontFamily: z.string().max(100).optional(),
+  backgroundImage: z.string().url().optional().or(z.literal("")).nullable(),
+  isDefault: z.boolean().optional(),
+});
+
+// ── Phase 4: Worship Order ──
+
+export const WorshipOrderCreateSchema = z.object({
+  name: z.string().min(1, "Name is required").max(200),
+  date: z.string().min(1, "Date is required"),
+  templateId: z.string().optional(),
+  items: z.array(z.object({
+    type: z.enum(["HYMN", "SCRIPTURE_READING", "SERMON_TITLE", "ANNOUNCEMENT", "CUSTOM_TEXT", "RESPONSIVE_READING", "PRAYER", "OFFERING", "BENEDICTION"]),
+    sortOrder: z.number().int().min(0),
+    title: z.string().max(500).optional(),
+    titleZh: z.string().max(500).optional(),
+    content: z.string().optional(),
+    contentZh: z.string().optional(),
+    hymnId: z.string().optional(),
+    scriptureRef: z.string().max(500).optional(),
+  })).optional().default([]),
+});
+
+export const WorshipOrderUpdateSchema = z.object({
+  name: z.string().min(1).max(200).optional(),
+  date: z.string().optional(),
+  templateId: z.string().optional().nullable(),
+  items: z.array(z.object({
+    type: z.enum(["HYMN", "SCRIPTURE_READING", "SERMON_TITLE", "ANNOUNCEMENT", "CUSTOM_TEXT", "RESPONSIVE_READING", "PRAYER", "OFFERING", "BENEDICTION"]),
+    sortOrder: z.number().int().min(0),
+    title: z.string().max(500).optional(),
+    titleZh: z.string().max(500).optional(),
+    content: z.string().optional(),
+    contentZh: z.string().optional(),
+    hymnId: z.string().optional(),
+    scriptureRef: z.string().max(500).optional(),
+  })).optional(),
+});
+
+// ── Phase 4: Live Translation ──
+
+export const TranslationSessionCreateSchema = z.object({
+  title: z.string().min(1, "Title is required").max(200),
+  language: z.string().max(10).optional().default("zh"),
+});
+
+export const TranslationEntryCreateSchema = z.object({
+  text: z.string().min(1, "Text is required").max(5000),
+  language: z.string().max(10).optional().default("zh"),
+});
+
 // Types
+export type GetHymnsQueryType = z.infer<typeof GetHymnsQuerySchema>;
+export type HymnCreateType = z.infer<typeof HymnCreateSchema>;
+export type HymnUpdateType = z.infer<typeof HymnUpdateSchema>;
+export type PptTemplateCreateType = z.infer<typeof PptTemplateCreateSchema>;
+export type PptTemplateUpdateType = z.infer<typeof PptTemplateUpdateSchema>;
+export type WorshipOrderCreateType = z.infer<typeof WorshipOrderCreateSchema>;
+export type WorshipOrderUpdateType = z.infer<typeof WorshipOrderUpdateSchema>;
+export type TranslationSessionCreateType = z.infer<typeof TranslationSessionCreateSchema>;
+export type TranslationEntryCreateType = z.infer<typeof TranslationEntryCreateSchema>;
+
 export type GetAdminSermonsQueryType = z.infer<typeof GetAdminSermonsQuerySchema>;
 export type SermonAdminCreateType = z.infer<typeof SermonAdminCreateSchema>;
 export type SermonAdminUpdateType = z.infer<typeof SermonAdminUpdateSchema>;

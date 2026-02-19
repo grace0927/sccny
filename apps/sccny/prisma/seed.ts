@@ -61,9 +61,24 @@ const permissions = [
   // Audit
   { key: "audit.view", name: "View Audit Log", resource: "audit", action: "view" },
   { key: "audit.export", name: "Export Audit Log", resource: "audit", action: "export" },
+  // Hymns
+  { key: "hymns.view", name: "View Hymns", resource: "hymns", action: "view" },
+  { key: "hymns.create", name: "Create Hymns", resource: "hymns", action: "create" },
+  { key: "hymns.edit", name: "Edit Hymns", resource: "hymns", action: "edit" },
+  { key: "hymns.delete", name: "Delete Hymns", resource: "hymns", action: "delete" },
+  // PPT Templates
+  { key: "templates.view", name: "View PPT Templates", resource: "templates", action: "view" },
+  { key: "templates.create", name: "Create PPT Templates", resource: "templates", action: "create" },
+  { key: "templates.edit", name: "Edit PPT Templates", resource: "templates", action: "edit" },
+  // PPT / Worship Orders
+  { key: "ppt.view", name: "View Worship Orders", resource: "ppt", action: "view" },
+  { key: "ppt.create", name: "Create Worship Orders", resource: "ppt", action: "create" },
+  { key: "ppt.edit", name: "Edit Worship Orders", resource: "ppt", action: "edit" },
+  { key: "ppt.delete", name: "Delete Worship Orders", resource: "ppt", action: "delete" },
+  { key: "ppt.generate", name: "Generate PPT", resource: "ppt", action: "generate" },
   // Tools
   { key: "tools.translation.operate", name: "Operate Live Translation", resource: "tools", action: "translation.operate" },
-  { key: "tools.ppt.generate", name: "Generate PPT", resource: "tools", action: "ppt.generate" },
+  { key: "tools.ppt.generate", name: "Generate PPT (Tools)", resource: "tools", action: "ppt.generate" },
 ];
 
 interface RoleDefinition {
@@ -117,13 +132,17 @@ const roles: RoleDefinition[] = [
   },
   {
     name: "MEDIA_TEAM",
-    description: "Sermons, content, and media upload",
+    description: "Sermons, content, media upload, hymns, and PPT generation",
     isSystem: true,
     permissionKeys: [
       "sermons.view", "sermons.create", "sermons.edit", "sermons.sync",
       "content.view", "content.edit", "content.publish",
       "media.upload", "media.delete",
       "news.view",
+      "hymns.view", "hymns.create", "hymns.edit", "hymns.delete",
+      "templates.view", "templates.create", "templates.edit",
+      "ppt.view", "ppt.create", "ppt.edit", "ppt.delete", "ppt.generate",
+      "tools.ppt.generate",
     ],
   },
   {
