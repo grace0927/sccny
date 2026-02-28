@@ -540,7 +540,27 @@
       "reapplying": "重新申请中...",
       "inactiveTitle": "账户未激活",
       "inactiveMessage": "您的会友账户目前处于未激活状态，请联系教会办公室。"
-    }
+    },
+    "community": "社区"
+  },
+  "Community": {
+    "title": "社区",
+    "newPost": "发帖",
+    "postPlaceholder": "与大家分享...",
+    "addImage": "添加图片",
+    "removeImage": "删除",
+    "post": "发布",
+    "posting": "发布中...",
+    "deletePost": "删除",
+    "noPostsYet": "还没有帖子，来发第一条吧！",
+    "loading": "加载中...",
+    "loadMore": "加载更多",
+    "postSuccess": "帖子已发布。",
+    "postError": "发布失败，请重试。",
+    "deleteSuccess": "帖子已删除。",
+    "deleteError": "删除失败。",
+    "imageUploadError": "图片上传失败。",
+    "imageTooLarge": "图片不能超过 5MB。"
   },
   "SermonManagement": {
     "title": "讲道管理",

@@ -393,6 +393,25 @@ export const TranslationEntryCreateSchema = z.object({
   language: z.string().max(10).optional().default("zh"),
 });
 
+// ── Phase 5: Community Feed ──
+
+export const CommunityPostCreateSchema = z.object({
+  content: z.string().min(1, "Content is required").max(500),
+  imageFileId: z.string().optional(),
+  imageUrl: z.string().url().optional(),
+});
+
+export const GetCommunityPostsQuerySchema = z.object({
+  page: z.string().optional().default("1").transform((val) => parseInt(val)),
+  limit: z.string().optional().default("20").transform((val) => Math.min(parseInt(val), 50)),
+});
+
+export const GetAdminCommunityPostsQuerySchema = z.object({
+  page: z.string().optional().default("1").transform((val) => parseInt(val)),
+  limit: z.string().optional().default("20").transform((val) => Math.min(parseInt(val), 100)),
+  memberId: z.string().optional(),
+});
+
 // Types
 export type GetHymnsQueryType = z.infer<typeof GetHymnsQuerySchema>;
 export type HymnCreateType = z.infer<typeof HymnCreateSchema>;
@@ -426,3 +445,6 @@ export type MemberUpdateType = z.infer<typeof MemberUpdateSchema>;
 export type MemberRejectType = z.infer<typeof MemberRejectSchema>;
 export type MemberProfileUpdateType = z.infer<typeof MemberProfileUpdateSchema>;
 export type PrayerRequestCreateType = z.infer<typeof PrayerRequestCreateSchema>;
+export type CommunityPostCreateType = z.infer<typeof CommunityPostCreateSchema>;
+export type GetCommunityPostsQueryType = z.infer<typeof GetCommunityPostsQuerySchema>;
+export type GetAdminCommunityPostsQueryType = z.infer<typeof GetAdminCommunityPostsQuerySchema>;

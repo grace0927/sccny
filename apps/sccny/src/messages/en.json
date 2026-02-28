@@ -540,7 +540,27 @@
       "reapplying": "Re-applying...",
       "inactiveTitle": "Account Inactive",
       "inactiveMessage": "Your member account is currently inactive. Please contact the church office."
-    }
+    },
+    "community": "Community"
+  },
+  "Community": {
+    "title": "Community",
+    "newPost": "New Post",
+    "postPlaceholder": "Share something with the community...",
+    "addImage": "Add Image",
+    "removeImage": "Remove",
+    "post": "Post",
+    "posting": "Posting...",
+    "deletePost": "Delete",
+    "noPostsYet": "No posts yet. Be the first to share!",
+    "loading": "Loading...",
+    "loadMore": "Load more",
+    "postSuccess": "Your post was shared.",
+    "postError": "Failed to post. Please try again.",
+    "deleteSuccess": "Post deleted.",
+    "deleteError": "Failed to delete post.",
+    "imageUploadError": "Failed to upload image.",
+    "imageTooLarge": "Image must be under 5MB."
   },
   "SermonManagement": {
     "title": "Sermon Management",
