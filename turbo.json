@@ -20,7 +20,9 @@
         "POSTGRES_URL_NO_SSL",
         "POSTGRES_HOST",
         "NEON_PROJECT_ID",
-        "CRON_SECRET"
+        "CRON_SECRET",
+        "GOOGLE_SERVICE_ACCOUNT_CREDENTIALS",
+        "GOOGLE_DRIVE_FOLDER_ID"
       ]
     },
     "dev": {

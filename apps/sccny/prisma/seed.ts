@@ -79,6 +79,8 @@ const permissions = [
   // Tools
   { key: "tools.translation.operate", name: "Operate Live Translation", resource: "tools", action: "translation.operate" },
   { key: "tools.ppt.generate", name: "Generate PPT (Tools)", resource: "tools", action: "ppt.generate" },
+  // Community
+  { key: "community.manage", name: "Manage Community Posts", resource: "community", action: "manage" },
 ];
 
 interface RoleDefinition {
@@ -188,6 +190,14 @@ async function main() {
 
     console.log(`  Role "${roleDef.name}" with ${perms.length} permissions.`);
   }
+
+  console.log("Seeding system config...");
+  await prisma.systemConfig.upsert({
+    where: { key: "post_max_length" },
+    update: {},
+    create: { key: "post_max_length", value: "150" },
+  });
+  console.log("  SystemConfig: post_max_length = 150");
 
   console.log("Seed complete.");
 }

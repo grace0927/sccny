@@ -86,11 +86,16 @@ export default function MemberDashboard({ member }: MemberDashboardProps) {
         )}
       </div>
 
-      {/* Prayer Requests link (ACTIVE only) */}
+      {/* ACTIVE-only actions */}
       {member.status === "ACTIVE" && (
-        <Link href="/my-account/prayer-requests">
-          <Button variant="outline">{t("prayerRequests")}</Button>
-        </Link>
+        <div className="flex gap-3 flex-wrap">
+          <Link href="/my-account/prayer-requests">
+            <Button variant="outline">{t("prayerRequests")}</Button>
+          </Link>
+          <Link href="/my-account/community">
+            <Button variant="outline">{t("community")}</Button>
+          </Link>
+        </div>
       )}
     </div>
   );
