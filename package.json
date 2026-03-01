@@ -10,7 +10,7 @@
     "lint": "turbo lint"
   },
   "devDependencies": {
-    "turbo": "^2.8.10"
+    "turbo": "^2.8.12"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
