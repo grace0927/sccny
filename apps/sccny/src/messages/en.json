@@ -413,6 +413,7 @@
     "title": "User Management",
     "inviteUser": "Invite User",
     "search": "Search users...",
+    "searchPlaceholder": "Search users...",
     "name": "Name",
     "email": "Email",
     "memberStatus": "Member Status",
@@ -423,6 +424,7 @@
     "disabled": "Disabled",
     "noUsers": "No users found.",
     "viewDetails": "View Details",
+    "viewDetail": "View Details",
     "loading": "Loading...",
     "page": "Page",
     "total": "total",
@@ -432,13 +434,16 @@
     "accountInfo": "Account Information",
     "displayName": "Display Name",
     "signedUp": "Signed Up",
+    "joined": "Joined",
     "lastActive": "Last Active",
     "linkedMember": "Linked Member Record",
     "noMember": "No member record linked",
+    "noMemberRecord": "No member record linked",
     "viewMember": "View Member",
     "roleAssignment": "Role Assignment",
     "saveRoles": "Save Roles",
     "disableUser": "Disable User",
+    "disableAccount": "Disable Account",
     "enableUser": "Enable User",
     "confirmDisable": "Disable User",
     "confirmDisableDescription": "Are you sure you want to disable this user? They will not be able to sign in.",
@@ -452,7 +457,9 @@
   "MemberManagement": {
     "title": "Member Management",
     "createMember": "Create Member",
+    "addMember": "Add Member",
     "search": "Search members...",
+    "searchPlaceholder": "Search members...",
     "tabs": {
       "pending": "Pending",
       "all": "All Members"
@@ -468,6 +475,7 @@
     "approve": "Approve",
     "reject": "Reject",
     "viewDetails": "View Details",
+    "viewDetail": "View Details",
     "noMembers": "No members found.",
     "noPending": "No pending member requests.",
     "loading": "Loading...",
@@ -479,6 +487,10 @@
     "active": "Active",
     "inactive": "Inactive",
     "rejected": "Rejected",
+    "statusActive": "Active",
+    "statusPending": "Pending",
+    "statusInactive": "Inactive",
+    "statusRejected": "Rejected",
     "details": "Member Details",
     "personalInfo": "Personal Information",
     "address": "Address",
@@ -502,7 +514,33 @@
     "userId": "User ID",
     "save": "Save",
     "saving": "Saving...",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "approveDialog": {
+      "title": "Approve Member",
+      "description": "Are you sure you want to approve this member application?",
+      "confirm": "Approve"
+    },
+    "rejectDialog": {
+      "title": "Reject Application",
+      "description": "Please provide a reason for rejecting this member application.",
+      "reasonLabel": "Reason",
+      "reasonPlaceholder": "Enter rejection reason...",
+      "confirm": "Reject"
+    },
+    "form": {
+      "createTitle": "Add Member",
+      "editTitle": "Edit Member",
+      "namePlaceholder": "Enter full name",
+      "nameZhPlaceholder": "Enter Chinese name",
+      "emailPlaceholder": "Enter email address",
+      "phonePlaceholder": "Enter phone number",
+      "addressPlaceholder": "Enter address",
+      "groupPlaceholder": "Enter fellowship group",
+      "ministryPlaceholder": "Enter ministry assignments (comma-separated)",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
+    }
   },
   "MemberCorner": {
     "title": "My Account",

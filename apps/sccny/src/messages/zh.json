@@ -413,6 +413,7 @@
     "title": "用户管理",
     "inviteUser": "邀请用户",
     "search": "搜索用户...",
+    "searchPlaceholder": "搜索用户...",
     "name": "姓名",
     "email": "邮箱",
     "memberStatus": "会友状态",
@@ -423,6 +424,7 @@
     "disabled": "已禁用",
     "noUsers": "未找到用户。",
     "viewDetails": "查看详情",
+    "viewDetail": "查看详情",
     "loading": "加载中...",
     "page": "页",
     "total": "总计",
@@ -432,13 +434,16 @@
     "accountInfo": "账户信息",
     "displayName": "显示名称",
     "signedUp": "注册时间",
+    "joined": "加入时间",
     "lastActive": "最近活跃",
     "linkedMember": "关联会友记录",
     "noMember": "未关联会友记录",
+    "noMemberRecord": "未关联会友记录",
     "viewMember": "查看会友",
     "roleAssignment": "角色分配",
     "saveRoles": "保存角色",
     "disableUser": "禁用用户",
+    "disableAccount": "禁用账户",
     "enableUser": "启用用户",
     "confirmDisable": "禁用用户",
     "confirmDisableDescription": "确定要禁用此用户吗？禁用后该用户将无法登录。",
@@ -452,7 +457,9 @@
   "MemberManagement": {
     "title": "会友管理",
     "createMember": "创建会友",
+    "addMember": "添加会友",
     "search": "搜索会友...",
+    "searchPlaceholder": "搜索会友...",
     "tabs": {
       "pending": "待审批",
       "all": "所有会友"
@@ -468,6 +475,7 @@
     "approve": "批准",
     "reject": "拒绝",
     "viewDetails": "查看详情",
+    "viewDetail": "查看详情",
     "noMembers": "未找到会友。",
     "noPending": "没有待审批的会友申请。",
     "loading": "加载中...",
@@ -479,6 +487,10 @@
     "active": "活跃",
     "inactive": "未活跃",
     "rejected": "已拒绝",
+    "statusActive": "活跃",
+    "statusPending": "待审批",
+    "statusInactive": "未活跃",
+    "statusRejected": "已拒绝",
     "details": "会友详情",
     "personalInfo": "个人信息",
     "address": "地址",
@@ -502,7 +514,33 @@
     "userId": "用户 ID",
     "save": "保存",
     "saving": "保存中...",
-    "cancel": "取消"
+    "cancel": "取消",
+    "approveDialog": {
+      "title": "批准会友",
+      "description": "确定要批准此会友申请吗？",
+      "confirm": "批准"
+    },
+    "rejectDialog": {
+      "title": "拒绝申请",
+      "description": "请提供拒绝此会友申请的原因。",
+      "reasonLabel": "原因",
+      "reasonPlaceholder": "输入拒绝原因...",
+      "confirm": "拒绝"
+    },
+    "form": {
+      "createTitle": "添加会友",
+      "editTitle": "编辑会友",
+      "namePlaceholder": "输入姓名",
+      "nameZhPlaceholder": "输入中文名",
+      "emailPlaceholder": "输入邮箱地址",
+      "phonePlaceholder": "输入电话号码",
+      "addressPlaceholder": "输入地址",
+      "groupPlaceholder": "输入团契小组",
+      "ministryPlaceholder": "输入事工分配（逗号分隔）",
+      "cancel": "取消",
+      "save": "保存",
+      "saving": "保存中..."
+    }
   },
   "MemberCorner": {
     "title": "我的账户",
