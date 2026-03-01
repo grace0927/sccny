@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { BookOpenIcon } from "@heroicons/react/24/outline";
+import { BookOpenIcon, LanguageIcon } from "@heroicons/react/24/outline";
 import { Card, CardContent, CardFooter, Button } from "dark-blue";
 
 export default function ToolsPage() {
@@ -39,6 +39,26 @@ export default function ToolsPage() {
               <CardFooter className="justify-end">
                 <Button asChild>
                   <Link href="/tools/bible">{t("bible.searchButton")}</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* Live Translation Card */}
+            <Card className="hover:shadow-xl transition-shadow duration-300">
+              <CardContent className="pt-6">
+                <div className="flex items-center mb-4">
+                  <div className="p-3 bg-primary/10 rounded-full mr-4">
+                    <LanguageIcon className="h-8 w-8 text-primary" />
+                  </div>
+                  <h2 className="text-xl font-bold text-foreground">
+                    {t("liveTranslation.title")}
+                  </h2>
+                </div>
+                <p className="text-muted-foreground mb-6">{t("liveTranslation.description")}</p>
+              </CardContent>
+              <CardFooter className="justify-end">
+                <Button asChild>
+                  <Link href="/tools/live-translation">{t("liveTranslation.openButton")}</Link>
                 </Button>
               </CardFooter>
             </Card>
