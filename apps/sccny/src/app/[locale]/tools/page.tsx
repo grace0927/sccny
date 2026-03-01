@@ -2,7 +2,9 @@ import { useTranslations } from "next-intl";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { BookOpenIcon, LanguageIcon } from "@heroicons/react/24/outline";
+import { BookOpenIcon } from "@heroicons/react/24/outline";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { LanguageIcon } = require("@heroicons/react/24/outline");
 import { Card, CardContent, CardFooter, Button } from "dark-blue";
 
 export default function ToolsPage() {
