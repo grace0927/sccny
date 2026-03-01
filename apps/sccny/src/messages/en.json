@@ -323,6 +323,11 @@
       "errorTitle": "Error",
       "copyVerse": "Copy verse",
       "copied": "Copied!"
+    },
+    "liveTranslation": {
+      "title": "Live Translation",
+      "description": "View real-time sermon translations during worship services and events.",
+      "openButton": "Open"
     }
   },
   "Admin": {
