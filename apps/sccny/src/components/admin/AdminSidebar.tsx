@@ -151,7 +151,8 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 shrink-0 bg-card border-r border-border transition-transform duration-200 lg:static lg:z-auto",
+          "h-full w-64 shrink-0 bg-card border-r border-border",
+          "max-lg:fixed max-lg:top-0 max-lg:left-0 max-lg:z-50 max-lg:transition-transform max-lg:duration-200",
           isOpen ? "translate-x-0" : "max-lg:-translate-x-full"
         )}
       >
