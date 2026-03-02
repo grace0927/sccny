@@ -545,6 +545,8 @@
   },
   "MemberCorner": {
     "title": "我的账户",
+    "dashboard": "主页",
+    "backToSite": "返回主站",
     "welcomeBack": "欢迎回来，{name}",
     "profile": "我的资料",
     "editProfile": "编辑资料",

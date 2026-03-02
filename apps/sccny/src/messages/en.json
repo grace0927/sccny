@@ -545,6 +545,8 @@
   },
   "MemberCorner": {
     "title": "My Account",
+    "dashboard": "Dashboard",
+    "backToSite": "Back to site",
     "welcomeBack": "Welcome back, {name}",
     "profile": "My Profile",
     "editProfile": "Edit Profile",
