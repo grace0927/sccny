@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle, Badge, Button, Input, Label } from "dark-blue";
+import { Alert, AlertDescription, Card, CardContent, CardHeader, CardTitle, Badge, Button, Textarea, Checkbox, Label, Skeleton } from "dark-blue";
 import { useState, useEffect } from "react";
 
 interface PrayerRequest {
@@ -73,13 +73,12 @@ export default function PrayerRequests() {
         </CardHeader>
         <CardContent>
           {message && (
-            <p className={`text-sm mb-4 ${message.type === "success" ? "text-green-600" : "text-destructive"}`}>
-              {message.text}
-            </p>
+            <Alert variant={message.type === "success" ? "success" : "destructive"} className="mb-4">
+              <AlertDescription>{message.text}</AlertDescription>
+            </Alert>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <textarea
-              className="w-full rounded-md border border-border bg-background p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            <Textarea
               rows={4}
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -87,11 +86,9 @@ export default function PrayerRequests() {
               required
             />
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={isAnonymous}
                 onChange={(e) => setIsAnonymous(e.target.checked)}
-                className="rounded border-border"
               />
               <span className="text-sm text-foreground">{t("prayerRequestForm.anonymous")}</span>
             </label>
@@ -109,7 +106,18 @@ export default function PrayerRequests() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <p className="text-sm text-muted-foreground">Loading...</p>
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="p-3 border border-border rounded-md space-y-2">
+                  <div className="flex justify-between">
+                    <Skeleton className="h-3 w-24" />
+                    <Skeleton className="h-5 w-16 rounded-full" />
+                  </div>
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              ))}
+            </div>
           ) : requests.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t("prayerRequestList.empty")}</p>
           ) : (
@@ -117,17 +125,17 @@ export default function PrayerRequests() {
               {requests.map((req) => (
                 <div
                   key={req.id}
-                  className="p-3 border border-border rounded-md"
+                  className="p-4 border border-border rounded-md space-y-2"
                 >
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
                       {new Date(req.createdAt).toLocaleDateString()}
                     </span>
-                    <Badge variant={req.status === "PRAYED" ? "default" : "subtle"}>
+                    <Badge variant={req.status === "PRAYED" ? "success-subtle" : "subtle"}>
                       {req.status === "PRAYED" ? t("prayerRequestList.statusPrayed") : t("prayerRequestList.statusPending")}
                     </Badge>
                   </div>
-                  <p className="text-sm text-foreground">{req.content}</p>
+                  <p className="text-sm text-foreground leading-relaxed">{req.content}</p>
                 </div>
               ))}
             </div>

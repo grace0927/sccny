@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from "dark-blue";
+import { Alert, AlertDescription, Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from "dark-blue";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 
@@ -69,61 +69,77 @@ export default function ProfileForm({ member }: ProfileFormProps) {
       </CardHeader>
       <CardContent>
         {message && (
-          <p className={`text-sm mb-4 ${message.type === "success" ? "text-green-600" : "text-destructive"}`}>
-            {message.text}
-          </p>
+          <Alert variant={message.type === "success" ? "success" : "destructive"} className="mb-4">
+            <AlertDescription>{message.text}</AlertDescription>
+          </Alert>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label>{t("profileForm.name")} *</Label>
-            <Input
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="profile-name">{t("profileForm.name")} *</Label>
+              <Input
+                id="profile-name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="profile-name-zh">{t("profileForm.nameZh")}</Label>
+              <Input
+                id="profile-name-zh"
+                value={form.nameZh}
+                onChange={(e) => setForm({ ...form, nameZh: e.target.value })}
+              />
+            </div>
           </div>
-          <div>
-            <Label>{t("profileForm.nameZh")}</Label>
-            <Input
-              value={form.nameZh}
-              onChange={(e) => setForm({ ...form, nameZh: e.target.value })}
-            />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="profile-email">{t("profileForm.email")}</Label>
+              <Input
+                id="profile-email"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="profile-phone">{t("profileForm.phone")}</Label>
+              <Input
+                id="profile-phone"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              />
+            </div>
           </div>
-          <div>
-            <Label>{t("profileForm.email")}</Label>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="profile-address">{t("profileForm.address")}</Label>
             <Input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-          </div>
-          <div>
-            <Label>{t("profileForm.phone")}</Label>
-            <Input
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            />
-          </div>
-          <div>
-            <Label>{t("profileForm.address")}</Label>
-            <Input
+              id="profile-address"
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
             />
           </div>
-          <div>
-            <Label>{t("profileForm.birthday")}</Label>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="profile-birthday">{t("profileForm.birthday")}</Label>
             <Input
+              id="profile-birthday"
               type="date"
               value={form.birthday}
               onChange={(e) => setForm({ ...form, birthday: e.target.value })}
+              className="max-w-xs"
             />
           </div>
 
-          <Button type="submit" disabled={saving}>
-            {saving ? t("profileForm.saving") : t("profileForm.save")}
-          </Button>
+          <div className="pt-2">
+            <Button type="submit" disabled={saving}>
+              {saving ? t("profileForm.saving") : t("profileForm.save")}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

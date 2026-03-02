@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Button } from "dark-blue";
+import { Alert, AlertContent, AlertTitle, AlertDescription, AlertActions, Button } from "dark-blue";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 
@@ -29,38 +29,31 @@ export default function MemberStatusBanner({ status, rejectionReason }: MemberSt
 
   if (status === "ACTIVE") return null;
 
-  const bgColor =
-    status === "REJECTED" ? "bg-destructive/10 border-destructive/20" :
-    status === "INACTIVE" ? "bg-muted border-border" :
-    "bg-primary/10 border-primary/20";
+  const variant =
+    status === "REJECTED" ? "destructive" :
+    status === "INACTIVE" ? "warning" :
+    "info";
 
-  const textColor =
-    status === "REJECTED" ? "text-destructive" :
-    status === "INACTIVE" ? "text-muted-foreground" :
-    "text-primary";
+  const title =
+    status === "PENDING" ? t("pendingBanner") :
+    status === "REJECTED" ? t("rejectedBanner") :
+    t("inactiveBanner");
 
   return (
-    <div className={`p-4 rounded-lg border ${bgColor}`}>
-      <p className={`text-sm font-medium ${textColor}`}>
-        {status === "PENDING" && t("pendingBanner")}
-        {status === "REJECTED" && t("rejectedBanner")}
-        {status === "INACTIVE" && t("inactiveBanner")}
-      </p>
-      {status === "REJECTED" && rejectionReason && (
-        <p className="text-sm text-muted-foreground mt-1">
-          {t("rejectedReason", { reason: rejectionReason })}
-        </p>
-      )}
+    <Alert variant={variant}>
+      <AlertContent>
+        <AlertTitle>{title}</AlertTitle>
+        {status === "REJECTED" && rejectionReason && (
+          <AlertDescription>{t("rejectedReason", { reason: rejectionReason })}</AlertDescription>
+        )}
+      </AlertContent>
       {status === "REJECTED" && (
-        <Button
-          size="sm"
-          className="mt-2"
-          onClick={handleReapply}
-          disabled={reapplying}
-        >
-          {t("reapply")}
-        </Button>
+        <AlertActions>
+          <Button size="sm" onClick={handleReapply} disabled={reapplying}>
+            {t("reapply")}
+          </Button>
+        </AlertActions>
       )}
-    </div>
+    </Alert>
   );
 }
