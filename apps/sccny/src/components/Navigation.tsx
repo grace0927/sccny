@@ -30,6 +30,7 @@ const navigation = [
   { name: "NEWS", href: "/news" },
   { name: "PASTORAL SEARCH", href: "/pastoral-search" },
   { name: "CONTACT US", href: "/contact" },
+  { name: "MEMBER CORNER", href: "/my-account" },
 ];
 
 const languageOptions = [
