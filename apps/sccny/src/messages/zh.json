@@ -545,6 +545,8 @@
   },
   "MemberCorner": {
     "title": "我的账户",
+    "dashboard": "主页",
+    "backToSite": "返回主站",
     "welcomeBack": "欢迎回来，{name}",
     "profile": "我的资料",
     "editProfile": "编辑资料",
@@ -552,7 +554,10 @@
     "fellowshipGroup": "团契小组",
     "ministryAssignments": "事工",
     "prayerRequests": "代祷请求",
+    "prayerRequestsDesc": "提交并跟踪您的代祷请求。",
     "community": "社区",
+    "communityDesc": "与其他会友交流分享。",
+    "quickActions": "快速操作",
     "pendingBanner": "您的会友申请正在审核中。",
     "rejectedBanner": "您的会友申请未被批准。",
     "inactiveBanner": "您的会友账户目前处于未激活状态，请联系教会办公室。",
@@ -584,36 +589,6 @@
       "empty": "暂无代祷请求。",
       "statusPrayed": "已代祷",
       "statusPending": "待代祷"
-    },
-    "dashboard": {
-      "welcome": "欢迎",
-      "profile": "我的资料",
-      "prayerRequests": "代祷请求",
-      "fellowshipGroup": "团契小组",
-      "ministries": "事工",
-      "none": "未分配"
-    },
-    "prayerRequestsSection": {
-      "title": "代祷请求",
-      "submit": "提交代祷请求",
-      "content": "您的代祷请求",
-      "contentPlaceholder": "分享您的代祷请求...",
-      "anonymous": "匿名提交",
-      "submitting": "提交中...",
-      "noRequests": "暂无代祷请求。",
-      "prayed": "已代祷",
-      "pending": "待代祷"
-    },
-    "status": {
-      "pendingTitle": "申请审核中",
-      "pendingMessage": "您的会友申请正在审核中，审批通过后会通知您。",
-      "rejectedTitle": "申请未通过",
-      "rejectedMessage": "您的会友申请未被批准。",
-      "reason": "原因",
-      "reapply": "重新申请",
-      "reapplying": "重新申请中...",
-      "inactiveTitle": "账户未激活",
-      "inactiveMessage": "您的会友账户目前处于未激活状态，请联系教会办公室。"
     }
   },
   "Community": {

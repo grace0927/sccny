@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { stackServerApp } from "@/stack/server";
+import { prisma } from "@/lib/db";
+import MemberShell from "@/components/member-corner/MemberShell";
 
 export default async function MyAccountLayout({
   children,
@@ -15,5 +17,12 @@ export default async function MyAccountLayout({
     redirect(`/handler/sign-in?after_auth_return_to=/${locale}/my-account`);
   }
 
-  return <>{children}</>;
+  const member = await prisma.member.findUnique({
+    where: { userId: user.id },
+    select: { status: true },
+  });
+
+  const isActive = member?.status === "ACTIVE";
+
+  return <MemberShell isActive={isActive}>{children}</MemberShell>;
 }
