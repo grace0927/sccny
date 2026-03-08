@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Active membership required" }, { status: 403 });
     }
 
-    if (!process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS) {
+    if (!process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS && !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
       return NextResponse.json({ error: "Image upload is not configured" }, { status: 503 });
     }
 

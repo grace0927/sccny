@@ -63,6 +63,14 @@ Standalone tools for ministry support.
 | :white_check_mark: | PPT Generation | [ppt-generation.md](./features/ppt-generation.md) | Bible Lookup (for scripture items) |
 | :white_check_mark: | Live Translation | [live-translation.md](./features/live-translation.md) | Admin Infrastructure (for operator auth) |
 
+## Phase 5: Community
+
+Member social and community features.
+
+| Status | Feature | Plan | Dependencies |
+|--------|---------|------|--------------|
+| :white_check_mark: | Community Feed | [community-feed.md](./features/community-feed.md) | Member Management |
+
 ---
 
 ## Prisma Schema Overview
@@ -91,6 +99,8 @@ New models required across all features (cumulative):
 | `WorshipOrder` | PPT Generation |
 | `WorshipOrderItem` | PPT Generation |
 | `BibleVerse` | Bible Lookup (if local DB approach) |
+| `SystemConfig` | Community Feed |
+| `CommunityPost` | Community Feed |
 
 ## Package Dependencies
 

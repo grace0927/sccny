@@ -160,6 +160,20 @@ model TranslationSession { /* live sessions */ }
 model TranslationEntry   { /* per-entry transcript */ }
 ```
 
+#### Community
+
+```prisma
+model SystemConfig {
+  // key-value application settings (e.g. post_max_length)
+  @@map("system_config")
+}
+
+model CommunityPost {
+  // memberId, content, optional Google Drive imageUrl/imageFileId, createdAt
+  @@map("community_posts")
+}
+```
+
 ## API Architecture
 
 ### REST API Overview
@@ -179,6 +193,9 @@ All responses are JSON. Paginated responses use `{ data: [...], pagination: { pa
 | POST | `/api/events/[id]/register` | Register for event |
 | GET | `/api/announcements` | List announcements |
 | GET/POST | `/api/member/me/*` | Member profile & prayer requests |
+| GET/POST | `/api/member/posts` | Community feed posts (ACTIVE members) |
+| DELETE | `/api/member/posts/[id]` | Delete own post |
+| POST | `/api/member/posts/images` | Upload post image to Google Drive |
 | GET/POST | `/api/tools/bible/search` | Bible lookup |
 | GET | `/api/tools/ppt/generate` | Generate PPT |
 | GET/POST | `/api/tools/translation/sessions` | Translation session management |
@@ -203,6 +220,7 @@ All admin routes require authentication and resource-action permissions.
 | `worship-orders` | CRUD |
 | `permissions` | List all; list mine |
 | `audit-log` | List + export |
+| `community-posts` | List all + delete (requires `community.manage`) |
 
 ### Cron Tasks
 
@@ -240,12 +258,14 @@ All admin routes require authentication and resource-action permissions.
 - **Templates** — PPT template management
 - **Worship Orders** — Drag-and-drop worship order builder
 - **Translation** — Live translation operator interface
+- **Community** — Moderate member community feed posts
 - **Audit Log** — Searchable and exportable audit trail
 
 ### Member Corner (`/[locale]/my-account/`)
 
 - Profile management
 - Prayer request submission and history
+- Community feed (ACTIVE members only) — post text/image updates, view others' posts
 
 ## Authentication & Authorization
 
@@ -260,7 +280,7 @@ Stack Auth (`@stackframe/stack` v2.8.69) handles all user authentication.
 
 ### Authorization (RBAC)
 
-- **Permission key format**: `resource:action` (e.g. `sermons:write`, `members:read`)
+- **Permission key format**: `resource.action` (e.g. `sermons.write`, `members.read`, `community.manage`)
 - Users have roles via `UserRole`; roles have permissions via `RolePermission`
 - Server: `requirePermission(userId, key)` in `lib/admin-auth.ts` guards API routes
 - Client: `PermissionGate` component controls UI visibility; `usePermissions()` hook
@@ -298,6 +318,8 @@ pnpm exec prisma studio                            # GUI for database inspection
 | `NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY` | Stack Auth public key |
 | `STACK_SECRET_SERVER_KEY` | Stack Auth server key |
 | `CRON_SECRET` | Bearer token for cron endpoints |
+| `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS` | JSON credentials for Google Drive image upload (community feed) |
+| `GOOGLE_DRIVE_FOLDER_ID` | Google Drive folder for community post images |
 
 See `turbo.json` for the full list used in the Turborepo build pipeline.
 
@@ -338,7 +360,7 @@ When implementing a new feature:
 
 ## Current Status
 
-As of February 2026, all features through Phase 3 and partial Phase 4 are implemented:
+As of March 2026, all features through Phase 5 are implemented (except Bible Lookup):
 
 | Phase | Status |
 |-------|--------|
@@ -348,5 +370,6 @@ As of February 2026, all features through Phase 3 and partial Phase 4 are implem
 | Phase 3 — Sermon Admin, Announcements, Events, Content CMS | ✅ Complete |
 | Phase 4 — Live Translation, PPT Generation | ✅ Complete |
 | Phase 4 — Bible Lookup (Enhanced) | Planned |
+| Phase 5 — Community Feed | ✅ Complete |
 
 See [TODO.md](TODO.md) for the full per-feature breakdown.
