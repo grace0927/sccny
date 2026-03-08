@@ -67,3 +67,6 @@ apps/sccny/.turbo/*
 .env
 .env.local
 .env.*.local
+
+# Google Drive API credentials
+drive-service-account.json
