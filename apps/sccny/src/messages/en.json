@@ -345,7 +345,8 @@
       "content": "Content",
       "hymns": "Hymns",
       "templates": "PPT Templates",
-      "auditLog": "Audit Log"
+      "auditLog": "Audit Log",
+      "community": "Community"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -936,5 +937,19 @@
     "dragToReorder": "Drag to reorder items",
     "orderSaved": "Worship order saved successfully.",
     "pptGenerated": "PPT generated successfully."
+  },
+  "AdminCommunity": {
+    "title": "Community Moderation",
+    "member": "Member",
+    "content": "Content",
+    "image": "Image",
+    "postedAt": "Posted At",
+    "actions": "Actions",
+    "delete": "Delete",
+    "noPosts": "No community posts yet.",
+    "deleteSuccess": "Post deleted.",
+    "deleteError": "Failed to delete post.",
+    "hasImage": "Has image",
+    "deleteConfirm": "Are you sure you want to delete this post? This action cannot be undone."
   }
 }

@@ -8,6 +8,7 @@ const nextConfig = {
     remotePatterns: [
       { hostname: "www.scc-ny.org" },
       { hostname: "scc-ny.org" },
+      { hostname: "drive.google.com" },
     ],
   },
   transpilePackages: ["dark-blue"],

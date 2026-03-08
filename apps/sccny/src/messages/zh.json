@@ -345,7 +345,8 @@
       "content": "内容管理",
       "hymns": "诗歌管理",
       "templates": "PPT模板",
-      "auditLog": "审计日志"
+      "auditLog": "审计日志",
+      "community": "社区管理"
     },
     "dashboard": {
       "title": "仪表盘",
@@ -936,5 +937,19 @@
     "dragToReorder": "拖拽以重新排序",
     "orderSaved": "敬拜程序保存成功。",
     "pptGenerated": "PPT生成成功。"
+  },
+  "AdminCommunity": {
+    "title": "社区管理",
+    "member": "会员",
+    "content": "内容",
+    "image": "图片",
+    "postedAt": "发布时间",
+    "actions": "操作",
+    "delete": "删除",
+    "noPosts": "暂无社区帖子。",
+    "deleteSuccess": "帖子已删除。",
+    "deleteError": "删除失败。",
+    "hasImage": "含图片",
+    "deleteConfirm": "确定要删除这条帖子吗？此操作无法撤销。"
   }
 }
