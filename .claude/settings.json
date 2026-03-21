@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/feng/Documents/Workspace/sccny && git diff --name-only 2>/dev/null | grep -qE '^apps/sccny/(src/(app/api|app/\\[locale\\]|lib)|prisma)|turbo\\.json|package\\.json' && echo '[DOC REMINDER] Code changes detected. Run /update-docs to keep docs current.' || true"
+          }
+        ]
+      }
+    ]
+  }
+}

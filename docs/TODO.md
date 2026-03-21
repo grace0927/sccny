@@ -62,6 +62,7 @@ Standalone tools for ministry support.
 | :clipboard: | Bible Lookup (Enhanced) | [bible-lookup.md](./features/bible-lookup.md) | — |
 | :white_check_mark: | PPT Generation | [ppt-generation.md](./features/ppt-generation.md) | Bible Lookup (for scripture items) |
 | :white_check_mark: | Live Translation | [live-translation.md](./features/live-translation.md) | Admin Infrastructure (for operator auth) |
+| :white_check_mark: | Google Slides Automation | [google-slides-automation.md](./features/google-slides-automation.md) | PPT Generation |
 
 ## Phase 5: Community
 
@@ -110,3 +111,4 @@ New models required across all features (cumulative):
 | `@vercel/blob` | Content Management (media upload) | Planned |
 | `pptxgenjs` | PPT Generation | ✅ Installed |
 | `@hello-pangea/dnd` | PPT Generation (drag-and-drop) | ✅ Installed |
+| `googleapis` | Google Slides Automation | ✅ Installed |

@@ -197,7 +197,7 @@ All responses are JSON. Paginated responses use `{ data: [...], pagination: { pa
 | DELETE | `/api/member/posts/[id]` | Delete own post |
 | POST | `/api/member/posts/images` | Upload post image to Google Drive |
 | GET/POST | `/api/tools/bible/search` | Bible lookup |
-| GET | `/api/tools/ppt/generate` | Generate PPT |
+| POST | `/api/tools/ppt/generate-slides` | Generate Google Slides presentation |
 | GET/POST | `/api/tools/translation/sessions` | Translation session management |
 | GET/PUT | `/api/tools/translation/sessions/[id]` | Session detail |
 | GET | `/api/tools/translation/sessions/[id]/stream` | SSE stream |
@@ -257,6 +257,7 @@ All admin routes require authentication and resource-action permissions.
 - **Hymns** — Bilingual hymn library for PPT generation
 - **Templates** — PPT template management
 - **Worship Orders** — Drag-and-drop worship order builder
+- **PPT / Slides** — Two-step Google Slides generator: paste worship order text → parse → review → generate
 - **Translation** — Live translation operator interface
 - **Community** — Moderate member community feed posts
 - **Audit Log** — Searchable and exportable audit trail
@@ -318,8 +319,12 @@ pnpm exec prisma studio                            # GUI for database inspection
 | `NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY` | Stack Auth public key |
 | `STACK_SECRET_SERVER_KEY` | Stack Auth server key |
 | `CRON_SECRET` | Bearer token for cron endpoints |
-| `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS` | JSON credentials for Google Drive image upload (community feed) |
+| `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS` | JSON credentials for Google Drive / Slides API (community feed + slide generation) |
 | `GOOGLE_DRIVE_FOLDER_ID` | Google Drive folder for community post images |
+| `GOOGLE_SLIDES_TEMPLATE_ID` | Google Slides template presentation ID for worship slide generation |
+| `GOOGLE_HYMN_BANK_ID` | Hymn bank presentation ID (source of hymn slide thumbnails) |
+| `GOOGLE_BIBLE_SHEET_ID` | Bible data Google Sheet ID (verse text for scripture slides) |
+| `GOOGLE_SLIDES_OUTPUT_FOLDER_ID` | Shared Drive folder where generated presentations are saved |
 
 See `turbo.json` for the full list used in the Turborepo build pipeline.
 
@@ -368,7 +373,7 @@ As of March 2026, all features through Phase 5 are implemented (except Bible Loo
 | Phase 1 — Admin Infrastructure, RBAC, Audit Log | ✅ Complete |
 | Phase 2 — User Management, Member Management, Member Corner | ✅ Complete |
 | Phase 3 — Sermon Admin, Announcements, Events, Content CMS | ✅ Complete |
-| Phase 4 — Live Translation, PPT Generation | ✅ Complete |
+| Phase 4 — Live Translation, PPT Generation, Google Slides Automation | ✅ Complete |
 | Phase 4 — Bible Lookup (Enhanced) | Planned |
 | Phase 5 — Community Feed | ✅ Complete |
 

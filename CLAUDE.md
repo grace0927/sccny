@@ -49,6 +49,9 @@ pnpm exec prisma studio    # Open Prisma Studio GUI
 - `lib/admin-auth.ts` - Admin authentication middleware
 - `lib/audit.ts` - Audit logging helpers
 - `lib/sermon-scraper.ts`, `lib/news-scraper.ts` - Content scrapers for scc-ny.org
+- `lib/google-drive.ts` - Google Drive image upload/delete (community feed)
+- `lib/google-slides.ts` - Google Slides + Sheets API operations (slide generation)
+- `lib/parse-worship-order.ts` - Client-safe rule-based parser for worship order text
 - `stack/` - Stack Auth client and server configuration
 - `messages/` - Translation JSON files (en.json, zh.json)
 - `generated/` - Prisma generated types (excluded from linting)
@@ -85,7 +88,9 @@ All API routes in `/api/` follow this pattern:
 - Support query params: `page`, `limit`, `sortBy`, `sortOrder`, plus model-specific filters
 - Admin routes guard access with `requirePermission()` from `lib/admin-auth.ts` and write to audit log
 
-Admin routes live under `app/api/admin/` and cover: sermons (+ bulk/sync), users (+ invite/enable/disable), roles, members (+ approval workflow), announcements, events (+ registrations), content CMS (+ revisions/publish), hymns, PPT templates, worship orders, permissions, and audit log.
+Admin routes live under `app/api/admin/` and cover: sermons (+ bulk/sync), users (+ invite/enable/disable), roles, members (+ approval workflow), announcements, events (+ registrations), content CMS (+ revisions/publish), hymns, PPT templates, worship orders, community-posts, permissions, and audit log.
+
+Tool routes live under `app/api/tools/` and cover: bible search, `ppt/generate-slides` (Google Slides generation), translation sessions (+ SSE stream).
 
 ### i18n Routing
 - Proxy in `src/proxy.ts` handles locale detection (renamed from `middleware.ts` per Next.js 16 convention)
@@ -96,7 +101,7 @@ Admin routes live under `app/api/admin/` and cover: sermons (+ bulk/sync), users
 - `StackProvider` wraps app in root layout
 - `stackClientApp` for client-side auth operations
 - `stackServerApp` for server-side auth (inherits from client)
-- RBAC: users → roles → permissions; permission key format is `resource:action` (e.g. `sermons:write`)
+- RBAC: users → roles → permissions; permission key format is `resource.action` (e.g. `sermons.write`, `community.manage`)
 - `requirePermission()` in `lib/admin-auth.ts` guards all admin API routes
 - `PermissionGate` component controls UI visibility on the client side
 
@@ -116,18 +121,29 @@ Required variables (see turbo.json for full list):
 - `DATABASE_URL` - PostgreSQL connection string
 - `STACK_SECRET_SERVER_KEY` - Stack Auth server key
 - `CRON_SECRET` - Secret for cron job endpoints
+- `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS` - JSON credentials for Google Drive/Slides API
+- `GOOGLE_DRIVE_FOLDER_ID` - Google Drive folder for community post images
+- `GOOGLE_SLIDES_TEMPLATE_ID` - Template presentation ID for slide generation
+- `GOOGLE_HYMN_BANK_ID` - Hymn bank presentation ID (source of hymn slide thumbnails)
+- `GOOGLE_BIBLE_SHEET_ID` - Bible data Google Sheet ID (verse text for scripture slides)
+- `GOOGLE_SLIDES_OUTPUT_FOLDER_ID` - Shared Drive folder for generated presentations
 
 ## Roadmap & Feature Plans
 
 The full roadmap is at [`docs/TODO.md`](docs/TODO.md). Each feature has a detailed plan in [`docs/features/`](docs/features/) covering functionality, schema additions, components, API endpoints, Zod schemas, and permissions.
 
-Features are organized in four phases (all Phase 0–3 and Live Translation are complete):
+Features are organized in phases (all Phase 0–5 complete except Bible Lookup):
 1. **Phase 1** ✅ — Admin Infrastructure, Role/Permission Management, Audit Log
 2. **Phase 2** ✅ — User Management, Member Management, Member Corner
 3. **Phase 3** ✅ — Sermon Admin, Announcements, Events, Content CMS
-4. **Phase 4** — Bible Lookup (enhanced), PPT Generation ✅, Live Translation ✅
+4. **Phase 4** ✅ — PPT Generation, Live Translation, Google Slides Automation (Bible Lookup enhanced: planned)
+5. **Phase 5** ✅ — Community Feed
 
 When implementing a feature, always read its plan in `docs/features/` first and follow the patterns described there.
+
+## Documentation Maintenance
+
+After making code changes (new features, API routes, pages, schema changes, env vars, or dependencies), run `/update-docs` to keep all documentation current. The skill checks what changed and updates `docs/TODO.md`, `docs/PROJECT_SPEC.md`, and this file accordingly.
 
 ## Deployment
 

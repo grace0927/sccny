@@ -148,6 +148,17 @@ const roles: RoleDefinition[] = [
     ],
   },
   {
+    name: "PPT_OPERATOR",
+    description: "Create and generate worship order PPTs; read-only access to hymns and templates",
+    isSystem: true,
+    permissionKeys: [
+      "hymns.view",
+      "templates.view",
+      "ppt.view", "ppt.create", "ppt.edit", "ppt.delete", "ppt.generate",
+      "tools.ppt.generate",
+    ],
+  },
+  {
     name: "MEMBER",
     description: "Member corner access only",
     isSystem: true,
