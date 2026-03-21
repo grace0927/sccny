@@ -13,12 +13,13 @@ export async function POST(request: NextRequest) {
     await requirePermission(user.id, "users.invite");
 
     const body = await request.json();
-    const { email } = UserInviteSchema.parse(body);
+    const { email, displayName } = UserInviteSchema.parse(body);
 
     // Create user in Stack Auth with a temporary password (they'll reset it)
     const newUser = await stackServerApp.createUser({
       primaryEmail: email,
       primaryEmailAuthEnabled: true,
+      displayName,
     });
 
     await logAction({

@@ -5,6 +5,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { Card, CardContent, Badge, Button, Input } from "dark-blue";
 import { usePermissions } from "@/lib/permissions-client";
 import { useState, useEffect, useCallback } from "react";
+import InviteUserDialog from "./InviteUserDialog";
 
 interface UserData {
   id: string;
@@ -46,6 +47,7 @@ export default function UserTable({ initialData, initialPagination }: UserTableP
   const [data, setData] = useState(initialData);
   const [pagination, setPagination] = useState(initialPagination);
   const [loading, setLoading] = useState(false);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
 
   const fetchUsers = useCallback(async (page: number, searchTerm: string) => {
     setLoading(true);
@@ -80,9 +82,7 @@ export default function UserTable({ initialData, initialPagination }: UserTableP
           className="max-w-sm"
         />
         {hasPermission("users.invite") && (
-          <Link href="/admin/users?invite=true">
-            <Button>{t("inviteUser")}</Button>
-          </Link>
+          <Button onClick={() => setShowInviteDialog(true)}>{t("inviteUser")}</Button>
         )}
       </div>
 
@@ -157,6 +157,10 @@ export default function UserTable({ initialData, initialPagination }: UserTableP
             </Button>
           </div>
         </div>
+      )}
+
+      {showInviteDialog && (
+        <InviteUserDialog onClose={() => setShowInviteDialog(false)} />
       )}
     </div>
   );

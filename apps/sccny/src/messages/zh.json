@@ -459,7 +459,8 @@
     "inviteEmail": "邮箱地址",
     "inviteDisplayName": "显示名称",
     "invite": "发送邀请",
-    "inviting": "发送中..."
+    "inviting": "发送中...",
+    "cancel": "取消"
   },
   "MemberManagement": {
     "title": "会友管理",

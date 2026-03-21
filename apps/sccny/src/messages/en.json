@@ -459,7 +459,8 @@
     "inviteEmail": "Email Address",
     "inviteDisplayName": "Display Name",
     "invite": "Send Invite",
-    "inviting": "Sending..."
+    "inviting": "Sending...",
+    "cancel": "Cancel"
   },
   "MemberManagement": {
     "title": "Member Management",
