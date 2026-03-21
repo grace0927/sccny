@@ -63,3 +63,38 @@ export async function PATCH(
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await getAdminUser();
+    if (!user) return unauthorizedResponse();
+
+    await requirePermission(user.id, "templates.delete");
+
+    const { id } = await params;
+    const existing = await prisma.pptTemplate.findUnique({ where: { id } });
+    if (!existing) {
+      return NextResponse.json({ error: "Template not found" }, { status: 404 });
+    }
+
+    await prisma.pptTemplate.delete({ where: { id } });
+
+    await logAction({
+      userId: user.id,
+      userName: user.displayName || user.primaryEmail || "Unknown",
+      action: "DELETE",
+      resourceType: "ppt_template",
+      resourceId: id,
+      oldValues: existing as unknown as Record<string, unknown>,
+    });
+
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    if (error instanceof PermissionError) return forbiddenResponse();
+    console.error("Error deleting template:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}

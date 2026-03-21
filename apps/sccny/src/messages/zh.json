@@ -329,6 +329,11 @@
       "title": "实时翻译",
       "description": "在崇拜聚会和活动中查看实时讲道翻译。",
       "openButton": "打开"
+    },
+    "pptGeneration": {
+      "title": "崇拜幻灯片",
+      "description": "根据崇拜程序自动生成主日崇拜 Google Slides 幻灯片。",
+      "openButton": "生成"
     }
   },
   "Admin": {
@@ -344,7 +349,7 @@
       "events": "活动管理",
       "content": "内容管理",
       "hymns": "诗歌管理",
-      "templates": "PPT模板",
+      "templates": "生成PPT",
       "auditLog": "审计日志",
       "community": "社区管理"
     },

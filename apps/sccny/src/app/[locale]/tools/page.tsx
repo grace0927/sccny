@@ -5,6 +5,8 @@ import Link from "next/link";
 import { BookOpenIcon } from "@heroicons/react/24/outline";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { LanguageIcon } = require("@heroicons/react/24/outline");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { PresentationChartBarIcon } = require("@heroicons/react/24/outline");
 import { Card, CardContent, CardFooter, Button } from "dark-blue";
 
 export default function ToolsPage() {
@@ -61,6 +63,26 @@ export default function ToolsPage() {
               <CardFooter className="justify-end">
                 <Button asChild>
                   <Link href="/tools/live-translation">{t("liveTranslation.openButton")}</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* PPT Generation Card */}
+            <Card className="hover:shadow-xl transition-shadow duration-300">
+              <CardContent className="pt-6">
+                <div className="flex items-center mb-4">
+                  <div className="p-3 bg-primary/10 rounded-full mr-4">
+                    <PresentationChartBarIcon className="h-8 w-8 text-primary" />
+                  </div>
+                  <h2 className="text-xl font-bold text-foreground">
+                    {t("pptGeneration.title")}
+                  </h2>
+                </div>
+                <p className="text-muted-foreground mb-6">{t("pptGeneration.description")}</p>
+              </CardContent>
+              <CardFooter className="justify-end">
+                <Button asChild>
+                  <Link href="/tools/ppt">{t("pptGeneration.openButton")}</Link>
                 </Button>
               </CardFooter>
             </Card>

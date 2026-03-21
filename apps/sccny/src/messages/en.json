@@ -329,6 +329,11 @@
       "title": "Live Translation",
       "description": "View real-time sermon translations during worship services and events.",
       "openButton": "Open"
+    },
+    "pptGeneration": {
+      "title": "Worship Slides",
+      "description": "Automatically generate Sunday worship Google Slides from the worship order.",
+      "openButton": "Generate"
     }
   },
   "Admin": {
@@ -344,7 +349,7 @@
       "events": "Events",
       "content": "Content",
       "hymns": "Hymns",
-      "templates": "PPT Templates",
+      "templates": "PPT Generation",
       "auditLog": "Audit Log",
       "community": "Community"
     },
