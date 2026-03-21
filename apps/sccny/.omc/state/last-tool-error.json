@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"grep -l \\\"GOOGLE_SERVICE_ACCOUNT\\\" /Users/feng/Documents/Workspace/sccny/apps/sccny/.env /Users/feng/Documents/Workspace/sccny/.env /Users/feng/Documents/Workspace/sccny/.env.local 2>/dev/...",
-  "error": "Exit code 2",
-  "timestamp": "2026-03-21T02:58:28.984Z",
-  "retry_count": 3
-}
