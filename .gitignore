@@ -63,6 +63,8 @@ apps/sccny/.turbo/*
 .claude/settings.local.json
 .cursor/
 .omc/*
+apps/sccny/.omc/*
+apps/sccny/.omc
 .serena/*
 
 # Environment files
