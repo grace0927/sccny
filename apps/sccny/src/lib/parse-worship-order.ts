@@ -96,7 +96,7 @@ export function parseWorshipOrder(text: string): WorshipOrderData {
     } else if (line.startsWith("金句：")) {
       result.memoryVerse = line.replace(/^金句：/, "").trim();
     } else if (line.startsWith("主日证道题目：") || line.startsWith("主日證道題目：")) {
-      const rest = line.replace(/^主日[证證]道題?目：/, "").trim();
+      const rest = line.replace(/^主日[证證]道[题題]目：/, "").trim();
       // Extract sermon title from first "..." quotes
       const titleMatch = rest.match(/["""「](.*?)["""」]/);
       if (titleMatch) {

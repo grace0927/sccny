@@ -10,10 +10,28 @@ interface WorshipTextInputProps {
 
 export default function WorshipTextInput({ onParsed }: WorshipTextInputProps) {
   const [text, setText] = useState(DEFAULT_WORSHIP_ORDER_TEMPLATE);
+  const [parsing, setParsing] = useState(false);
 
-  function handleParse() {
-    const data = parseWorshipOrder(text);
-    onParsed(data, text);
+  async function handleParse() {
+    setParsing(true);
+    try {
+      const res = await fetch("/api/tools/ppt/parse-worship-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (res.ok) {
+        const { data } = await res.json();
+        onParsed(data, text);
+        return;
+      }
+    } catch {
+      // fall through to rule-based fallback
+    } finally {
+      setParsing(false);
+    }
+    // Fallback: rule-based parser
+    onParsed(parseWorshipOrder(text), text);
   }
 
   return (
@@ -33,7 +51,9 @@ export default function WorshipTextInput({ onParsed }: WorshipTextInputProps) {
           spellCheck={false}
         />
         <div className="flex justify-end">
-          <Button onClick={handleParse}>解析预览 →</Button>
+          <Button onClick={handleParse} disabled={parsing}>
+            {parsing ? "解析中…" : "解析预览 →"}
+          </Button>
         </div>
       </CardContent>
     </Card>

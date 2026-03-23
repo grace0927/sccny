@@ -27,7 +27,9 @@
         "GOOGLE_HYMN_BANK_ID",
         "GOOGLE_BIBLE_SHEET_ID",
         "GOOGLE_SLIDES_OUTPUT_FOLDER_ID",
-        "GOOGLE_SCHEDULE_SHEET_ID"
+        "GOOGLE_SCHEDULE_SHEET_ID",
+        "GEMINI_API_KEY",
+        "GEMINI_MODEL"
       ]
     },
     "dev": {
