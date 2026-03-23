@@ -7,6 +7,7 @@ import { getMessages } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/next";
 import { stackClientApp } from "../../stack/client";
 import { cn } from "@/lib/utils";
+import LocaleSync from "@/components/LocaleSync";
 import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -46,6 +47,7 @@ export default async function LocaleLayout({
     <html lang={locale} className="light">
       <body className={cn(inter.className, "bg-background text-foreground")}>
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <LocaleSync />
           <StackProvider app={stackClientApp}>
             <StackTheme>{children}</StackTheme>
           </StackProvider>

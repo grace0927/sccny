@@ -6,4 +6,7 @@ export const routing = defineRouting({
 
   // Used when no locale matches
   defaultLocale: "zh",
+
+  // Always use zh as default, ignore browser language preference
+  localeDetection: false,
 });
