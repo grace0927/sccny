@@ -2,6 +2,8 @@ export interface HymnEntry {
   number: string;
   title: string;
   raw: string;
+  /** True for 回应诗歌 (response hymn); false/absent for all other hymns */
+  isResponse?: boolean;
 }
 
 export interface WorshipOrderData {
@@ -74,6 +76,7 @@ export function parseWorshipOrder(text: string): WorshipOrderData {
   };
 
   const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  let pastSermon = false;
 
   for (const line of lines) {
     // Detect communion
@@ -81,15 +84,21 @@ export function parseWorshipOrder(text: string): WorshipOrderData {
       result.hasCommunion = true;
     }
 
+    // Track when we've passed the sermon line so subsequent 诗歌 become response hymns
+    if (line.startsWith("主日证道题目：") || line.startsWith("主日證道題目：") ||
+        line.startsWith("证道") || line.startsWith("證道")) {
+      pastSermon = true;
+    }
+
     if (line.startsWith("诗歌：") || line.startsWith("詩歌：")) {
       const rest = line.replace(/^[詩诗]歌：/, "");
       const hymn = parseHymnLine(rest);
-      if (hymn) result.hymns.push(hymn);
+      if (hymn) result.hymns.push(pastSermon ? { ...hymn, isResponse: true } : hymn);
       else result.otherLines.push(line);
     } else if (line.startsWith("回应诗歌：") || line.startsWith("回應詩歌：")) {
       const rest = line.replace(/^回[應应][詩诗]歌：/, "");
       const hymn = parseHymnLine(rest);
-      if (hymn) result.hymns.push(hymn);
+      if (hymn) result.hymns.push({ ...hymn, isResponse: true });
       else result.otherLines.push(line);
     } else if (line.startsWith("经文：") || line.startsWith("經文：")) {
       result.scriptureReading = line.replace(/^[經经]文：/, "").trim();

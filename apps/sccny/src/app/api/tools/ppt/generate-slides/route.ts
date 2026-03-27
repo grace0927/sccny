@@ -96,18 +96,22 @@ export async function POST(request: NextRequest) {
       // Communion flag (H2) — Apps Script deletes communion slide when FALSE
       "{H2}": body.hasCommunion ? "TRUE" : "FALSE",
       // Hymns (rows 22–25): A = number, B = Chinese title, C = English title
-      "{A22}": body.hymns[0]?.number ?? "",
-      "{B22}": body.hymns[0]?.title ?? "",
-      "{C22}": hymnEnMap.get(body.hymns[0]?.number ?? "") ?? "",
-      "{A23}": body.hymns[1]?.number ?? "",
-      "{B23}": body.hymns[1]?.title ?? "",
-      "{C23}": hymnEnMap.get(body.hymns[1]?.number ?? "") ?? "",
-      "{A24}": body.hymns[2]?.number ?? "",
-      "{B24}": body.hymns[2]?.title ?? "",
-      "{C24}": hymnEnMap.get(body.hymns[2]?.number ?? "") ?? "",
-      "{A25}": body.hymns[3]?.number ?? "",
-      "{B25}": body.hymns[3]?.title ?? "",
-      "{C25}": hymnEnMap.get(body.hymns[3]?.number ?? "") ?? "",
+      // Response hymn (回应诗歌) always goes into slot 25 (after the message);
+      // remaining hymns fill slots 22–24 in order.
+      ...((): Record<string, string> => {
+        const regular = body.hymns.filter((h) => !h.isResponse);
+        const response = body.hymns.find((h) => h.isResponse);
+        const slots = [...regular, ...(response ? [] : []), undefined, undefined, undefined, undefined].slice(0, 3);
+        const h = (i: number) => slots[i];
+        const en = (i: number) => hymnEnMap.get(slots[i]?.number ?? "") ?? "";
+        return {
+          "{A22}": h(0)?.number ?? "", "{B22}": h(0)?.title ?? "", "{C22}": en(0),
+          "{A23}": h(1)?.number ?? "", "{B23}": h(1)?.title ?? "", "{C23}": en(1),
+          "{A24}": h(2)?.number ?? "", "{B24}": h(2)?.title ?? "", "{C24}": en(2),
+          "{A25}": response?.number ?? "", "{B25}": response?.title ?? "",
+          "{C25}": hymnEnMap.get(response?.number ?? "") ?? "",
+        };
+      })(),
       // Static label columns (A) and header row
       "{A1}": "",
       "{B1}": "本主日",
