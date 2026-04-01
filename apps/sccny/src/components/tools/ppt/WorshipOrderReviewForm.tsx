@@ -136,28 +136,36 @@ export default function WorshipOrderReviewForm({
           {data.hymns.length === 0 && (
             <p className="text-sm text-muted-foreground">未检测到诗歌</p>
           )}
-          <div className="space-y-2">
+          <div className="space-y-3">
             {data.hymns.map((hymn, i) => (
-              <div key={i} className="flex items-center gap-2">
+              <div key={i} className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <input
+                    className="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    value={hymn.number}
+                    onChange={(e) => updateHymn(i, "number", e.target.value)}
+                    placeholder="编号"
+                  />
+                  <input
+                    className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    value={hymn.title}
+                    onChange={(e) => updateHymn(i, "title", e.target.value)}
+                    placeholder="诗歌名称"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeHymn(i)}
+                    className="text-muted-foreground hover:text-destructive text-sm px-2"
+                  >
+                    删除
+                  </button>
+                </div>
                 <input
-                  className="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  value={hymn.number}
-                  onChange={(e) => updateHymn(i, "number", e.target.value)}
-                  placeholder="编号"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  value={hymn.youtubeUrl ?? ""}
+                  onChange={(e) => updateHymn(i, "youtubeUrl", e.target.value)}
+                  placeholder="YouTube 链接（选填，填写后以视频幻灯片替代歌词）"
                 />
-                <input
-                  className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  value={hymn.title}
-                  onChange={(e) => updateHymn(i, "title", e.target.value)}
-                  placeholder="诗歌名称"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeHymn(i)}
-                  className="text-muted-foreground hover:text-destructive text-sm px-2"
-                >
-                  删除
-                </button>
               </div>
             ))}
           </div>

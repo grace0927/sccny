@@ -4,6 +4,8 @@ export interface HymnEntry {
   raw: string;
   /** True for 回应诗歌 (response hymn); false/absent for all other hymns */
   isResponse?: boolean;
+  /** YouTube URL if provided on the hymn line — video slide replaces lyrics slides */
+  youtubeUrl?: string;
 }
 
 export interface WorshipOrderData {
@@ -35,14 +37,27 @@ export interface WorshipOrderData {
  * Parse a hymn line like "诗歌：12 你真伟大" or "回应诗歌：441 洁净我"
  * Returns { number, title, raw } or null if not parseable.
  */
+function extractYouTubeUrl(text: string): { youtubeUrl: string; textWithoutUrl: string } | null {
+  const match = text.match(/\s+(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?[^\s]*v=|youtu\.be\/)[^\s]+)/);
+  if (!match) return null;
+  return {
+    youtubeUrl: match[1],
+    textWithoutUrl: text.slice(0, match.index!).trim(),
+  };
+}
+
 function parseHymnLine(text: string): HymnEntry | null {
   // text is already stripped of the prefix (e.g. "12 你真伟大")
-  const match = text.trim().match(/^(\d+)\s+(.+)$/);
+  const trimmed = text.trim();
+  const extracted = extractYouTubeUrl(trimmed);
+  const cleanText = extracted ? extracted.textWithoutUrl : trimmed;
+  const match = cleanText.match(/^(\d+)\s+(.+)$/);
   if (!match) return null;
   return {
     number: match[1],
     title: match[2].trim(),
-    raw: text.trim(),
+    raw: trimmed,
+    ...(extracted ? { youtubeUrl: extracted.youtubeUrl } : {}),
   };
 }
 
