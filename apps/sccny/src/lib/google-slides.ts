@@ -944,7 +944,7 @@ async function fetchVerseText(
 
   // Split multi-range refs like "林前1:18-25, 2:1-8, 3:18-20".
   // Segments that start with a digit re-use the book prefix from the previous segment.
-  const rawParts = ref.split(/[,;]\s*/);
+  const rawParts = ref.split(/[,;，；]\s*/);  // also split on full-width Chinese commas/semicolons
   const segments: string[] = [];
   let bookPrefix = "";
   for (const part of rawParts) {
