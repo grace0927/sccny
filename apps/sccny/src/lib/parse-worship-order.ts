@@ -52,13 +52,24 @@ function parseHymnLine(text: string): HymnEntry | null {
   const extracted = extractYouTubeUrl(trimmed);
   const cleanText = extracted ? extracted.textWithoutUrl : trimmed;
   const match = cleanText.match(/^(\d+)\s+(.+)$/);
-  if (!match) return null;
-  return {
-    number: match[1],
-    title: match[2].trim(),
-    raw: trimmed,
-    ...(extracted ? { youtubeUrl: extracted.youtubeUrl } : {}),
-  };
+  if (match) {
+    return {
+      number: match[1],
+      title: match[2].trim(),
+      raw: trimmed,
+      ...(extracted ? { youtubeUrl: extracted.youtubeUrl } : {}),
+    };
+  }
+  // No leading number — treat full text as title (e.g. "因祂活着 https://...")
+  if (cleanText) {
+    return {
+      number: "",
+      title: cleanText,
+      raw: trimmed,
+      ...(extracted ? { youtubeUrl: extracted.youtubeUrl } : {}),
+    };
+  }
+  return null;
 }
 
 /**

@@ -10,7 +10,7 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-2.5-flash-lite";
 const PARSE_PROMPT = `You are a Chinese church worship order parser. Extract the following fields from the text below and return ONLY valid JSON (no markdown, no explanation).
 
 Fields to extract:
-- hymns: array of {number: string, title: string, raw: string, isResponse: boolean} — all hymns in order; "raw" is number + space + title (e.g. "12 你真伟大"); set isResponse=true for 回应诗歌/Response Hymn lines AND for any 诗歌 that appears after the 证道/Sermon line, false for all others
+- hymns: array of {number: string, title: string, raw: string, isResponse: boolean, youtubeUrl?: string} — all hymns in order; "raw" is number + space + title (e.g. "12 你真伟大"); set isResponse=true for 回应诗歌/Response Hymn lines AND for any 诗歌 that appears after the 证道/Sermon line, false for all others; if a YouTube URL appears on the hymn line, set youtubeUrl to that URL and omit it from "raw"
 - scriptureReading: string — scripture reading reference (经文 / 信息经文 / Sermon Verses / Scripture Reading); extract only the Bible reference (e.g. "林前1:18-25, 2:1-8, 3:18-20")
 - memoryVerse: string — memory verse reference (金句 / Verses of the Week); extract only the Bible reference (e.g. "箴言3:5-7")
 - sermonTitle: string — sermon title (证道 / Sermon), extracted from inside quotes if present; if no quotes, take the title text before the speaker name
