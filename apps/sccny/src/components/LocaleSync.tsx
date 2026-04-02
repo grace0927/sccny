@@ -12,18 +12,18 @@ export default function LocaleSync() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // On first mount: redirect to stored locale if it differs from current
+  // On mount and locale changes: redirect to stored locale if it differs,
+  // otherwise persist the current locale. Never write the old locale to
+  // localStorage when a redirect is about to happen (that caused an
+  // infinite zh→en→zh loop because both effects ran before navigation).
   useEffect(() => {
     const stored = localStorage.getItem(LOCALE_KEY);
     if (stored && VALID_LOCALES.includes(stored) && stored !== locale) {
       router.replace(pathname, { locale: stored });
+      return; // don't persist the locale we're redirecting away from
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Whenever the active locale changes, persist it
-  useEffect(() => {
     localStorage.setItem(LOCALE_KEY, locale);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale]);
 
   return null;
