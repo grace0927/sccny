@@ -271,6 +271,16 @@ export async function addScriptureSlides(
   }
 }
 
+// ── YouTube helpers ───────────────────────────────────────────────────────────
+
+/** Extract YouTube video ID from a URL (watch?v=, youtu.be/, or embed/). */
+function extractYouTubeId(url: string): string | null {
+  const match = url.match(
+    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/
+  );
+  return match ? match[1] : null;
+}
+
 // ── Hymn slide copy ───────────────────────────────────────────────────────────
 
 /** Extract slide text for hymn-title matching. */
@@ -314,14 +324,18 @@ function findHymnPageIds(
  * inserting them immediately after the corresponding hymn title slide
  * (identified by containing both the hymn title and "颂诗 HYMN").
  * The first slide in the bank for each hymn (the title slide) is skipped.
+ *
+ * If a hymn has a youtubeUrl, a YouTube video slide is inserted instead of
+ * lyrics slides and no bank lookup is performed for that hymn.
  */
 export async function copyHymnSlides(
   targetPresentationId: string,
   hymnBankId: string,
-  hymnTitles: string[],
+  hymns: Array<{ title: string; youtubeUrl?: string }>,
 ): Promise<string[]> {
   const missingHymns: string[] = [];
-  if (hymnTitles.length === 0) return missingHymns;
+  if (hymns.length === 0) return missingHymns;
+  const hymnTitles = hymns.map((h) => h.title);
 
   const slides = getSlidesClient();
 
@@ -335,21 +349,8 @@ export async function copyHymnSlides(
 
   let insertionOffset = 0; // tracks extra slides inserted so far
 
-  for (const title of hymnTitles) {
-    const allPageIds = findHymnPageIds(bankSlides, title);
-    if (allPageIds.length === 0) {
-      console.warn(`copyHymnSlides: no slides found for hymn "${title}"`);
-      missingHymns.push(title);
-      continue;
-    }
-
-    // Skip the first slide (title slide in the bank); only copy lyrics
-    const pageIds = allPageIds.slice(1);
-    if (pageIds.length === 0) {
-      console.warn(`copyHymnSlides: only a title slide found for hymn "${title}", no lyrics`);
-      missingHymns.push(title);
-      continue;
-    }
+  for (const hymn of hymns) {
+    const title = hymn.title;
 
     // Find the hymn title slide in the target presentation:
     // must contain both the hymn title AND "颂诗 HYMN"
@@ -367,8 +368,75 @@ export async function copyHymnSlides(
       continue;
     }
 
+    // Insert right after the title slide
+    const insertIndex = titleSlideIndex + 1 + insertionOffset;
+
+    // ── YouTube path: insert a video slide, skip lyrics ──────────────────────
+    if (hymn.youtubeUrl) {
+      const videoId = extractYouTubeId(hymn.youtubeUrl);
+      if (!videoId) {
+        console.warn(`copyHymnSlides: could not extract YouTube ID from "${hymn.youtubeUrl}"`);
+      } else {
+        const videoSlideId = `hymn_yt_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const videoElemId = `${videoSlideId}_vid`;
+        await slides.presentations.batchUpdate({
+          presentationId: targetPresentationId,
+          requestBody: {
+            requests: [
+              {
+                createSlide: {
+                  objectId: videoSlideId,
+                  insertionIndex: insertIndex,
+                  slideLayoutReference: { predefinedLayout: "BLANK" },
+                },
+              },
+              {
+                createVideo: {
+                  objectId: videoElemId,
+                  source: "YOUTUBE",
+                  id: videoId,
+                  elementProperties: {
+                    pageObjectId: videoSlideId,
+                    size: {
+                      width: { magnitude: 9144000, unit: "EMU" },
+                      height: { magnitude: 5143500, unit: "EMU" },
+                    },
+                    transform: {
+                      scaleX: 1,
+                      scaleY: 1,
+                      translateX: 0,
+                      translateY: 0,
+                      unit: "EMU",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        });
+        insertionOffset++;
+      }
+      continue;
+    }
+
+    // ── Standard path: copy lyrics slides from hymn bank ────────────────────
+    const allPageIds = findHymnPageIds(bankSlides, title);
+    if (allPageIds.length === 0) {
+      console.warn(`copyHymnSlides: no slides found for hymn "${title}"`);
+      missingHymns.push(title);
+      continue;
+    }
+
+    // Skip the first slide (title slide in the bank); only copy lyrics
+    const pageIds = allPageIds.slice(1);
+    if (pageIds.length === 0) {
+      console.warn(`copyHymnSlides: only a title slide found for hymn "${title}", no lyrics`);
+      missingHymns.push(title);
+      continue;
+    }
+
     // Insert lyrics slides right after the title slide
-    let currentIndex = titleSlideIndex + 1 + insertionOffset;
+    let currentIndex = insertIndex;
 
     for (const pageId of pageIds) {
       const src = bankSlides.find((s) => s.objectId === pageId);

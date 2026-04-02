@@ -168,11 +168,13 @@ export async function POST(request: NextRequest) {
     // 5. Handle communion slides
     await handleCommunionSlides(presentationId, body.hasCommunion);
 
-    // 6. Copy hymn slides from hymn bank into the presentation (preserves editability)
+    // 6. Copy hymn slides from hymn bank into the presentation (preserves editability).
+    //    Hymns with a YouTube URL get a video slide instead of lyrics; those still
+    //    need the bank for title-slide lookup, but we call even when HYMN_BANK_ID is
+    //    absent so YouTube-only hymns are still processed.
     let missingHymns: string[] = [];
-    if (HYMN_BANK_ID && body.hymns.length > 0) {
-      const hymnTitles = body.hymns.map((h) => h.title);
-      missingHymns = await copyHymnSlides(presentationId, HYMN_BANK_ID, hymnTitles);
+    if (body.hymns.length > 0 && (HYMN_BANK_ID || body.hymns.some((h) => h.youtubeUrl))) {
+      missingHymns = await copyHymnSlides(presentationId, HYMN_BANK_ID || "", body.hymns);
     }
 
     const presentationUrl = buildPresentationUrl(presentationId);
