@@ -152,7 +152,12 @@ export default function Navigation() {
           <DropdownContent className="w-32 z-[100]">
             {languageOptions.map((option) => (
               <DropdownItem key={option.locale}>
-                <Link locale={option.locale} href="/" className="block w-full">
+                <Link
+                  locale={option.locale}
+                  href="/"
+                  className="block w-full"
+                  onClick={() => localStorage.setItem("preferred-locale", option.locale)}
+                >
                   {option.label}
                 </Link>
               </DropdownItem>
