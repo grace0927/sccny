@@ -17,7 +17,7 @@
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "dark-blue": "^0.3.0",
-    "next": "16.2.1",
+    "next": "16.2.3",
     "pptxgenjs": "^4.0.1",
     "prisma": "^7.5.0"
   },
