@@ -110,12 +110,25 @@ export default function WorshipOrderReviewForm({
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-muted-foreground">宣召</label>
+              <label className="text-sm font-medium text-muted-foreground">宣召经文引用</label>
               <input
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 value={data.callToWorship}
                 onChange={(e) => update("callToWorship", e.target.value)}
                 placeholder="如：诗篇51"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                宣召自定义文字
+                <span className="ml-1 text-xs font-normal text-muted-foreground/70">（选填；填写后将直接显示此文字，不查找经文）</span>
+              </label>
+              <textarea
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                rows={3}
+                value={data.callToWorshipCustomText ?? ""}
+                onChange={(e) => update("callToWorshipCustomText", e.target.value)}
+                placeholder="如：你们要赞美耶和华！因歌颂我们的神为善为美，颂赞的话是合宜的。"
               />
             </div>
             <div className="space-y-1">
