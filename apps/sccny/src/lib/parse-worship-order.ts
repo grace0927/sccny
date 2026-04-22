@@ -21,8 +21,10 @@ export interface WorshipOrderData {
   sermonSubtitle: string;
   /** Speaker / preacher name → summary!B3 */
   speaker: string;
-  /** Call to worship scripture ref */
+  /** Call to worship scripture ref (used for Bible lookup) */
   callToWorship: string;
+  /** Optional custom call-to-worship text; if set, overrides Bible lookup and is shown verbatim */
+  callToWorshipCustomText?: string;
   /** Confession prayer scripture ref */
   confessionPrayer: string;
   /** Assurance scripture ref */

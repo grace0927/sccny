@@ -155,7 +155,9 @@ export async function POST(request: NextRequest) {
     await replaceVerseContent(
       presentationId,
       [
-        { keyword: "宣召", vetitle: body.callToWorship, verse: body.callToWorship },
+        body.callToWorshipCustomText
+          ? { keyword: "宣召", vetitle: "", verse: body.callToWorshipCustomText }
+          : { keyword: "宣召", vetitle: body.callToWorship, verse: body.callToWorship },
         { keyword: "读经", vetitle: body.scriptureReading, verse: body.scriptureReading },
         { keyword: "金句", vetitle: body.memoryVerse, verse: body.memoryVerse, noSplit: true },
         { keyword: "认罪", vetitle: body.confessionPrayer, verse: body.confessionPrayer },
