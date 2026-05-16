@@ -323,7 +323,9 @@
       "fetchError": "获取圣经数据失败，请稍后重试。",
       "errorTitle": "错误",
       "copyVerse": "复制经文",
-      "copied": "已复制!"
+      "copied": "已复制!",
+      "chineseLabel": "中文 (和合本)",
+      "englishLabel": "英文 (ESV)"
     },
     "liveTranslation": {
       "title": "实时翻译",

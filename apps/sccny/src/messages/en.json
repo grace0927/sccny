@@ -323,7 +323,9 @@
       "fetchError": "Failed to fetch Bible data. Please try again later.",
       "errorTitle": "Error",
       "copyVerse": "Copy verse",
-      "copied": "Copied!"
+      "copied": "Copied!",
+      "chineseLabel": "Chinese (和合本)",
+      "englishLabel": "English (ESV)"
     },
     "liveTranslation": {
       "title": "Live Translation",
