@@ -15,7 +15,6 @@ import {
   CardContent,
   Input,
   Button,
-  Select,
   Skeleton,
   Alert,
   AlertTitle,
@@ -24,6 +23,22 @@ import {
 } from "dark-blue";
 import axios from "axios";
 
+// ── Types ────────────────────────────────────────────────────────────────────
+
+interface VerseSegment {
+  zhTitle: string;
+  enTitle: string;
+  zhVerses: string[];
+  enVerses: string[];
+}
+
+interface SheetsApiResponse {
+  status: string;
+  results: VerseSegment[];
+  error?: string;
+}
+
+// Legacy external-API types (fallback)
 interface BibleVerse {
   chineses: string;
   engs: string;
@@ -32,48 +47,68 @@ interface BibleVerse {
   bible_text: string;
 }
 
-interface BibleApiResponse {
+interface ExternalApiResponse {
   status: string;
   record_count: number;
-  proc: number;
   record: BibleVerse[];
 }
 
-type BibleVersion = "unv" | "esv";
+// ── Component ────────────────────────────────────────────────────────────────
 
 export default function BiblePage() {
   const t = useTranslations("Tools.bible");
+
   const [query, setQuery] = useState("");
-  const [version, setVersion] = useState<BibleVersion>("unv");
-  const [results, setResults] = useState<BibleVerse[]>([]);
+  const [segments, setSegments] = useState<VerseSegment[]>([]);
+  const [legacyVerses, setLegacyVerses] = useState<BibleVerse[]>([]);
+  const [usingSheetsSource, setUsingSheetsSource] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searched, setSearched] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const fetchBibleVerse = useCallback(
-    async (searchQuery: string, selectedVersion: BibleVersion) => {
+    async (searchQuery: string) => {
       setLoading(true);
       setError("");
       setSearched(true);
+      setSegments([]);
+      setLegacyVerses([]);
+
       try {
-        const response = await axios.get<BibleApiResponse>(
-          `/api/tools/bible/search?q=${encodeURIComponent(searchQuery)}&version=${selectedVersion}`
+        // Try Google Sheets source first (same data as PPT generation tool)
+        const sheetsRes = await axios.get<SheetsApiResponse>(
+          `/api/tools/bible/sheets-search?q=${encodeURIComponent(searchQuery)}`
         );
 
-        if (
-          response.data.status === "success" &&
-          response.data.record?.length > 0
-        ) {
-          setResults(response.data.record);
+        if (sheetsRes.data.status === "success" && sheetsRes.data.results?.length > 0) {
+          setSegments(sheetsRes.data.results);
+          setUsingSheetsSource(true);
+          return;
+        }
+
+        if (sheetsRes.data.status === "not_found") {
+          setError(t("noResults"));
+          return;
+        }
+      } catch {
+        // Google Sheets unavailable — fall through to external API
+      }
+
+      // Fallback: external bible.fhl.net API
+      try {
+        const externalRes = await axios.get<ExternalApiResponse>(
+          `/api/tools/bible/search?q=${encodeURIComponent(searchQuery)}&version=unv`
+        );
+
+        if (externalRes.data.status === "success" && externalRes.data.record?.length > 0) {
+          setLegacyVerses(externalRes.data.record);
+          setUsingSheetsSource(false);
         } else {
-          setResults([]);
           setError(t("noResults"));
         }
-      } catch (err) {
-        console.error("Bible API Error:", err);
+      } catch {
         setError(t("fetchError"));
-        setResults([]);
       } finally {
         setLoading(false);
       }
@@ -81,13 +116,33 @@ export default function BiblePage() {
     [t]
   );
 
+  // fetchBibleVerse manages its own loading state via the try/finally in the
+  // fallback branch; make sure loading is cleared even when sheets succeeds.
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
-    fetchBibleVerse(query.trim(), version);
+    setLoading(true);
+    fetchBibleVerse(query.trim()).finally(() => setLoading(false));
   };
 
-  const handleCopyVerse = async (verse: BibleVerse, index: number) => {
+  const handleCopySegment = async (seg: VerseSegment, index: number) => {
+    const text = [
+      `${seg.zhTitle}`,
+      seg.zhVerses.join(" "),
+      "",
+      `${seg.enTitle}`,
+      seg.enVerses.join(" "),
+    ].join("\n");
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000);
+    } catch {
+      // ignore clipboard errors
+    }
+  };
+
+  const handleCopyLegacyVerse = async (verse: BibleVerse, index: number) => {
     const reference = `${verse.chineses || verse.engs} ${verse.chap}:${verse.sec}`;
     const text = `${verse.bible_text}\n-- ${reference}`;
     try {
@@ -95,9 +150,11 @@ export default function BiblePage() {
       setCopiedIndex(index);
       setTimeout(() => setCopiedIndex(null), 2000);
     } catch {
-      // Fallback: ignore clipboard errors
+      // ignore clipboard errors
     }
   };
+
+  const hasResults = segments.length > 0 || legacyVerses.length > 0;
 
   return (
     <>
@@ -116,28 +173,6 @@ export default function BiblePage() {
               <p className="text-muted-foreground mb-8">{t("description")}</p>
 
               <form onSubmit={handleSearch} className="w-full max-w-lg mx-auto">
-                {/* Version Selector */}
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <label
-                    htmlFor="bible-version"
-                    className="text-sm font-medium text-muted-foreground"
-                  >
-                    {t("version")}:
-                  </label>
-                  <Select
-                    id="bible-version"
-                    value={version}
-                    onChange={(e) =>
-                      setVersion(e.target.value as BibleVersion)
-                    }
-                    className="w-[200px]"
-                  >
-                    <option value="unv">{t("versionCUV")}</option>
-                    <option value="esv">{t("versionESV")}</option>
-                  </Select>
-                </div>
-
-                {/* Search Input */}
                 <div className="relative flex items-center">
                   <Input
                     type="text"
@@ -156,7 +191,6 @@ export default function BiblePage() {
                     <MagnifyingGlassIcon className="h-6 w-6" />
                   </Button>
                 </div>
-
                 <p className="text-xs text-muted-foreground mt-3">
                   {t("searchHint")}
                 </p>
@@ -168,14 +202,22 @@ export default function BiblePage() {
           {(loading || searched) && (
             <div className="mt-6">
               {/* Results Header */}
-              {!loading && results.length > 0 && (
+              {!loading && hasResults && (
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-semibold text-foreground">
                     {t("resultTitle")}
                   </h2>
-                  <Badge variant="outline">
-                    {results.length} {t("versesFound")}
-                  </Badge>
+                  {usingSheetsSource && segments.length > 0 && (
+                    <Badge variant="outline">
+                      {segments.length}{" "}
+                      {segments.length === 1 ? "passage" : "passages"}
+                    </Badge>
+                  )}
+                  {!usingSheetsSource && legacyVerses.length > 0 && (
+                    <Badge variant="outline">
+                      {legacyVerses.length} {t("versesFound")}
+                    </Badge>
+                  )}
                 </div>
               )}
 
@@ -203,10 +245,71 @@ export default function BiblePage() {
                 </Alert>
               )}
 
-              {/* Verse Results */}
-              {!loading && !error && results.length > 0 && (
+              {/* Google Sheets Results (parallel zh/en view) */}
+              {!loading && !error && usingSheetsSource && segments.length > 0 && (
+                <div className="space-y-4">
+                  {segments.map((seg, index) => (
+                    <Card
+                      key={`${seg.zhTitle}-${index}`}
+                      className="transition-all hover:shadow-md"
+                    >
+                      <CardContent className="py-5">
+                        <div className="flex items-start justify-between gap-3 mb-4">
+                          <div className="flex flex-wrap gap-2">
+                            <Badge variant="outline" className="font-semibold">
+                              {seg.zhTitle}
+                            </Badge>
+                            <Badge variant="subtle" className="text-muted-foreground font-normal">
+                              {seg.enTitle}
+                            </Badge>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="shrink-0 text-muted-foreground hover:text-foreground"
+                            onClick={() => handleCopySegment(seg, index)}
+                            aria-label={t("copyVerse")}
+                          >
+                            <DocumentDuplicateIcon className="h-4 w-4" />
+                            {copiedIndex === index && (
+                              <span className="text-xs ml-1 text-green-600">
+                                {t("copied")}
+                              </span>
+                            )}
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Chinese text */}
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
+                              {t("chineseLabel")}
+                            </p>
+                            <p className="text-foreground leading-relaxed text-sm">
+                              {seg.zhVerses.join(" ")}
+                            </p>
+                          </div>
+
+                          {/* English text */}
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
+                              {t("englishLabel")}
+                            </p>
+                            <p className="text-foreground leading-relaxed text-sm">
+                              {seg.enVerses.join(" ")}
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Legacy External API Results */}
+              {!loading && !error && !usingSheetsSource && legacyVerses.length > 0 && (
                 <div className="space-y-3">
-                  {results.map((verse, index) => (
+                  {legacyVerses.map((verse, index) => (
                     <Card
                       key={`${verse.chap}-${verse.sec}-${index}`}
                       className="transition-all hover:shadow-md"
@@ -214,11 +317,9 @@ export default function BiblePage() {
                       <CardContent className="py-4">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
-                            {/* Verse Reference */}
                             <div className="flex items-center gap-2 mb-2">
                               <Badge variant="outline" className="font-mono text-xs shrink-0">
-                                {verse.chineses || verse.engs} {verse.chap}:
-                                {verse.sec}
+                                {verse.chineses || verse.engs} {verse.chap}:{verse.sec}
                               </Badge>
                               {verse.engs && verse.chineses && (
                                 <span className="text-xs text-muted-foreground truncate">
@@ -226,8 +327,6 @@ export default function BiblePage() {
                                 </span>
                               )}
                             </div>
-
-                            {/* Verse Text */}
                             <p className="text-foreground text-base leading-relaxed">
                               <span className="text-primary font-semibold mr-1">
                                 {verse.sec}
@@ -235,13 +334,11 @@ export default function BiblePage() {
                               {verse.bible_text}
                             </p>
                           </div>
-
-                          {/* Copy Button */}
                           <Button
                             variant="ghost"
                             size="sm"
                             className="shrink-0 text-muted-foreground hover:text-foreground"
-                            onClick={() => handleCopyVerse(verse, index)}
+                            onClick={() => handleCopyLegacyVerse(verse, index)}
                             aria-label={t("copyVerse")}
                           >
                             <DocumentDuplicateIcon className="h-4 w-4" />
@@ -258,8 +355,8 @@ export default function BiblePage() {
                 </div>
               )}
 
-              {/* Empty State (searched but no results and no error) */}
-              {!loading && !error && results.length === 0 && searched && (
+              {/* Empty State */}
+              {!loading && !error && !hasResults && searched && (
                 <Card>
                   <CardContent className="py-12 text-center">
                     <BookOpenIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
