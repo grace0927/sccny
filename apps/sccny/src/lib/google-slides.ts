@@ -571,6 +571,25 @@ export async function copyHymnSlides(
               "foregroundColor", "backgroundColor", "fontFamily", "fontSize", "weightedFontFamily",
             ];
 
+            // Apply shape-level default text style before per-run overrides.
+            // Title text on lyric slides often inherits color/size from the shape's
+            // textStyle rather than setting it explicitly on each run — without this
+            // step the title appears unstyled on the blank destination slide.
+            const shapeTextStyle = (el.shape as { text?: { textStyle?: Record<string, unknown> } }).text?.textStyle;
+            if (shapeTextStyle) {
+              const shapeTextFields = runStyleFields.filter((f) => f in shapeTextStyle).join(",");
+              if (shapeTextFields) {
+                requests.push({
+                  updateTextStyle: {
+                    objectId: elId,
+                    style: shapeTextStyle,
+                    textRange: { type: "ALL" },
+                    fields: shapeTextFields,
+                  },
+                });
+              }
+            }
+
             let charOffset = 0;
             for (const para of paragraphs) {
               const paraText = para.runs.map((r) => r.content).join("");
