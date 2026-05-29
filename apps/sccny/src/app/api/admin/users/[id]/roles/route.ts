@@ -4,6 +4,7 @@ import { getAdminUser, unauthorizedResponse, forbiddenResponse } from "@/lib/adm
 import { requirePermission, PermissionError } from "@/lib/permissions";
 import { UserRoleUpdateSchema } from "@/lib/admin-validations";
 import { logAction } from "@/lib/audit";
+import { stackServerApp } from "@/stack/server";
 
 export async function GET(
   _request: Request,
@@ -40,6 +41,19 @@ export async function PATCH(
     await requirePermission(user.id, "users.roles");
 
     const { id } = await params;
+
+    const stackUser = await stackServerApp.getUser(id);
+    if (!stackUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Ensure user exists locally (FK requirement for UserRole)
+    await prisma.user.upsert({
+      where: { id },
+      update: { email: stackUser.primaryEmail ?? undefined, name: stackUser.displayName ?? undefined },
+      create: { id, email: stackUser.primaryEmail ?? undefined, name: stackUser.displayName ?? undefined },
+    });
+
     const body = await request.json();
     const { roleIds } = UserRoleUpdateSchema.parse(body);
 
