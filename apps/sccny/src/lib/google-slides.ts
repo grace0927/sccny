@@ -347,6 +347,52 @@ export async function copyHymnSlides(
   const bankSlides = hymnBank.data.slides || [];
   const targetSlides = targetPres.data.slides || [];
 
+  // Build theme-colour → concrete RGB map from the hymn bank master.
+  // Text styles in the bank reference theme colours (e.g. ACCENT3 = red).
+  // Those same references resolve to different colours in the target presentation,
+  // so we materialise them to RGB before copying.
+  type RgbColor = { red?: number; green?: number; blue?: number };
+  const themeColorMap: Record<string, RgbColor> = {};
+  for (const master of (hymnBank.data.masters || []) as Array<{
+    pageProperties?: { colorScheme?: { colors?: Array<{ type?: string; color?: { rgbColor?: RgbColor } }> } };
+  }>) {
+    for (const pair of master.pageProperties?.colorScheme?.colors || []) {
+      if (pair.type && pair.color?.rgbColor) themeColorMap[pair.type] = pair.color.rgbColor;
+    }
+  }
+
+  function resolveColorValue(c: unknown): unknown {
+    if (!c || typeof c !== "object") return c;
+    const oc = (c as Record<string, unknown>).opaqueColor as Record<string, unknown> | undefined;
+    if (oc?.themeColor && typeof oc.themeColor === "string" && themeColorMap[oc.themeColor]) {
+      return { opaqueColor: { rgbColor: themeColorMap[oc.themeColor] } };
+    }
+    return c;
+  }
+
+  function resolveStyleColors(style: Record<string, unknown>): Record<string, unknown> {
+    const out = { ...style };
+    if ("foregroundColor" in out) out.foregroundColor = resolveColorValue(out.foregroundColor);
+    if ("backgroundColor" in out) out.backgroundColor = resolveColorValue(out.backgroundColor);
+    return out;
+  }
+
+  // Determine the hymn bank master's default paragraph alignment so we can
+  // substitute it when a slide paragraph has alignment=ALIGNMENT_UNSPECIFIED
+  // (i.e. it inherits the master's value, which is typically CENTER here).
+  let masterParaAlignment: string | null = null;
+  masterAlignSearch:
+  for (const master of (hymnBank.data.masters || []) as Array<{
+    pageElements?: Array<{ shape?: { text?: { textElements?: Array<{ paragraphMarker?: { style?: { alignment?: string } } }> } } }>;
+  }>) {
+    for (const el of master.pageElements || []) {
+      for (const te of el.shape?.text?.textElements || []) {
+        const a = te.paragraphMarker?.style?.alignment;
+        if (a && a !== "ALIGNMENT_UNSPECIFIED") { masterParaAlignment = a; break masterAlignSearch; }
+      }
+    }
+  }
+
   let insertionOffset = 0; // tracks extra slides inserted so far
 
   for (const hymn of hymns) {
@@ -571,18 +617,18 @@ export async function copyHymnSlides(
               "foregroundColor", "backgroundColor", "fontFamily", "fontSize", "weightedFontFamily",
             ];
 
-            // Apply shape-level default text style before per-run overrides.
-            // Title text on lyric slides often inherits color/size from the shape's
-            // textStyle rather than setting it explicitly on each run — without this
-            // step the title appears unstyled on the blank destination slide.
+            // Apply shape-level default text style (with theme colours resolved to RGB)
+            // before per-run overrides. Title text often inherits colour/size from the
+            // shape's textStyle rather than setting it explicitly on each run.
             const shapeTextStyle = (el.shape as { text?: { textStyle?: Record<string, unknown> } }).text?.textStyle;
             if (shapeTextStyle) {
-              const shapeTextFields = runStyleFields.filter((f) => f in shapeTextStyle).join(",");
+              const resolvedShape = resolveStyleColors(shapeTextStyle);
+              const shapeTextFields = runStyleFields.filter((f) => f in resolvedShape).join(",");
               if (shapeTextFields) {
                 requests.push({
                   updateTextStyle: {
                     objectId: elId,
-                    style: shapeTextStyle,
+                    style: resolvedShape,
                     textRange: { type: "ALL" },
                     fields: shapeTextFields,
                   },
@@ -595,14 +641,22 @@ export async function copyHymnSlides(
               const paraText = para.runs.map((r) => r.content).join("");
               const paraLen = paraText.length;
 
-              // Apply paragraph style (alignment, line spacing, etc.)
-              if (para.paraStyle) {
-                const fields = paraStyleFields.filter((f) => f in para.paraStyle!).join(",");
+              // Apply paragraph style (alignment, line spacing, etc.).
+              // ALIGNMENT_UNSPECIFIED means "inherit from master"; on a blank slide
+              // that defaults to LEFT, so substitute the bank master's actual alignment.
+              const baseParaStyle: Record<string, unknown> = para.paraStyle ?? {};
+              const effectiveParaStyle =
+                (!baseParaStyle.alignment || baseParaStyle.alignment === "ALIGNMENT_UNSPECIFIED") &&
+                masterParaAlignment
+                  ? { ...baseParaStyle, alignment: masterParaAlignment }
+                  : baseParaStyle;
+              if (Object.keys(effectiveParaStyle).length > 0) {
+                const fields = paraStyleFields.filter((f) => f in effectiveParaStyle).join(",");
                 if (fields) {
                   requests.push({
                     updateParagraphStyle: {
                       objectId: elId,
-                      style: para.paraStyle,
+                      style: effectiveParaStyle,
                       textRange: { type: "FIXED_RANGE", startIndex: charOffset, endIndex: charOffset + paraLen },
                       fields,
                     },
@@ -610,16 +664,17 @@ export async function copyHymnSlides(
                 }
               }
 
-              // Apply per-run text styles
+              // Apply per-run text styles (theme colours resolved to RGB)
               let runOffset = charOffset;
               for (const run of para.runs) {
                 if (run.style && run.content.length > 0) {
-                  const fields = runStyleFields.filter((f) => f in run.style!).join(",");
+                  const resolvedRun = resolveStyleColors(run.style as Record<string, unknown>);
+                  const fields = runStyleFields.filter((f) => f in resolvedRun).join(",");
                   if (fields) {
                     requests.push({
                       updateTextStyle: {
                         objectId: elId,
-                        style: run.style,
+                        style: resolvedRun,
                         textRange: { type: "FIXED_RANGE", startIndex: runOffset, endIndex: runOffset + run.content.length },
                         fields,
                       },
