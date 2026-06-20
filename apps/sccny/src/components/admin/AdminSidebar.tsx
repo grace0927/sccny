@@ -114,6 +114,16 @@ const sidebarItems: SidebarItem[] = [
     ),
   },
   {
+    key: "generatedPpt",
+    href: "/admin/ppt/generated",
+    permission: "ppt.generate",
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+      </svg>
+    ),
+  },
+  {
     key: "auditLog",
     href: "/admin/audit-log",
     permission: "audit.view",
@@ -184,10 +194,13 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
         <nav className="p-4 space-y-1">
           {visibleItems.map((item) => {
-            const isActive =
-              item.href === "/admin"
-                ? pathname === "/admin"
-                : pathname.startsWith(item.href);
+            // Exact-match routes that have nested sibling routes, so a prefix
+            // match would wrongly activate the parent (e.g. /admin/ppt vs
+            // /admin/ppt/generated).
+            const exactMatchRoutes = ["/admin", "/admin/ppt"];
+            const isActive = exactMatchRoutes.includes(item.href)
+              ? pathname === item.href
+              : pathname.startsWith(item.href);
 
             return (
               <Link

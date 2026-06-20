@@ -352,6 +352,7 @@
       "content": "Content",
       "hymns": "Hymns",
       "templates": "PPT Generation",
+      "generatedPpt": "Generated Slides",
       "auditLog": "Audit Log",
       "community": "Community"
     },
