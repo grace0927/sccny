@@ -85,7 +85,7 @@ export class NewsScraper {
     element: unknown
   ): RawNewsData | null {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const $element = $(element as any);
 
       // The structure is <tr><td class="posted_on">...</td><td class="title">...</td><td class="excerpt">...</td></tr>

@@ -13,8 +13,8 @@ A [Turborepo](https://turbo.build/repo) monorepo containing the SCCNY (Suffolk C
 │       └── next.config.mjs
 ├── docs/                # Project documentation & roadmap
 │   ├── TODO.md          # Phased feature roadmap
-│   ├── PROJECT_SPEC.md  # Technical specification
-│   └── features/        # Detailed feature plans
+│   ├── reference/       # Current-state architecture (per subsystem)
+│   └── features/        # Original feature plans
 ├── turbo.json           # Turborepo configuration
 └── package.json         # Root workspace configuration
 ```
@@ -96,8 +96,8 @@ pnpm exec prisma studio                            # Open Prisma Studio GUI
 ## Documentation
 
 - [Roadmap & Feature Status](docs/TODO.md)
-- [Technical Specification](docs/PROJECT_SPEC.md)
-- [Feature Plans](docs/features/)
+- [Architecture Reference](docs/reference/) — current-state, per subsystem
+- [Feature Plans](docs/features/) — original design specs
 - [AI Agent Guidance](CLAUDE.md)
 
 ## Deploy on Vercel

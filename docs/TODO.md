@@ -17,9 +17,9 @@ This document tracks all planned features for the SCCNY web application. Each it
 | Status | Feature | Plan |
 |--------|---------|------|
 | :white_check_mark: | Switch to PNPM | — |
-| :white_check_mark: | Sermon API + Scraper | [sermon-api-implementation.md](./features/sermon-api-implementation.md) |
-| :white_check_mark: | News API + Scraper | [news-implementation.md](./features/news-implementation.md) |
-| :white_check_mark: | Message Pages (Sermon Recordings, Sunday School, etc.) | [message-pages-implementation.md](./features/message-pages-implementation.md) |
+| :white_check_mark: | Sermon API + Scraper | [reference/content.md](./reference/content.md) |
+| :white_check_mark: | News API + Scraper | [reference/content.md](./reference/content.md) |
+| :white_check_mark: | Message Pages (Sermon Recordings, Sunday School, etc.) | [reference/content.md](./reference/content.md) |
 
 ## Phase 1: Auth Foundation & Admin Shell
 
@@ -99,7 +99,7 @@ New models required across all features (cumulative):
 | `PptTemplate` | PPT Generation |
 | `WorshipOrder` | PPT Generation |
 | `WorshipOrderItem` | PPT Generation |
-| `BibleVerse` | Bible Lookup (if local DB approach) |
+| `BibleVerse` | Bible Lookup — *planned, not yet in schema* (verse text currently comes from a Google Sheet) |
 | `SystemConfig` | Community Feed |
 | `CommunityPost` | Community Feed |
 
@@ -107,8 +107,9 @@ New models required across all features (cumulative):
 
 | Package | Used By | Status |
 |---------|---------|--------|
-| `@tiptap/react` + `@tiptap/starter-kit` | Content Management (rich text editor) | Planned |
-| `@vercel/blob` | Content Management (media upload) | Planned |
-| `pptxgenjs` | PPT Generation | ✅ Installed |
-| `@hello-pangea/dnd` | PPT Generation (drag-and-drop) | ✅ Installed |
-| `googleapis` | Google Slides Automation | ✅ Installed |
+| `googleapis` | Slides generation, Drive (community images), Sheets (roster/Bible) | ✅ Installed |
+| `@google/generative-ai` | Worship-order parsing (Gemini) | ✅ Installed |
+| `@hello-pangea/dnd` | Worship order builder (drag-and-drop) | ✅ Installed |
+| `axios` | Bible API proxy (`tools/bible/search`) | ✅ Installed |
+
+> Content Management uses a plain `<textarea>` (no rich-text editor) and Google Drive for media — `@tiptap` / `@vercel/blob` were never adopted. The PPT tool generates via the Google Slides API (the originally-planned `pptxgenjs` approach was dropped).

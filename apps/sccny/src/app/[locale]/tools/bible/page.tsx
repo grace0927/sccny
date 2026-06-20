@@ -8,7 +8,7 @@ import {
   MagnifyingGlassIcon,
   BookOpenIcon,
 } from "@heroicons/react/24/outline";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+ 
 const { DocumentDuplicateIcon } = require("@heroicons/react/24/outline");
 import {
   Card,

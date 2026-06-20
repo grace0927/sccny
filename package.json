@@ -18,7 +18,6 @@
     "@prisma/client": "^7.8.0",
     "dark-blue": "^0.3.0",
     "next": "16.2.9",
-    "pptxgenjs": "^4.0.1",
     "prisma": "^7.8.0"
   },
   "pnpm": {

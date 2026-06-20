@@ -1,28 +1,38 @@
 Review recent code changes in the SCCNY project and update all affected documentation to reflect the current state.
 
+## Doc map
+
+- `CLAUDE.md` — lean, always-loaded agent index: commands, key directories, data-model list, cross-cutting conventions, env vars, reference-doc index. Keep concise; push detail into `docs/reference/*`.
+- `docs/reference/*.md` — current-state architecture per subsystem (file maps, data flow, key functions, permissions):
+  - `admin-and-rbac.md` — admin shell/sidebar, admin API pattern, RBAC, audit log
+  - `content.md` — sermons, news (+ scrapers/sync), announcements, events, CMS, hymns, templates
+  - `members.md` — member management, member corner, community feed
+  - `tools.md` — PPT generation, live translation, Bible lookup, Google APIs
+- `docs/TODO.md` — phased roadmap, cumulative model table, package table.
+- `docs/features/*.md` — original forward-looking feature *plans* (historical design intent). Do not retrofit these to current state; that's what `docs/reference/` is for.
+- `prisma/schema.prisma` — source of truth for models. Do not duplicate full field lists in docs; summarize and point here.
+
 ## Instructions
 
-1. **Identify what changed** — run `git diff HEAD --stat` and `git diff HEAD --name-only` to see which files were modified. If there are no staged changes, run `git status` to see working tree changes.
+1. **Identify what changed** — run `git diff HEAD --stat` and `git diff HEAD --name-only`. If nothing is staged, use `git status` for working-tree changes.
 
-2. **Determine documentation impact** — map changed files to doc sections:
-   - New/removed API routes (`app/api/`) → update API tables in `docs/PROJECT_SPEC.md` and `CLAUDE.md`
-   - New pages (`app/[locale]/`) → update Public Pages or Admin Portal sections in `docs/PROJECT_SPEC.md`
-   - New/changed Prisma models (`prisma/schema.prisma`) → update Database Models in both `docs/PROJECT_SPEC.md` and `CLAUDE.md`, and the model table in `docs/TODO.md`
-   - New libraries (`src/lib/`) → update Key Directories in `CLAUDE.md`
-   - New env vars (`turbo.json` env section) → update Environment Variables in both `docs/PROJECT_SPEC.md` and `CLAUDE.md`
-   - Feature completion → update status in `docs/TODO.md` (mark ✅) and Current Status in `docs/PROJECT_SPEC.md`
-   - New dependencies (`package.json`) → update Package Dependencies in `docs/TODO.md`
-   - New feature plan files (`docs/features/`) → add entry to `docs/TODO.md` roadmap table
+2. **Map changed files to docs:**
+   - New/removed API routes (`app/api/`) → the matching `docs/reference/*.md` (admin/RBAC, content, members, or tools).
+   - New pages (`app/[locale]/`) → matching `docs/reference/*.md`; if it adds an admin sidebar entry, note it in `admin-and-rbac.md`.
+   - New/changed Prisma models (`prisma/schema.prisma`) → data-model list in `CLAUDE.md`, the relevant `docs/reference/*.md`, and the model table in `docs/TODO.md`.
+   - New libraries (`src/lib/`) → Key directories in `CLAUDE.md` + the owning `docs/reference/*.md`.
+   - New env vars (`turbo.json`) → Environment Variables in `CLAUDE.md` (+ the reference doc that uses them).
+   - New permissions (`prisma/seed.ts`) → permission list in `admin-and-rbac.md`.
+   - New dependencies (`package.json`) → Package Dependencies table in `docs/TODO.md`.
+   - Feature completion → status in `docs/TODO.md` (`:white_check_mark:`).
+   - New feature plan in `docs/features/` → add a row to the `docs/TODO.md` roadmap table.
 
-3. **Update each affected document** — make targeted edits only. Do not rewrite sections that are still accurate. Follow these conventions:
-   - `docs/TODO.md` — use `:white_check_mark:` for completed items, `:clipboard:` for planned
-   - `docs/PROJECT_SPEC.md` — keep API tables complete and accurate; update Current Status table at the bottom
-   - `CLAUDE.md` — keep the Key Directories list and Environment Variables section in sync with the actual codebase
+3. **Make targeted edits only** — don't rewrite still-accurate sections. Keep `CLAUDE.md` lean (move depth into `docs/reference/`). `docs/TODO.md`: `:white_check_mark:` = done, `:clipboard:` = planned.
 
-4. **Verify completeness** — after edits, confirm:
-   - All new env vars from `turbo.json` are listed in both docs
-   - All new routes appear in the API tables
-   - `docs/TODO.md` feature status matches what's actually implemented
-   - No doc references a file or endpoint that no longer exists (e.g., old renamed routes)
+4. **Verify completeness:**
+   - New env vars from `turbo.json` are in `CLAUDE.md`.
+   - New routes/pages/models/permissions appear in the right reference doc.
+   - `docs/TODO.md` status matches what's actually implemented.
+   - No doc links to a file, route, or model that no longer exists.
 
-5. **Report** — briefly summarize which documents were updated and what was changed.
+5. **Report** — briefly summarize which docs were updated and what changed.

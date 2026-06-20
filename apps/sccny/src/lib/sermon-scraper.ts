@@ -117,7 +117,7 @@ export class SermonScraper {
     type: PrismaSermonType = PrismaSermonType.SERMON
   ): RawSermonData | null {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const $element = $(element as any);
       const titleElement = $element
         .find("h1, h2, h3, .title, .sermon-title")
@@ -177,7 +177,7 @@ export class SermonScraper {
   /**
    * Extract URL from element
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private extractUrl(element: cheerio.Cheerio<any>): string | undefined {
     const href = element.attr("href");
     const src = element.attr("src");
@@ -235,7 +235,7 @@ export class SermonScraper {
     type: PrismaSermonType = PrismaSermonType.SERMON
   ): RawSermonData | null {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const mp3Url = $(element as any).attr("href");
       if (!mp3Url || !mp3Url.endsWith(".mp3")) {
         return null;

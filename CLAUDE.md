@@ -1,153 +1,79 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. It is the lean, always-loaded index; **detailed per-subsystem architecture lives in `docs/reference/` — read the relevant doc before modifying a subsystem instead of re-exploring the code.**
 
 ## Project Overview
 
-SCCNY (Suffolk Chinese Christian Church of New York) is a Turborepo monorepo containing a Next.js 16 church website with bilingual support (English/Chinese), sermon management, and news content scraped from the legacy church website.
+SCCNY (Suffolk Chinese Christian Church of New York) is a Turborepo monorepo containing a Next.js 16 church website with bilingual support (Chinese default / English), sermon & news management, member self-service, and ministry tools (PPT generation, live translation, Bible lookup).
 
 ## Commands
 
 ```bash
-# Development
-pnpm dev             # Start development server (runs from root)
+# Development (from root)
+pnpm dev             # Start dev server
 pnpm build           # Build all apps
-pnpm lint            # Lint with ESLint 9
+pnpm lint            # turbo → eslint . (flat config, eslint-config-next)
 
-# Database (run from apps/sccny)
-pnpm exec prisma generate  # Generate Prisma client
-pnpm exec prisma migrate dev --name <migration_name>  # Create migration
-pnpm exec prisma db push   # Push schema changes without migration
-pnpm exec prisma studio    # Open Prisma Studio GUI
+# Type-check (from apps/sccny) — the other correctness gate
+node <ts>/tsc --noEmit   # see memory MEMORY.md for exact tsc/prisma paths
+
+# Database (from apps/sccny)
+pnpm exec prisma generate                              # Generate client
+pnpm exec prisma db push                               # Push schema (use this; migrate dev fails on Neon shadow DB)
+pnpm exec prisma studio                                # GUI
 ```
 
 ## Architecture
 
-### Monorepo Structure
-- `/apps/sccny` - Main Next.js 16 application
-- Root `package.json` uses pnpm workspaces (`pnpm-workspace.yaml`) with Turborepo orchestration
+### Monorepo & stack
+- `/apps/sccny` — the Next.js 16.1.6 app (App Router, React 19). Root uses pnpm workspaces + Turborepo.
+- **DB**: PostgreSQL (Neon) + Prisma 7.4.0 (`@prisma/adapter-pg`). Schema is the source of truth: `apps/sccny/prisma/schema.prisma`. Seed (roles/permissions): `prisma/seed.ts`.
+- **Auth**: Stack Auth (`@stackframe/stack`) in `src/stack/`. **i18n**: next-intl (zh default, en secondary). **Styling**: Tailwind v4 + the `dark-blue` design-system package. **Validation**: Zod 4.
 
-### Tech Stack
-- **Framework**: Next.js 16.1.6 with App Router, React 19
-- **Database**: PostgreSQL (Neon) with Prisma 7.4.0 using `@prisma/adapter-pg`
-- **Auth**: Stack Auth (`@stackframe/stack` v2.8.69) - configured in `/src/stack/`
-- **i18n**: next-intl v4.8.3 with Chinese (zh) as default, English (en) secondary
-- **Styling**: Tailwind CSS v4 + [dark-blue](https://www.npmjs.com/package/dark-blue) design system (token-based, light/dark mode)
-- **Validation**: Zod 4.3.6
+### Key directories (`apps/sccny/src`)
+- `app/api/` — REST routes: `admin/*` (permission-gated), public (`sermons`, `news`, `announcements`, `events`), `member/*` (self-service), `tools/*` (ppt, translation, bible), `tasks/*` (cron sync).
+- `app/[locale]/` — localized pages (incl. `admin/`, `my-account/`, `tools/`, `messages/`).
+- `components/` — `admin/`, `member-corner/`, `sermons/`, `news/`, `tools/`.
+- `lib/` — `db.ts` (Prisma singleton), `validations.ts` / `admin-validations.ts` (Zod), `permissions.ts` + `permissions-client.ts` (RBAC), `admin-auth.ts`, `audit.ts`, `google-slides.ts` / `google-drive.ts` / `bible-lookup.ts` / `parse-worship-order.ts` / `service-date.ts`, `sermon-scraper.ts` / `news-scraper.ts`.
+- `messages/` — `en.json` / `zh.json`. `generated/` — Prisma types (lint-excluded).
 
-### Key Directories (apps/sccny/src)
-- `app/api/` - REST API routes (public + admin, ~42 route files)
-- `app/[locale]/` - Localized pages (en/zh), including `admin/` subtree
-- `components/admin/` - Admin UI components (tables, forms, dialogs, shells)
-- `components/sermons/`, `components/news/` - Public content components
-- `components/member-corner/` - Member self-service components
-- `components/tools/` - Ministry tool components (translation, PPT)
-- `lib/db.ts` - Prisma singleton with connection pooling
-- `lib/validations.ts` - Zod schemas for public API
-- `lib/admin-validations.ts` - Zod schemas for admin API
-- `lib/permissions.ts`, `lib/permissions-client.ts` - RBAC helpers
-- `lib/admin-auth.ts` - Admin authentication middleware
-- `lib/audit.ts` - Audit logging helpers
-- `lib/sermon-scraper.ts`, `lib/news-scraper.ts` - Content scrapers for scc-ny.org
-- `lib/google-drive.ts` - Google Drive image upload/delete (community feed)
-- `lib/google-slides.ts` - Google Slides + Sheets API operations (slide generation)
-- `lib/parse-worship-order.ts` - Client-safe rule-based parser for worship order text
-- `stack/` - Stack Auth client and server configuration
-- `messages/` - Translation JSON files (en.json, zh.json)
-- `generated/` - Prisma generated types (excluded from linting)
+### Data models (full fields in `schema.prisma`)
+- **Content**: `Sermon`, `News`, `Announcement`, `Event` (+`EventRegistration`), `ContentPage` (+`ContentRevision`, `MediaAsset`).
+- **Access**: `User`, `Role`, `Permission`, `RolePermission`, `UserRole`, `AuditLog`.
+- **Members**: `Member`, `PrayerRequest`, `CommunityPost`, `SystemConfig`.
+- **Tools**: `Hymn`, `PptTemplate`, `WorshipOrder`(+`WorshipOrderItem`), `TranslationSession`(+`TranslationEntry`).
 
-### Database Models
+### Cross-cutting conventions
+- **API responses**: list endpoints return `{ data, pagination: { page, limit, total, totalPages } }` and accept `page`/`limit`/`sortBy`/`sortOrder` + filters. Public Zod schemas in `lib/validations.ts`; admin in `lib/admin-validations.ts`. Zod v4: detect validation errors via `error.name === "ZodError"`, not `instanceof`.
+- **Auth & RBAC**: `getAdminUser()` (`lib/admin-auth.ts`) → Stack Auth user; `requirePermission(userId, key)` (`lib/permissions.ts`) throws `PermissionError` → 403. Permission keys are dot notation `resource.action` (e.g. `sermons.edit`, `community.manage`). Client gating via `usePermissions()` / `PermissionGate`. Full pattern + key list: `docs/reference/admin-and-rbac.md`.
+- **i18n routing**: locale detection in `src/proxy.ts` (Next 16 rename of `middleware.ts`); pages under `app/[locale]/`; `useTranslations` + `messages/*.json`. When adding keys, validate both files for duplicate/mismatched keys (see `MEMORY.md`).
+- **dark-blue**: import UI from the `dark-blue` package; `globals.css` imports its styles and registers tokens via Tailwind `@theme` + `@config tailwind.config.mjs` (`important: true` to beat Stack Auth CSS). `cn()` is local in `src/lib/utils.ts`. Must be a dependency in **both** root and `apps/sccny` `package.json`.
 
-**Content:**
-- **Sermon**: title, speaker, date, type (SERMON|SUNDAY_SCHOOL|RETREAT_MESSAGE|BAPTISM_CLASS), series, scripture, video/audio URLs
-- **News**: title, date, content, excerpt, status (DRAFT|PUBLISHED|ARCHIVED)
-- **Announcement**: bilingual title/content, priority, audience, status, schedule dates
-- **Event**: bilingual, type, recurrence, status; related **EventRegistration** (REGISTERED|CANCELLED|ATTENDED)
-- **ContentPage**: slug-based bilingual CMS pages with **ContentRevision** history and **MediaAsset**
+### Subsystem reference docs (`docs/reference/`)
+Read the relevant doc before working on a subsystem — each has file maps, data flow, key functions, and permissions for the *current* implementation:
 
-**Users & Access:**
-- **User**: mirrors Stack Auth user; userId, email, name, status
-- **Role** / **Permission** / **RolePermission**: RBAC — roles have named permissions
-- **UserRole**: join table linking users to roles
-- **AuditLog**: full audit trail of admin actions (userId, action, resource, old/new values, IP)
+| Subsystem | Doc |
+|-----------|-----|
+| Admin shell, RBAC, audit log, admin API pattern | [`docs/reference/admin-and-rbac.md`](docs/reference/admin-and-rbac.md) |
+| Content: sermons, news (+ scrapers/sync), announcements, events, CMS, hymns, templates | [`docs/reference/content.md`](docs/reference/content.md) |
+| Members, member corner, community feed | [`docs/reference/members.md`](docs/reference/members.md) |
+| Tools: PPT generation, live translation, Bible lookup, Google APIs | [`docs/reference/tools.md`](docs/reference/tools.md) |
 
-**Members:**
-- **Member**: church member profile, status (PENDING|ACTIVE|INACTIVE|REJECTED)
-- **PrayerRequest**: member prayer requests, status (PENDING|PRAYED)
-
-**Tools:**
-- **Hymn**: bilingual hymn lyrics for PPT generation
-- **PptTemplate**: PPT styling/layout templates
-- **WorshipOrder** / **WorshipOrderItem**: worship order builder with drag-and-drop
-- **TranslationSession** / **TranslationEntry**: live translation sessions
-
-### API Patterns
-All API routes in `/api/` follow this pattern:
-- Public routes use Zod schemas from `lib/validations.ts`; admin routes use `lib/admin-validations.ts`
-- Return paginated responses: `{ data, pagination: { page, limit, total, totalPages } }`
-- Support query params: `page`, `limit`, `sortBy`, `sortOrder`, plus model-specific filters
-- Admin routes guard access with `requirePermission()` from `lib/admin-auth.ts` and write to audit log
-
-Admin routes live under `app/api/admin/` and cover: sermons (+ bulk/sync), users (+ invite/enable/disable), roles, members (+ approval workflow), announcements, events (+ registrations), content CMS (+ revisions/publish), hymns, PPT templates, worship orders, community-posts, permissions, and audit log.
-
-Tool routes live under `app/api/tools/` and cover: bible search, `ppt/generate-slides` (Google Slides generation), translation sessions (+ SSE stream).
-
-### i18n Routing
-- Proxy in `src/proxy.ts` handles locale detection (renamed from `middleware.ts` per Next.js 16 convention)
-- All public pages nested under `app/[locale]/`
-- Use `useTranslations` hook and translation keys from `messages/*.json`
-
-### Authentication & Authorization Flow
-- `StackProvider` wraps app in root layout
-- `stackClientApp` for client-side auth operations
-- `stackServerApp` for server-side auth (inherits from client)
-- RBAC: users → roles → permissions; permission key format is `resource.action` (e.g. `sermons.write`, `community.manage`)
-- `requirePermission()` in `lib/admin-auth.ts` guards all admin API routes
-- `PermissionGate` component controls UI visibility on the client side
-
-### dark-blue Design System Integration
-
-All UI components come from the `dark-blue` npm package (our own design system). Key integration points:
-
-- **CSS**: `src/app/globals.css` imports `dark-blue/styles.css` for token definitions, then uses `@theme` to register tokens with Tailwind v4. A `@config` directive loads `tailwind.config.mjs` for the v3-compatible color palette.
-- **Tailwind config**: `tailwind.config.mjs` maps CSS custom properties (e.g. `--primary`, `--muted`) to Tailwind colors via `hsl(var(--token))`. `important: true` is required to override Stack Auth's scoped CSS utilities.
-- **Components**: Import from `dark-blue` — Button, Card, Badge, Alert, Input, Select, Label, Tabs, Pagination, Breadcrumb, Carousel, Dropdown, Skeleton, Footer, MediaPlayer, etc.
-- **`cn()` utility**: Defined locally in `src/lib/utils.ts` (not re-exported from dark-blue) to avoid client/server boundary issues with Next.js RSC.
-- **Root dependency**: `dark-blue` must be listed in both the root `package.json` and `apps/sccny/package.json` for Turbopack module resolution in the monorepo.
+(`docs/features/` holds the original forward-looking feature *plans*; `docs/reference/` describes what is actually built.)
 
 ## Environment Variables
 
-Required variables (see turbo.json for full list):
-- `DATABASE_URL` - PostgreSQL connection string
-- `STACK_SECRET_SERVER_KEY` - Stack Auth server key
-- `CRON_SECRET` - Secret for cron job endpoints
-- `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS` - JSON credentials for Google Drive/Slides API
-- `GOOGLE_DRIVE_FOLDER_ID` - Google Drive folder for community post images
-- `GOOGLE_SLIDES_TEMPLATE_ID` - Template presentation ID for slide generation
-- `GOOGLE_HYMN_BANK_ID` - Hymn bank presentation ID (source of hymn slide thumbnails)
-- `GOOGLE_BIBLE_SHEET_ID` - Bible data Google Sheet ID (verse text for scripture slides)
-- `GOOGLE_SLIDES_OUTPUT_FOLDER_ID` - Shared Drive folder for generated presentations
+See `turbo.json` for the authoritative list.
+- `DATABASE_URL`, `STACK_SECRET_SERVER_KEY`, `CRON_SECRET`
+- Google service account: `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS` (JSON) or `GOOGLE_APPLICATION_CREDENTIALS` (path)
+- Google IDs: `GOOGLE_DRIVE_FOLDER_ID` (community images), `GOOGLE_SLIDES_TEMPLATE_ID`, `GOOGLE_HYMN_BANK_ID`, `GOOGLE_BIBLE_SHEET_ID`, `GOOGLE_SLIDES_OUTPUT_FOLDER_ID`, `GOOGLE_SCHEDULE_SHEET_ID` (optional)
+- Worship-order parsing: `GEMINI_API_KEY` (optional; falls back to rule-based parser), `GEMINI_MODEL` (default `gemini-2.5-flash-lite`)
 
-## Roadmap & Feature Plans
+## Roadmap & Docs Maintenance
 
-The full roadmap is at [`docs/TODO.md`](docs/TODO.md). Each feature has a detailed plan in [`docs/features/`](docs/features/) covering functionality, schema additions, components, API endpoints, Zod schemas, and permissions.
-
-Features are organized in phases (all Phase 0–5 complete except Bible Lookup):
-1. **Phase 1** ✅ — Admin Infrastructure, Role/Permission Management, Audit Log
-2. **Phase 2** ✅ — User Management, Member Management, Member Corner
-3. **Phase 3** ✅ — Sermon Admin, Announcements, Events, Content CMS
-4. **Phase 4** ✅ — PPT Generation, Live Translation, Google Slides Automation (Bible Lookup enhanced: planned)
-5. **Phase 5** ✅ — Community Feed
-
-When implementing a feature, always read its plan in `docs/features/` first and follow the patterns described there.
-
-## Documentation Maintenance
-
-After making code changes (new features, API routes, pages, schema changes, env vars, or dependencies), run `/update-docs` to keep all documentation current. The skill checks what changed and updates `docs/TODO.md`, `docs/PROJECT_SPEC.md`, and this file accordingly.
+- Roadmap: [`docs/TODO.md`](docs/TODO.md). Phases 1–5 complete (Bible Lookup enhancement still planned). Original specs per feature in [`docs/features/`](docs/features/).
+- After code changes (features, routes, pages, schema, env vars, deps), run `/update-docs` to refresh `docs/TODO.md`, this file, and the matching `docs/reference/*.md`.
 
 ## Deployment
 
-- Hosted on Vercel
-- Cron job runs weekly (Friday 2 AM UTC): `/api/tasks/sync-sermons` syncs sermons from legacy site
-- News sync available via `/api/tasks/sync-news`
-- Vercel Analytics integrated via `@vercel/analytics`
+- Hosted on Vercel. Weekly cron (Fri 02:00 UTC) `/api/tasks/sync-sermons` syncs sermons from the legacy site; news via `/api/tasks/sync-news`. Both guarded by `CRON_SECRET`. Vercel Analytics via `@vercel/analytics`.

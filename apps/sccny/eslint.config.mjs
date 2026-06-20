@@ -1,16 +1,16 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import next from "eslint-config-next";
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...next,
+  {
+    rules: {
+      // eslint-config-next 16 enables this React-Compiler-era rule as an error.
+      // It flags the codebase's standard, intentional patterns (loading flags
+      // around data fetching in effects, resetting state when a dependency
+      // changes). Keep it visible as a warning instead of failing the build.
+      "react-hooks/set-state-in-effect": "warn",
+    },
+  },
   {
     ignores: ["src/generated/**"],
   },
