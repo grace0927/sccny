@@ -5,17 +5,9 @@ import WorshipTextInput from "@/components/tools/ppt/WorshipTextInput";
 import WorshipOrderReviewForm from "@/components/tools/ppt/WorshipOrderReviewForm";
 import SlideGenerationResult from "@/components/tools/ppt/SlideGenerationResult";
 import { WorshipOrderData } from "@/lib/parse-worship-order";
+import { getComingSunday, isFirstSundayOfMonth, parseServiceDate, toDateInputValue } from "@/lib/service-date";
 
 type Step = "input" | "review" | "result";
-
-/** Returns true if the coming Sunday is the first Sunday of its month (date 1–7). */
-function isFirstSundayOfMonth(): boolean {
-  const today = new Date();
-  const daysUntilSunday = today.getDay() === 0 ? 0 : 7 - today.getDay();
-  const sunday = new Date(today);
-  sunday.setDate(today.getDate() + daysUntilSunday);
-  return sunday.getDate() <= 7;
-}
 
 interface GenerationResult {
   presentationUrl: string;
@@ -25,14 +17,16 @@ interface GenerationResult {
 
 export default function AdminPptGenerationPage() {
   const [step, setStep] = useState<Step>("input");
+  const [serviceDate, setServiceDate] = useState(() => toDateInputValue(getComingSunday()));
   const [parsed, setParsed] = useState<WorshipOrderData | null>(null);
   const [result, setResult] = useState<GenerationResult | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function handleParsed(data: WorshipOrderData) {
-    // Default communion to true on the first Sunday of the month
-    setParsed({ ...data, hasCommunion: data.hasCommunion || isFirstSundayOfMonth() });
+    // Default communion to true on the first Sunday of the selected month
+    const sunday = parseServiceDate(serviceDate) ?? getComingSunday();
+    setParsed({ ...data, hasCommunion: data.hasCommunion || isFirstSundayOfMonth(sunday) });
     setStep("review");
     setError(null);
   }
@@ -44,7 +38,7 @@ export default function AdminPptGenerationPage() {
       const res = await fetch("/api/tools/ppt/generate-slides", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, serviceDate }),
       });
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
@@ -62,6 +56,7 @@ export default function AdminPptGenerationPage() {
 
   function handleStartOver() {
     setStep("input");
+    setServiceDate(toDateInputValue(getComingSunday()));
     setParsed(null);
     setResult(null);
     setError(null);
@@ -97,7 +92,13 @@ export default function AdminPptGenerationPage() {
         </div>
       )}
 
-      {step === "input" && <WorshipTextInput onParsed={handleParsed} />}
+      {step === "input" && (
+        <WorshipTextInput
+          onParsed={handleParsed}
+          serviceDate={serviceDate}
+          onServiceDateChange={setServiceDate}
+        />
+      )}
 
       {step === "review" && parsed && (
         <WorshipOrderReviewForm

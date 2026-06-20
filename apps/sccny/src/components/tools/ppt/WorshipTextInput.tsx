@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, Card, CardContent, CardHeader, CardTitle } from "dark-blue";
 import { DEFAULT_WORSHIP_ORDER_TEMPLATE, parseWorshipOrder, WorshipOrderData } from "@/lib/parse-worship-order";
+import { getUpcomingSundays } from "@/lib/service-date";
 
 interface WorshipTextInputProps {
   onParsed: (data: WorshipOrderData, rawText: string) => void;
+  serviceDate: string;
+  onServiceDateChange: (value: string) => void;
 }
 
-export default function WorshipTextInput({ onParsed }: WorshipTextInputProps) {
+export default function WorshipTextInput({ onParsed, serviceDate, onServiceDateChange }: WorshipTextInputProps) {
+  const sundayOptions = useMemo(() => getUpcomingSundays(), []);
   const [text, setText] = useState(DEFAULT_WORSHIP_ORDER_TEMPLATE);
   const [parsing, setParsing] = useState(false);
 
@@ -41,8 +45,25 @@ export default function WorshipTextInput({ onParsed }: WorshipTextInputProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          请将本周崇拜程序粘贴或编辑到下方文本框，每行一个项目。编辑完成后点击「解析预览」。
+          请选择崇拜主日，并将该周崇拜程序粘贴或编辑到下方文本框，每行一个项目。编辑完成后点击「解析预览」。
         </p>
+        <div className="space-y-1">
+          <label htmlFor="serviceDate" className="text-sm font-medium text-muted-foreground">
+            崇拜主日
+          </label>
+          <select
+            id="serviceDate"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:w-64"
+            value={serviceDate}
+            onChange={(e) => onServiceDateChange(e.target.value)}
+          >
+            {sundayOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <textarea
           className="w-full min-h-[320px] rounded-md border border-input bg-background px-3 py-2 text-sm font-mono text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-y"
           value={text}

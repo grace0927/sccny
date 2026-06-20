@@ -12,6 +12,7 @@ import {
   fetchServiceRoles,
 } from "@/lib/google-slides";
 import { WorshipOrderData } from "@/lib/parse-worship-order";
+import { getComingSunday, parseServiceDate, formatCompact } from "@/lib/service-date";
 import { prisma } from "@/lib/db";
 
 const TEMPLATE_ID = process.env.GOOGLE_SLIDES_TEMPLATE_ID!;
@@ -20,23 +21,6 @@ const OUTPUT_FOLDER_ID = process.env.GOOGLE_SLIDES_OUTPUT_FOLDER_ID!;
 const SCHEDULE_SHEET_ID = process.env.GOOGLE_SCHEDULE_SHEET_ID;
 const BIBLE_SHEET_ID = process.env.GOOGLE_BIBLE_SHEET_ID;
 
-/** Get the coming Sunday as a Date (today if already Sunday) */
-function getComingSunday(): Date {
-  const today = new Date();
-  const dayOfWeek = today.getDay(); // 0 = Sunday
-  const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
-  const sunday = new Date(today);
-  sunday.setDate(today.getDate() + daysUntilSunday);
-  return sunday;
-}
-
-function formatDate(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}${m}${day}`;
-}
-
 export async function POST(request: NextRequest) {
   try {
     const user = await getAdminUser();
@@ -44,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     await requirePermission(user.id, "ppt.generate");
 
-    const body: WorshipOrderData = await request.json();
+    const body: WorshipOrderData & { serviceDate?: string } = await request.json();
 
     if (!TEMPLATE_ID || !OUTPUT_FOLDER_ID) {
       return NextResponse.json(
@@ -53,10 +37,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const thisSunday = getComingSunday();
+    // Use the client-selected Sunday; fall back to the coming Sunday for
+    // older clients or an invalid value.
+    const thisSunday = parseServiceDate(body.serviceDate) ?? getComingSunday();
     const nextSunday = new Date(thisSunday);
     nextSunday.setDate(thisSunday.getDate() + 7);
-    const sundayDate = formatDate(thisSunday);
+    const sundayDate = formatCompact(thisSunday);
     const title = sundayDate;
 
     // Fetch service roles from schedule sheet (non-fatal if not configured)
