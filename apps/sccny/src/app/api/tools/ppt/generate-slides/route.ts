@@ -50,19 +50,29 @@ export async function POST(request: NextRequest) {
       ? await fetchServiceRoles(SCHEDULE_SHEET_ID, thisSunday, nextSunday)
       : { thisWeek: {}, nextWeek: {} };
 
-    // Look up English hymn titles from DB (for {C22}–{C25} placeholders)
+    // Look up hymn records from DB: English titles (for {C22}–{C25} placeholders),
+    // indexed bank-slide ranges, and stored lyrics (slide-copy fallbacks)
     const hymnNumbers = body.hymns
       .map((h) => parseInt(h.number, 10))
       .filter((n) => !isNaN(n));
     const hymnRecords = hymnNumbers.length > 0
       ? await prisma.hymn.findMany({
           where: { number: { in: hymnNumbers } },
-          select: { number: true, titleEn: true },
+          select: {
+            number: true,
+            titleEn: true,
+            lyricsZh: true,
+            lyricsEn: true,
+            slidesUrl: true,
+            slideStartIndex: true,
+            slideEndIndex: true,
+          },
         })
       : [];
     const hymnEnMap = new Map(
       hymnRecords.map((h) => [String(h.number), h.titleEn ?? ""])
     );
+    const hymnRecordMap = new Map(hymnRecords.map((h) => [String(h.number), h]));
 
     // 1. Copy template into output folder
     const presentationId = await copyTemplatePresentation(title, TEMPLATE_ID, OUTPUT_FOLDER_ID);
@@ -161,8 +171,20 @@ export async function POST(request: NextRequest) {
     //    need the bank for title-slide lookup, but we call even when HYMN_BANK_ID is
     //    absent so YouTube-only hymns are still processed.
     let missingHymns: string[] = [];
-    if (body.hymns.length > 0 && (HYMN_BANK_ID || body.hymns.some((h) => h.youtubeUrl))) {
-      missingHymns = await copyHymnSlides(presentationId, HYMN_BANK_ID || "", body.hymns);
+    if (body.hymns.length > 0) {
+      const hymnSources = body.hymns.map((h) => {
+        const record = hymnRecordMap.get(String(parseInt(h.number, 10)));
+        return {
+          title: h.title,
+          youtubeUrl: h.youtubeUrl,
+          slidesUrl: record?.slidesUrl,
+          slideStartIndex: record?.slideStartIndex,
+          slideEndIndex: record?.slideEndIndex,
+          lyricsZh: record?.lyricsZh,
+          lyricsEn: record?.lyricsEn,
+        };
+      });
+      missingHymns = await copyHymnSlides(presentationId, HYMN_BANK_ID || "", hymnSources);
     }
 
     const presentationUrl = buildPresentationUrl(presentationId);

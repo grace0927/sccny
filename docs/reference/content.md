@@ -28,5 +28,5 @@ All admin routes follow the standard admin API pattern (see `admin-and-rbac.md`)
 - **Admin**: `app/api/admin/content` (+ `[slug]`, `[slug]/publish`, `[slug]/revisions`); UI `app/[locale]/admin/content` (+ `[slug]`) + `components/admin/content/`. Permissions `content.view/edit/publish`; media `media.upload/delete`.
 
 ## Hymns & PPT templates (content-like admin)
-- **Hymn** (bilingual lyrics; `number`, `titleEn` used by the PPT tool): `app/api/admin/hymns` (+ `[id]`); UI `app/[locale]/admin/hymns`-area via `components/admin/hymns/`. Permissions `hymns.view/create/edit/delete`.
+- **Hymn** (bilingual lyrics + indexed hymn-bank slide range `slidesUrl`/`slideStartIndex`/`slideEndIndex`; `number`, `titleEn` used by the PPT tool): `app/api/admin/hymns` (+ `[id]`, `index-bank` POST which scans the Google Slides hymn bank and upserts each hymn's slide range — gated `hymns.edit`); UI `app/[locale]/admin/hymns/page.tsx` → `components/admin/hymns/HymnTable.tsx` (list/search/edit/delete + "Index Hymn Bank" button) + `HymnFormDialog.tsx`. Permissions `hymns.view/create/edit/delete`. Lyrics stored here feed generated lyric slides in the PPT tool (see `tools.md`).
 - **PptTemplate** (styling/layout): `app/api/admin/templates` (+ `[id]`). Permissions `templates.view/create/edit`. See `tools.md` for how templates relate to generation.

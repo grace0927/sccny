@@ -814,7 +814,14 @@
     "saving": "保存中...",
     "cancel": "取消",
     "confirmDelete": "删除诗歌",
-    "confirmDeleteDescription": "确定要删除此诗歌吗？此操作不可撤销。"
+    "confirmDeleteDescription": "确定要删除此诗歌吗？此操作不可撤销。",
+    "indexBank": "索引诗歌库",
+    "indexing": "正在索引…",
+    "indexResult": "已索引 {indexed} 首诗歌：新增 {created}，更新 {updated}",
+    "indexFailed": "索引诗歌库失败",
+    "bankSlides": "诗歌库幻灯片",
+    "lyrics": "歌词",
+    "slidePages": "第 {start}–{end} 页"
   },
   "TemplateManagement": {
     "title": "PPT模板管理",

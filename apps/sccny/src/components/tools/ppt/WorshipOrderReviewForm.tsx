@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button, Card, CardContent, CardHeader, CardTitle, CardFooter } from "dark-blue";
 import { WorshipOrderData, HymnEntry } from "@/lib/parse-worship-order";
+import HymnLyricsPanel from "./HymnLyricsPanel";
 
 interface WorshipOrderReviewFormProps {
   parsed: WorshipOrderData;
@@ -182,6 +183,8 @@ export default function WorshipOrderReviewForm({
               </div>
             ))}
           </div>
+          {/* Availability check + lyrics lookup for hymns not in the bank */}
+          <HymnLyricsPanel hymns={data.hymns} />
         </section>
 
         {/* Communion toggle */}

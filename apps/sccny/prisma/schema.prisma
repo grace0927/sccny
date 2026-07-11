@@ -349,18 +349,23 @@ model MediaAsset {
 // ── Phase 4: PPT Generation ──
 
 model Hymn {
-  id        String   @id @default(cuid())
-  number    Int?
-  titleEn   String
-  titleZh   String
-  lyricsEn  String
-  lyricsZh  String
-  author    String?
-  composer  String?
-  category  String?
-  createdBy String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(cuid())
+  number          Int?
+  titleEn         String
+  titleZh         String
+  lyricsEn        String
+  lyricsZh        String
+  author          String?
+  composer        String?
+  category        String?
+  // Existing slides in the Google Slides hymn bank (filled by the bank indexer).
+  // Page indexes are 0-based; start = title slide, end = last lyrics slide (inclusive).
+  slidesUrl       String?
+  slideStartIndex Int?
+  slideEndIndex   Int?
+  createdBy       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([titleEn])
   @@index([titleZh])

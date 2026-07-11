@@ -308,6 +308,9 @@ export const HymnCreateSchema = z.object({
   author: z.string().max(200).optional(),
   composer: z.string().max(200).optional(),
   category: z.string().max(100).optional(),
+  slidesUrl: z.string().url().max(1000).optional(),
+  slideStartIndex: z.number().int().min(0).optional(),
+  slideEndIndex: z.number().int().min(0).optional(),
 });
 
 export const HymnUpdateSchema = z.object({
@@ -319,6 +322,19 @@ export const HymnUpdateSchema = z.object({
   author: z.string().max(200).optional().nullable(),
   composer: z.string().max(200).optional().nullable(),
   category: z.string().max(100).optional().nullable(),
+  slidesUrl: z.string().url().max(1000).optional().nullable(),
+  slideStartIndex: z.number().int().min(0).optional().nullable(),
+  slideEndIndex: z.number().int().min(0).optional().nullable(),
+});
+
+// ── Hymn lyrics workflow (PPT tool) ──
+
+export const SaveHymnLyricsSchema = z.object({
+  number: z.number().int().positive(),
+  titleZh: z.string().min(1).max(500),
+  titleEn: z.string().max(500).optional(),
+  lyricsZh: z.string().min(1, "Chinese lyrics are required"),
+  lyricsEn: z.string().optional(),
 });
 
 // ── Phase 4: PPT Template Management ──

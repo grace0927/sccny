@@ -1,5 +1,5 @@
 import "server-only";
-import { google } from "googleapis";
+import { google, type slides_v1 } from "googleapis";
 import { Readable } from "stream";
 import fs from "fs";
 
@@ -284,7 +284,7 @@ function extractYouTubeId(url: string): string | null {
 // ── Hymn slide copy ───────────────────────────────────────────────────────────
 
 /** Extract slide text for hymn-title matching. */
-function slideFullText(slide: { pageElements?: Array<{ shape?: { text?: { textElements?: Array<{ textRun?: { content?: string | null } | null }> | null } | null } | null }> | null }): string {
+function slideFullText(slide: slides_v1.Schema$Page): string {
   return (slide.pageElements || [])
     .map((el) =>
       (el.shape?.text?.textElements || [])
@@ -296,7 +296,7 @@ function slideFullText(slide: { pageElements?: Array<{ shape?: { text?: { textEl
 
 /** Find page IDs in bankSlides whose text contains hymnTitle. */
 function findHymnPageIds(
-  bankSlides: Array<{ objectId?: string | null; pageElements?: unknown[] | null }>,
+  bankSlides: slides_v1.Schema$Page[],
   hymnTitle: string
 ): string[] {
   const matchedIds: string[] = [];
@@ -304,7 +304,7 @@ function findHymnPageIds(
 
   for (const slide of bankSlides) {
     const pageId = slide.objectId!;
-    const fullText = slideFullText(slide as Parameters<typeof slideFullText>[0]);
+    const fullText = slideFullText(slide);
 
     if (fullText.includes(hymnTitle)) {
       inHymn = true;
@@ -319,32 +319,134 @@ function findHymnPageIds(
   return matchedIds;
 }
 
+/** Extract the presentation ID from a Google Slides URL (or accept a bare ID). */
+export function extractPresentationId(urlOrId: string): string | null {
+  const match = urlOrId.match(/\/presentation\/d\/([a-zA-Z0-9_-]+)/);
+  if (match) return match[1];
+  return /^[a-zA-Z0-9_-]{20,}$/.test(urlOrId) ? urlOrId : null;
+}
+
+export interface HymnBankIndexEntry {
+  number: number;
+  titleZh: string;
+  titleEn: string;
+  /** 0-based page index of the hymn's title slide in the bank presentation */
+  startIndex: number;
+  /** 0-based page index of its last lyrics slide (inclusive) */
+  endIndex: number;
+}
+
 /**
- * Copy hymn LYRICS slides from the hymn bank into the target presentation,
- * inserting them immediately after the corresponding hymn title slide
- * (identified by containing both the hymn title and "颂诗 HYMN").
- * The first slide in the bank for each hymn (the title slide) is skipped.
- *
- * If a hymn has a youtubeUrl, a YouTube video slide is inserted instead of
- * lyrics slides and no bank lookup is performed for that hymn.
+ * Scan the hymn bank presentation and locate every hymn's slide range.
+ * Title slides are the ones containing the "颂诗 HYMN" marker (the same
+ * marker copyHymnSlides matches in the target deck); the slides between one
+ * title slide and the next are that hymn's lyrics. A numbered title slide
+ * reads "<number>\n<Chinese title>[\n<English title>]"; title slides without
+ * a leading hymn number (one-off songs) are skipped for indexing but still
+ * terminate the previous hymn's range.
+ */
+export async function indexHymnBank(hymnBankId: string): Promise<HymnBankIndexEntry[]> {
+  const slides = getSlidesClient();
+  const res = await slides.presentations.get({ presentationId: hymnBankId });
+  const bankSlides = res.data.slides || [];
+  const texts = bankSlides.map((s) => slideFullText(s));
+
+  const titleIndexes: number[] = [];
+  texts.forEach((t, i) => {
+    if (t.includes("颂诗 HYMN")) titleIndexes.push(i);
+  });
+
+  const entries: HymnBankIndexEntry[] = [];
+  for (let k = 0; k < titleIndexes.length; k++) {
+    const startIndex = titleIndexes[k];
+    const endIndex = (k + 1 < titleIndexes.length ? titleIndexes[k + 1] : bankSlides.length) - 1;
+
+    const lines = texts[startIndex]
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0 && !l.includes("颂诗 HYMN"));
+    if (lines.length === 0) continue;
+
+    // Number on its own line ("3\n求大君王来临") or inline ("3 求大君王来临")
+    let number: number;
+    let titleZh: string;
+    let titleEnLine: string | undefined;
+    const inlineMatch = lines[0].match(/^(\d+)\s+(\S.*)$/);
+    if (/^\d+$/.test(lines[0])) {
+      number = parseInt(lines[0], 10);
+      titleZh = lines[1] ?? "";
+      titleEnLine = lines[2];
+    } else if (inlineMatch) {
+      number = parseInt(inlineMatch[1], 10);
+      titleZh = inlineMatch[2].trim();
+      titleEnLine = lines[1];
+    } else {
+      continue; // unnumbered title slide — not indexable by hymn number
+    }
+    if (!titleZh) continue;
+
+    entries.push({
+      number,
+      titleZh,
+      titleEn: titleEnLine && /[A-Za-z]/.test(titleEnLine) ? titleEnLine : "",
+      startIndex,
+      endIndex,
+    });
+  }
+
+  return entries;
+}
+
+/** A hymn to insert slides for, with optional DB-backed sources. */
+export interface HymnSlideSource {
+  title: string;
+  /** YouTube URL — a video slide replaces lyrics slides */
+  youtubeUrl?: string;
+  /** Indexed slide range in a bank presentation (from the Hymn table) */
+  slidesUrl?: string | null;
+  slideStartIndex?: number | null;
+  slideEndIndex?: number | null;
+  /** Stored lyrics (from the Hymn table) — used when no bank slides exist */
+  lyricsZh?: string | null;
+  lyricsEn?: string | null;
+}
+
+/**
+ * Insert hymn LYRICS slides into the target presentation immediately after
+ * each hymn's title slide (identified by containing both the hymn title and
+ * "颂诗 HYMN"). Per-hymn source priority:
+ *  1. youtubeUrl → a YouTube video slide
+ *  2. indexed slide range (slidesUrl + slideStartIndex/slideEndIndex) → copy
+ *     those bank pages by index (the title slide at startIndex is skipped)
+ *  3. title-scan of the default hymn bank (legacy fuzzy match)
+ *  4. stored lyrics text → generated bilingual lyric slides
+ * Hymns with none of the above are returned as missing.
  */
 export async function copyHymnSlides(
   targetPresentationId: string,
   hymnBankId: string,
-  hymns: Array<{ title: string; youtubeUrl?: string }>,
+  hymns: HymnSlideSource[],
 ): Promise<string[]> {
   const missingHymns: string[] = [];
   if (hymns.length === 0) return missingHymns;
-  const hymnTitles = hymns.map((h) => h.title);
 
   const slides = getSlidesClient();
 
-  // Fetch hymn bank and a snapshot of the target presentation (for locating title slides)
-  const [hymnBank, targetPres] = await Promise.all([
-    slides.presentations.get({ presentationId: hymnBankId }),
-    slides.presentations.get({ presentationId: targetPresentationId }),
-  ]);
-  const bankSlides = hymnBank.data.slides || [];
+  // Source presentations (default bank + any per-hymn slidesUrl) are fetched
+  // lazily and cached so several hymns from the same bank cost one API call.
+  const presCache = new Map<string, slides_v1.Schema$Page[]>();
+  const getSourceSlides = async (presentationId: string): Promise<slides_v1.Schema$Page[]> => {
+    let cached = presCache.get(presentationId);
+    if (!cached) {
+      const res = await slides.presentations.get({ presentationId });
+      cached = res.data.slides || [];
+      presCache.set(presentationId, cached);
+    }
+    return cached;
+  };
+
+  // Snapshot of the target presentation (for locating title slides)
+  const targetPres = await slides.presentations.get({ presentationId: targetPresentationId });
   const targetSlides = targetPres.data.slides || [];
 
   let insertionOffset = 0; // tracks extra slides inserted so far
@@ -356,7 +458,7 @@ export async function copyHymnSlides(
     // must contain both the hymn title AND "颂诗 HYMN"
     let titleSlideIndex = -1;
     for (let i = 0; i < targetSlides.length; i++) {
-      const text = slideFullText(targetSlides[i] as Parameters<typeof slideFullText>[0]);
+      const text = slideFullText(targetSlides[i]);
       if (text.includes(title) && text.includes("颂诗 HYMN")) {
         titleSlideIndex = i;
         break;
@@ -419,37 +521,94 @@ export async function copyHymnSlides(
       continue;
     }
 
-    // ── Standard path: copy lyrics slides from hymn bank ────────────────────
-    const allPageIds = findHymnPageIds(bankSlides, title);
-    if (allPageIds.length === 0) {
-      console.warn(`copyHymnSlides: no slides found for hymn "${title}"`);
-      missingHymns.push(title);
+    // ── Resolve the hymn's source slides ─────────────────────────────────────
+    let srcSlides: slides_v1.Schema$Page[] = [];
+
+    // 1) Indexed slide range from the DB (requires at least one lyrics page)
+    if (
+      hymn.slidesUrl &&
+      hymn.slideStartIndex != null &&
+      hymn.slideEndIndex != null &&
+      hymn.slideEndIndex > hymn.slideStartIndex
+    ) {
+      const srcPresId = extractPresentationId(hymn.slidesUrl);
+      if (srcPresId) {
+        try {
+          const all = await getSourceSlides(srcPresId);
+          // Skip the title slide at startIndex; copy only the lyrics pages
+          srcSlides = all.slice(hymn.slideStartIndex + 1, hymn.slideEndIndex + 1);
+        } catch (err) {
+          console.warn(`copyHymnSlides: failed to load indexed slides for "${title}"`, err);
+        }
+      }
+    }
+
+    // 2) Legacy fuzzy title-scan of the default hymn bank
+    if (srcSlides.length === 0 && hymnBankId) {
+      try {
+        const bankSlides = await getSourceSlides(hymnBankId);
+        // Skip the first matched slide (the bank's own title slide)
+        const pageIds = findHymnPageIds(bankSlides, title).slice(1);
+        srcSlides = pageIds
+          .map((id) => bankSlides.find((s) => s.objectId === id))
+          .filter((s): s is slides_v1.Schema$Page => !!s);
+      } catch (err) {
+        console.warn(`copyHymnSlides: hymn bank scan failed for "${title}"`, err);
+      }
+    }
+
+    if (srcSlides.length > 0) {
+      // Insert copied slides right after the title slide
+      let currentIndex = insertIndex;
+      for (const src of srcSlides) {
+        const newSlideId = `hymn_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const requests = buildSlideCopyRequests(src, newSlideId, currentIndex);
+        await slides.presentations.batchUpdate({
+          presentationId: targetPresentationId,
+          requestBody: { requests },
+        });
+        currentIndex++;
+        insertionOffset++;
+      }
       continue;
     }
 
-    // Skip the first slide (title slide in the bank); only copy lyrics
-    const pageIds = allPageIds.slice(1);
-    if (pageIds.length === 0) {
-      console.warn(`copyHymnSlides: only a title slide found for hymn "${title}", no lyrics`);
-      missingHymns.push(title);
-      continue;
+    // 3) Stored lyrics → generate bilingual lyric slides
+    if (hymn.lyricsZh?.trim()) {
+      const inserted = await createLyricsSlides(
+        slides,
+        targetPresentationId,
+        insertIndex,
+        hymn.lyricsZh,
+        hymn.lyricsEn ?? undefined,
+        targetSlides[titleSlideIndex]
+      );
+      if (inserted > 0) {
+        insertionOffset += inserted;
+        continue;
+      }
     }
 
-    // Insert lyrics slides right after the title slide
-    let currentIndex = insertIndex;
+    console.warn(`copyHymnSlides: no slides or lyrics found for hymn "${title}"`);
+    missingHymns.push(title);
+  }
+  return missingHymns;
+}
 
-    for (const pageId of pageIds) {
-      const src = bankSlides.find((s) => s.objectId === pageId);
-      if (!src) continue;
-
-      const newSlideId = `hymn_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-      const requests: object[] = [];
+/** Build the batchUpdate requests that clone one source slide into the target at insertionIndex. */
+function buildSlideCopyRequests(
+  src: slides_v1.Schema$Page,
+  newSlideId: string,
+  insertionIndex: number
+): object[] {
+  const requests: object[] = [];
+  {
 
       // 1. Create blank slide
       requests.push({
         createSlide: {
           objectId: newSlideId,
-          insertionIndex: currentIndex,
+          insertionIndex,
           slideLayoutReference: { predefinedLayout: "BLANK" },
         },
       });
@@ -615,17 +774,137 @@ export async function copyHymnSlides(
         }
       }
 
-      // Execute all requests for this slide in one batch
-      await slides.presentations.batchUpdate({
-        presentationId: targetPresentationId,
-        requestBody: { requests },
-      });
-
-      currentIndex++;
-      insertionOffset++;
-    }
   }
-  return missingHymns;
+  return requests;
+}
+
+// EMU dimensions of a standard 16:9 slide (matches the video-slide sizing above)
+const SLIDE_WIDTH_EMU = 9144000;
+const SLIDE_HEIGHT_EMU = 5143500;
+
+/**
+ * Generate lyric slides from stored lyrics text — one slide per stanza
+ * (stanzas are separated by blank lines). When English lyrics are present,
+ * each slide shows the Chinese stanza with the matching English stanza below
+ * it (extra English stanzas are dropped). The slides inherit the hymn title
+ * slide's background so they match the deck theme; text is white and centered.
+ * Returns the number of slides inserted.
+ */
+async function createLyricsSlides(
+  slidesClient: ReturnType<typeof getSlidesClient>,
+  targetPresentationId: string,
+  insertIndex: number,
+  lyricsZh: string,
+  lyricsEn: string | undefined,
+  titleSlide: slides_v1.Schema$Page | undefined
+): Promise<number> {
+  const splitStanzas = (text: string) =>
+    text
+      .split(/\n\s*\n/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+  const stanzasZh = splitStanzas(lyricsZh);
+  if (stanzasZh.length === 0) return 0;
+  const stanzasEn = lyricsEn ? splitStanzas(lyricsEn) : [];
+
+  // Inherit the deck theme from the hymn title slide (clean object — see
+  // the propertyState note in buildSlideCopyRequests)
+  const bgFill = titleSlide?.pageProperties?.pageBackgroundFill;
+  let backgroundFill: object;
+  if (bgFill?.solidFill) {
+    backgroundFill = { solidFill: bgFill.solidFill };
+  } else if (bgFill?.stretchedPictureFill?.contentUrl) {
+    backgroundFill = {
+      stretchedPictureFill: { contentUrl: bgFill.stretchedPictureFill.contentUrl },
+    };
+  } else {
+    // Dark default so the white lyric text stays readable
+    backgroundFill = { solidFill: { color: { rgbColor: { red: 0, green: 0, blue: 0 } } } };
+  }
+
+  const requests: object[] = [];
+  stanzasZh.forEach((zh, i) => {
+    const en = stanzasEn[i];
+    const slideId = `hymn_lyr_${Date.now()}_${i}_${Math.random().toString(36).slice(2)}`;
+    const textBoxId = `${slideId}_txt`;
+
+    requests.push({
+      createSlide: {
+        objectId: slideId,
+        insertionIndex: insertIndex + i,
+        slideLayoutReference: { predefinedLayout: "BLANK" },
+      },
+    });
+    requests.push({
+      updatePageProperties: {
+        objectId: slideId,
+        pageProperties: { pageBackgroundFill: backgroundFill },
+        fields: "pageBackgroundFill",
+      },
+    });
+    requests.push({
+      createShape: {
+        objectId: textBoxId,
+        shapeType: "TEXT_BOX",
+        elementProperties: {
+          pageObjectId: slideId,
+          size: {
+            width: { magnitude: SLIDE_WIDTH_EMU, unit: "EMU" },
+            height: { magnitude: SLIDE_HEIGHT_EMU, unit: "EMU" },
+          },
+          transform: { scaleX: 1, scaleY: 1, translateX: 0, translateY: 0, unit: "EMU" },
+        },
+      },
+    });
+
+    const text = en ? `${zh}\n\n${en}` : zh;
+    requests.push({ insertText: { objectId: textBoxId, insertionIndex: 0, text } });
+    requests.push({
+      updateShapeProperties: {
+        objectId: textBoxId,
+        shapeProperties: { contentAlignment: "MIDDLE" },
+        fields: "contentAlignment",
+      },
+    });
+    requests.push({
+      updateParagraphStyle: {
+        objectId: textBoxId,
+        style: { alignment: "CENTER" },
+        textRange: { type: "ALL" },
+        fields: "alignment",
+      },
+    });
+    requests.push({
+      updateTextStyle: {
+        objectId: textBoxId,
+        style: {
+          foregroundColor: { opaqueColor: { rgbColor: { red: 1, green: 1, blue: 1 } } },
+          fontSize: { magnitude: 28, unit: "PT" },
+          bold: true,
+        },
+        textRange: { type: "ALL" },
+        fields: "foregroundColor,fontSize,bold",
+      },
+    });
+    if (en) {
+      const enStart = zh.length + 2; // after the Chinese stanza + blank line
+      requests.push({
+        updateTextStyle: {
+          objectId: textBoxId,
+          style: { fontSize: { magnitude: 20, unit: "PT" }, bold: false },
+          textRange: { type: "FIXED_RANGE", startIndex: enStart, endIndex: enStart + en.length },
+          fields: "fontSize,bold",
+        },
+      });
+    }
+  });
+
+  await slidesClient.presentations.batchUpdate({
+    presentationId: targetPresentationId,
+    requestBody: { requests },
+  });
+  return stanzasZh.length;
 }
 
 // ── Schedule sheet role lookup ────────────────────────────────────────────────
