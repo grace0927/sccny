@@ -38,6 +38,7 @@
       "persistent": true
     },
     "lint": {},
+    "test": {},
     "start": {}
   }
 }

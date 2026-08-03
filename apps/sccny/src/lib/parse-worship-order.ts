@@ -36,6 +36,37 @@ export interface WorshipOrderData {
 }
 
 /**
+ * The worship-order fields that hold a Bible reference, in slide order.
+ *
+ * Single source of truth for the review-form preview, the preview-verses route
+ * and the generate-slides pre-validation, so the three never drift apart.
+ * `label` is what the operator sees on the slide and in error messages.
+ */
+export const SCRIPTURE_FIELDS = [
+  { field: "callToWorship", label: "宣召" },
+  { field: "confessionPrayer", label: "认罪祷告" },
+  { field: "assuranceOfPardon", label: "宣告赦免" },
+  { field: "scriptureReading", label: "经文" },
+  { field: "memoryVerse", label: "金句" },
+] as const satisfies ReadonlyArray<{ field: keyof WorshipOrderData; label: string }>;
+
+export type ScriptureField = (typeof SCRIPTURE_FIELDS)[number]["field"];
+
+/**
+ * The scripture references that will actually be looked up for a worship order:
+ * empty fields are skipped, and 宣召 is skipped when custom text overrides it.
+ */
+export function collectScriptureRefs(
+  data: Pick<WorshipOrderData, ScriptureField | "callToWorshipCustomText">
+): Array<{ field: ScriptureField; label: string; ref: string }> {
+  return SCRIPTURE_FIELDS.filter(
+    ({ field }) => !(field === "callToWorship" && data.callToWorshipCustomText?.trim())
+  )
+    .map(({ field, label }) => ({ field, label, ref: (data[field] ?? "").trim() }))
+    .filter(({ ref }) => ref.length > 0);
+}
+
+/**
  * Parse a hymn line like "诗歌：12 你真伟大" or "回应诗歌：441 洁净我"
  * Returns { number, title, raw } or null if not parseable.
  */

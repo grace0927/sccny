@@ -15,6 +15,13 @@ interface GenerationResult {
   missingHymns: string[];
 }
 
+/** One rejected scripture reference from generate-slides' 400 response. */
+interface InvalidRef {
+  field: string;
+  ref: string;
+  reason: string;
+}
+
 export default function AdminPptGenerationPage() {
   const [step, setStep] = useState<Step>("input");
   const [serviceDate, setServiceDate] = useState(() => toDateInputValue(getComingSunday()));
@@ -42,6 +49,14 @@ export default function AdminPptGenerationPage() {
       });
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
+        // Invalid scripture references are reported per field so the operator
+        // knows exactly which one to fix. No deck was created.
+        if (Array.isArray(json.invalidRefs) && json.invalidRefs.length > 0) {
+          const details = (json.invalidRefs as InvalidRef[])
+            .map((r) => `${r.field}「${r.ref}」：${r.reason}`)
+            .join("；");
+          throw new Error(`${json.error ?? "经文引用无效"} — ${details}`);
+        }
         throw new Error(json.error || `Server error ${res.status}`);
       }
       const json: GenerationResult = await res.json();

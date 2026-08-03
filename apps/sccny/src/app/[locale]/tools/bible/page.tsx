@@ -38,6 +38,21 @@ interface SheetsApiResponse {
   error?: string;
 }
 
+/** 400 body when the reference names a book/chapter/verse that doesn't exist. */
+interface InvalidReferenceResponse {
+  status: "invalid_reference";
+  ref: string;
+  error: { code: string; message: string; params: Record<string, string | number> };
+}
+
+function isInvalidReference(data: unknown): data is InvalidReferenceResponse {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    (data as { status?: unknown }).status === "invalid_reference"
+  );
+}
+
 // Legacy external-API types (fallback)
 interface BibleVerse {
   chineses: string;
@@ -67,6 +82,26 @@ export default function BiblePage() {
   const [searched, setSearched] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
+  /**
+   * Localise a reference error. Falls back to the server's Chinese sentence for
+   * any code this build doesn't have a translation for.
+   */
+  const translateRefError = useCallback(
+    (data: InvalidReferenceResponse): string => {
+      const keys: Record<string, string> = {
+        UNPARSEABLE: "errors.unparseable",
+        UNKNOWN_BOOK: "errors.unknownBook",
+        CHAPTER_OUT_OF_RANGE: "errors.chapterOutOfRange",
+        VERSE_OUT_OF_RANGE: "errors.verseOutOfRange",
+        REVERSED_RANGE: "errors.reversedRange",
+      };
+      const key = keys[data.error.code];
+      if (!key) return data.error.message;
+      return t(key, { ref: data.ref, ...data.error.params });
+    },
+    [t]
+  );
+
   const fetchBibleVerse = useCallback(
     async (searchQuery: string) => {
       setLoading(true);
@@ -91,7 +126,15 @@ export default function BiblePage() {
           setError(t("noResults"));
           return;
         }
-      } catch {
+      } catch (err) {
+        // A reference that doesn't exist is the user's error: report it instead
+        // of retrying against a different source that would answer with
+        // different — and equally wrong — verses.
+        const data = axios.isAxiosError(err) ? err.response?.data : undefined;
+        if (isInvalidReference(data)) {
+          setError(translateRefError(data));
+          return;
+        }
         // Google Sheets unavailable — fall through to external API
       }
 
@@ -113,7 +156,7 @@ export default function BiblePage() {
         setLoading(false);
       }
     },
-    [t]
+    [t, translateRefError]
   );
 
   // fetchBibleVerse manages its own loading state via the try/finally in the
