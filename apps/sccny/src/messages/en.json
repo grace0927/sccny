@@ -310,9 +310,9 @@
     "bible": {
       "title": "Holy Bible Lite",
       "description": "A simple Bible lookup tool to help you find verses quickly.",
-      "searchPlaceholder": "Enter book chapter:verse (e.g. Eph 2:1)",
+      "searchPlaceholder": "Enter book chapter:verse (e.g. John 1:1-2:2)",
       "searchButton": "Search",
-      "searchHint": "Examples: John 3:16, Rom 8:28, Gen 1:1-3, Ps 23",
+      "searchHint": "Examples: John 3:16, John 1:1-2:2, 1 Cor 1:18-25, Ps 23, 约翰福音1:1-2:2",
       "version": "Version",
       "versionCUV": "Chinese Union Version (CUV)",
       "versionESV": "English Standard Version (ESV)",
@@ -325,7 +325,14 @@
       "copyVerse": "Copy verse",
       "copied": "Copied!",
       "chineseLabel": "Chinese (和合本)",
-      "englishLabel": "English (ESV)"
+      "englishLabel": "English (ESV)",
+      "errors": {
+        "unparseable": "Could not read that reference: “{ref}”",
+        "unknownBook": "Unknown book: “{ref}”",
+        "chapterOutOfRange": "{bookEn} has only {maxChapter} chapters (you asked for chapter {chapter}).",
+        "verseOutOfRange": "{bookEn} {chapter} has only {maxVerse} verses (you asked for verse {verse}).",
+        "reversedRange": "That range ends before it starts: “{ref}”"
+      }
     },
     "liveTranslation": {
       "title": "Live Translation",

@@ -17,6 +17,8 @@ pnpm lint            # turbo → eslint . (flat config, eslint-config-next)
 # Type-check (from apps/sccny) — the other correctness gate
 node <ts>/tsc --noEmit   # see memory MEMORY.md for exact tsc/prisma paths
 
+pnpm test            # vitest (from apps/sccny); currently covers lib/bible-reference.ts only
+
 # Database (from apps/sccny)
 pnpm exec prisma generate                              # Generate client
 pnpm exec prisma db push                               # Push schema (use this; migrate dev fails on Neon shadow DB)
@@ -34,7 +36,7 @@ pnpm exec prisma studio                                # GUI
 - `app/api/` — REST routes: `admin/*` (permission-gated), public (`sermons`, `news`, `announcements`, `events`), `member/*` (self-service), `tools/*` (ppt, translation, bible), `tasks/*` (cron sync).
 - `app/[locale]/` — localized pages (incl. `admin/`, `my-account/`, `tools/`, `messages/`).
 - `components/` — `admin/`, `member-corner/`, `sermons/`, `news/`, `tools/`.
-- `lib/` — `db.ts` (Prisma singleton), `validations.ts` / `admin-validations.ts` (Zod), `permissions.ts` + `permissions-client.ts` (RBAC), `admin-auth.ts`, `audit.ts`, `google-slides.ts` / `google-drive.ts` / `bible-lookup.ts` / `parse-worship-order.ts` / `hymn-lyrics.ts` (web lyric scrapers) / `service-date.ts`, `sermon-scraper.ts` / `news-scraper.ts`.
+- `lib/` — `db.ts` (Prisma singleton), `validations.ts` / `admin-validations.ts` (Zod), `permissions.ts` + `permissions-client.ts` (RBAC), `admin-auth.ts`, `audit.ts`, `google-slides.ts` / `google-drive.ts` / `bible-reference.ts` (shared, pure, unit-tested Bible reference parser) + `bible-lookup.ts` (its Sheets I/O) / `parse-worship-order.ts` / `hymn-lyrics.ts` (web lyric scrapers) / `service-date.ts`, `sermon-scraper.ts` / `news-scraper.ts`.
 - `messages/` — `en.json` / `zh.json`. `generated/` — Prisma types (lint-excluded).
 
 ### Data models (full fields in `schema.prisma`)

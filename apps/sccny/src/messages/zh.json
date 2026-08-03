@@ -310,9 +310,9 @@
     "bible": {
       "title": "圣经查询 (精简版)",
       "description": "一个简单的圣经查询工具，帮助您快速查找经文。",
-      "searchPlaceholder": "输入书卷 章:节 (例如 弗 2:1)",
+      "searchPlaceholder": "输入书卷 章:节 (例如 约翰福音1:1-2:2)",
       "searchButton": "搜索",
-      "searchHint": "示例：约 3:16、罗 8:28、创 1:1-3、诗 23",
+      "searchHint": "示例：约 3:16、约翰福音1:1-2:2、林前1:18-25、诗 23、John 1:1-2:2",
       "version": "版本",
       "versionCUV": "和合本 (CUV)",
       "versionESV": "英文标准版 (ESV)",
@@ -325,7 +325,14 @@
       "copyVerse": "复制经文",
       "copied": "已复制!",
       "chineseLabel": "中文 (和合本)",
-      "englishLabel": "英文 (ESV)"
+      "englishLabel": "英文 (ESV)",
+      "errors": {
+        "unparseable": "无法解析经文引用：「{ref}」",
+        "unknownBook": "无法识别经卷：「{ref}」",
+        "chapterOutOfRange": "{book} 只有 {maxChapter} 章（引用为第 {chapter} 章）",
+        "verseOutOfRange": "{book} {chapter} 章只有 {maxVerse} 节（引用为第 {verse} 节）",
+        "reversedRange": "经文范围起止颠倒：「{ref}」"
+      }
     },
     "liveTranslation": {
       "title": "实时翻译",

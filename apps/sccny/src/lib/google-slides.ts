@@ -2,6 +2,8 @@ import "server-only";
 import { google, type slides_v1 } from "googleapis";
 import { Readable } from "stream";
 import fs from "fs";
+import { fetchSegments, loadBibleIndex } from "./bible-lookup";
+import { resolveRef } from "./bible-reference";
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -1047,209 +1049,6 @@ export async function fetchServiceRoles(
 // ── Per-slide verse content replacement ──────────────────────────────────────
 
 /**
- * Common Chinese Bible book abbreviations → canonical full names.
- * Sorted longest-first at build time so shorter prefixes don't shadow longer ones.
- */
-const BOOK_ABBREV_MAP: Record<string, string> = {
-  "林前": "哥林多前书", "林后": "哥林多后书", "林後": "哥林多后书",
-  "帖前": "帖撒罗尼迦前书", "帖后": "帖撒罗尼迦后书", "帖後": "帖撒罗尼迦后书",
-  "提前": "提摩太前书",    "提后": "提摩太后书",    "提後": "提摩太后书",
-  "彼前": "彼得前书",      "彼后": "彼得后书",      "彼後": "彼得后书",
-  "撒上": "撒母耳记上",    "撒下": "撒母耳记下",
-  "王上": "列王纪上",      "王下": "列王纪下",
-  "代上": "历代志上",      "代下": "历代志下",
-  "约一": "约翰一书",      "约二": "约翰二书",   "约三": "约翰三书",
-  "弗":   "以弗所书",      "腓": "腓立比书",     "西": "歌罗西书",
-  "多":   "提多书",        "门": "腓利门书",     "来": "希伯来书",
-  "雅":   "雅各书",        "犹": "犹大书",       "启": "启示录",   "啟": "启示录",
-  "罗":   "罗马书",        "加": "加拉太书",
-  "太":   "马太福音",      "可": "马可福音",     "路": "路加福音",
-  "约":   "约翰福音",      "徒": "使徒行传",
-  "创":   "创世记",        "出": "出埃及记",     "利": "利未记",
-  "民":   "民数记",        "申": "申命记",       "书": "约书亚记",
-  "士":   "士师记",        "得": "路得记",       "拉": "以斯拉记",
-  "尼":   "尼希米记",      "斯": "以斯帖记",     "伯": "约伯记",
-  "诗":   "诗篇",          "詩": "诗篇",         "传": "传道书",   "傳": "传道书",   "歌": "雅歌",
-  "赛":   "以赛亚书",      "耶": "耶利米书",     "哀": "耶利米哀歌",
-  "结":   "以西结书",      "但": "但以理书",     "何": "何西阿书",
-  "珥":   "约珥书",        "摩": "阿摩司书",     "俄": "俄巴底亚书",
-  "拿":   "约拿书",        "弥": "弥迦书",       "鸿": "那鸿书",   "鴻": "那鸿书",
-  "哈":   "哈巴谷书",      "番": "西番雅书",     "该": "哈该书",
-  "亚":   "撒迦利亚书",    "玛": "玛拉基书",
-};
-// Pre-sort entries longest-first to prevent short prefixes shadowing longer ones.
-const ABBREV_ENTRIES = Object.entries(BOOK_ABBREV_MAP).sort((a, b) => b[0].length - a[0].length);
-
-/**
- * Expand a common abbreviation at the start of a verse reference, e.g. "林前1:18" → "哥林多前书1:18".
- * Only expands when the character after the abbreviation is a digit, 第, space, or colon —
- * so full names like "以弗所书" are never corrupted.
- */
-function expandBookAbbreviation(ref: string): string {
-  for (const [abbrev, full] of ABBREV_ENTRIES) {
-    if (!ref.startsWith(abbrev)) continue;
-    const after = ref.slice(abbrev.length);
-    if (after === "" || /^[\d第\s：:]/.test(after)) return full + after;
-  }
-  return ref;
-}
-
-/**
- * Normalise Chinese chapter ordinals ("第五章") to Arabic digits ("5").
- * e.g. "哥林多前书第五章" → "哥林多前书5"
- */
-function normalizeChapterRef(ref: string): string {
-  const cn: Record<string, number> = {
-    "一": 1, "二": 2, "三": 3, "四": 4, "五": 5,
-    "六": 6, "七": 7, "八": 8, "九": 9,
-    "十": 10, "十一": 11, "十二": 12, "十三": 13, "十四": 14, "十五": 15,
-    "十六": 16, "十七": 17, "十八": 18, "十九": 19, "二十": 20,
-    "二十一": 21, "二十二": 22, "二十三": 23, "二十四": 24, "二十五": 25,
-    "二十六": 26, "二十七": 27, "二十八": 28, "二十九": 29, "三十": 30,
-  };
-  return ref.replace(/第([二三四五六七八九十一]+)章/, (_, ch: string) =>
-    cn[ch] !== undefined ? String(cn[ch]) : ch
-  );
-}
-
-/** Return last index i where arr[i] <= target; -1 if none. */
-function binarySearchLE(arr: number[], target: number): number {
-  let lo = 0, hi = arr.length - 1, result = -1;
-  while (lo <= hi) {
-    const mid = (lo + hi) >> 1;
-    if (arr[mid] <= target) { result = mid; lo = mid + 1; }
-    else hi = mid - 1;
-  }
-  return result;
-}
-
-/**
- * Parse a Chinese verse reference into its components.
- * Handles: "约翰一书1:9", "诗篇51", "罗马书8：1-2", "哥林多前书第七章1-40".
- * bookNamesList must be sorted by zhName.length descending (longest first).
- */
-function parseVerseRef(
-  ref: string,
-  bookNamesList: Array<{ zhName: string; enName: string; bookNum: number }>
-): { bookNum: number; bookZh: string; bookEn: string; chapter: number; startVerse: number; endVerse: number; verseSpecified: boolean } | null {
-  const normalized = normalizeChapterRef(expandBookAbbreviation(ref.trim()));
-  for (const { zhName, enName, bookNum } of bookNamesList) {
-    if (!normalized.startsWith(zhName)) continue;
-    // trimStart handles "以弗所书 1:7-8" where a space separates book and chapter
-    const rest = normalized.slice(zhName.length).trimStart();
-    // chapter[章][: or ：][startVerse][- or ~][endVerse]
-    const m = rest.match(/^(\d+)章?(?:[：:](\d+)(?:[-~](\d+))?)?/);
-    if (!m) continue;
-    const chapter    = parseInt(m[1], 10);
-    const startVerse = m[2] ? parseInt(m[2], 10) : 1;
-    const endVerse   = m[3] ? parseInt(m[3], 10) : startVerse;
-    return { bookNum, bookZh: zhName, bookEn: enName, chapter, startVerse, endVerse, verseSpecified: !!m[2] };
-  }
-  return null;
-}
-
-/**
- * Look up Chinese Bible verse text + formatted title.
- *
- * Uses bibleData col A keys (bookNum*1e6 + chapter*1e3 + verse, sorted) for fast
- * lookup — matches the Apps Script MATCH formula and findOneVerse() output format:
- *   text:  "{n} {verseText}" per verse, space-joined
- *   title: "bookZh chapter:start~end"
- *
- * @param bookNamesList  Pre-fetched from bookNames!A:C, sorted longest-name first.
- * @param bibleDataKeys  Pre-fetched from bibleData!A:A (all ~31K verse keys).
- */
-/** Fetch verse text for a single, already-resolved ref segment (no commas). */
-async function fetchSingleRef(
-  bibleSheetId: string,
-  ref: string,
-  bookNamesList: Array<{ zhName: string; enName: string; bookNum: number }>,
-  bibleDataKeys: number[]
-): Promise<{ zhVerses: string[]; enVerses: string[]; zhTitle: string; enTitle: string } | null> {
-  const parsed = parseVerseRef(ref, bookNamesList);
-  if (!parsed) {
-    console.warn("fetchVerseText: could not parse ref:", ref);
-    return null;
-  }
-
-  const { bookNum, bookZh, bookEn, chapter, startVerse, endVerse, verseSpecified } = parsed;
-  const startKey = bookNum * 1000000 + chapter * 1000 + startVerse;
-  const startIdx = binarySearchLE(bibleDataKeys, startKey);
-
-  if (startIdx < 0 || bibleDataKeys[startIdx] !== startKey) {
-    console.warn("fetchVerseText: verse not found for key", startKey, "ref:", ref);
-    return null;
-  }
-
-  const endKey = verseSpecified
-    ? bookNum * 1000000 + chapter * 1000 + endVerse
-    : bookNum * 1000000 + chapter * 1000 + 999;
-  const endIdx = Math.min(binarySearchLE(bibleDataKeys, endKey), bibleDataKeys.length - 1);
-
-  const actualEndVerse = bibleDataKeys[endIdx] % 1000;
-  const verseRange = actualEndVerse === startVerse ? `${startVerse}` : `${startVerse}-${actualEndVerse}`;
-  const zhTitle = `${bookZh} ${chapter}:${verseRange}`;
-  const enTitle = `${bookEn || bookZh} ${chapter}:${verseRange}`;
-
-  try {
-    const sheets = getSheetsClient();
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId: bibleSheetId,
-      range: `bibleData!B${startIdx + 1}:C${endIdx + 1}`,
-      valueRenderOption: "FORMATTED_VALUE",
-    });
-    const verseRows = (res.data.values || []) as string[][];
-    const zhVerses = verseRows.map((r, i) => `${startVerse + i} ${(r[0] || "").trim()}`);
-    const enVerses = verseRows.map((r, i) => `${startVerse + i} ${(r[1] || "").trim()}`);
-    return {
-      zhVerses: zhVerses.length > 0 ? zhVerses : [ref],
-      enVerses: enVerses.length > 0 ? enVerses : [ref],
-      zhTitle,
-      enTitle,
-    };
-  } catch (err) {
-    console.warn("fetchVerseText: fetch failed for ref", ref, err);
-    return { zhVerses: [ref], enVerses: [ref], zhTitle, enTitle };
-  }
-}
-
-async function fetchVerseText(
-  bibleSheetId: string,
-  ref: string,
-  bookNamesList: Array<{ zhName: string; enName: string; bookNum: number }>,
-  bibleDataKeys: number[]
-): Promise<Array<{ zhVerses: string[]; enVerses: string[]; zhTitle: string; enTitle: string }> | null> {
-  if (!ref || bookNamesList.length === 0 || bibleDataKeys.length === 0) return null;
-
-  // Split multi-range refs like "林前1:18-25, 2:1-8, 3:18-20".
-  // Segments that start with a digit re-use the book prefix from the previous segment.
-  const rawParts = ref.split(/[,;，；]\s*/);  // also split on full-width Chinese commas/semicolons
-  const segments: string[] = [];
-  let bookPrefix = "";
-  for (const part of rawParts) {
-    const t = part.trim();
-    if (!t) continue;
-    if (/^\d/.test(t) && bookPrefix) {
-      segments.push(bookPrefix + t);
-    } else {
-      segments.push(t);
-      // Capture the leading non-digit characters as the book prefix
-      const m = t.match(/^([^\d]+)/);
-      if (m) bookPrefix = m[1];
-    }
-  }
-
-  if (segments.length === 0) return null;
-
-  // Fetch all segments in parallel; each becomes its own paginated group
-  const results = await Promise.all(
-    segments.map((seg) => fetchSingleRef(bibleSheetId, seg, bookNamesList, bibleDataKeys))
-  );
-  const valid = results.filter((r): r is NonNullable<typeof r> => r !== null);
-  return valid.length > 0 ? valid : null;
-}
-
-/**
  * Paginate verse strings into pages ≤ limit chars each.
  * Matches Apps Script findOneVerse() logic: title appears only on the LAST page;
  * intermediate pages get an empty [vetitle].
@@ -1277,15 +1076,34 @@ function paginateVerses(
   return { pages, pageTitles };
 }
 
+/** One scripture section of the deck. */
+export interface VerseEntry {
+  /** Text that identifies the template slide, e.g. "宣召". */
+  keyword: string;
+  /** A Bible reference, or literal text when `literal` is set. */
+  verse: string;
+  vetitle: string;
+  /** Keep all segments on a single slide (金句). */
+  noSplit?: boolean;
+  /** `verse` is free-form text to print verbatim, not a reference to look up. */
+  literal?: boolean;
+}
+
 /**
  * For each entry, find slides whose text contains `keyword`, replace [vetitle]
  * and [verse] on those slides. If the verse text exceeds 240 chars, the template
  * slide is duplicated and content is split across pages — matching the Apps Script
  * findOneVerse() pagination logic (title on last page only).
+ *
+ * References are resolved through `lib/bible-reference.ts` — the same parser the
+ * Bible tool and the PPT preview use, so what the operator confirmed in the
+ * preview is exactly what lands on the slides. Callers are expected to have
+ * validated the references first (see the generate-slides route); an invalid
+ * reference here throws rather than printing the raw reference as scripture.
  */
 export async function replaceVerseContent(
   presentationId: string,
-  entries: Array<{ keyword: string; verse: string; vetitle: string; noSplit?: boolean }>,
+  entries: VerseEntry[],
   bibleSheetId?: string,
   isJoint = false
 ): Promise<void> {
@@ -1295,36 +1113,7 @@ export async function replaceVerseContent(
   const pres = await slidesClient.presentations.get({ presentationId });
   const allSlides = pres.data.slides || [];
 
-  // Pre-fetch bookNames + bibleData key column for Bible verse lookup
-  let bookNamesList: Array<{ zhName: string; enName: string; bookNum: number }> = [];
-  let bibleDataKeys: number[] = [];
-  if (bibleSheetId) {
-    try {
-      const sheets = getSheetsClient();
-      const [bnRes, bdRes] = await Promise.all([
-        sheets.spreadsheets.values.get({
-          spreadsheetId: bibleSheetId,
-          range: "bookNames!A:C",
-          valueRenderOption: "FORMATTED_VALUE",
-        }),
-        sheets.spreadsheets.values.get({
-          spreadsheetId: bibleSheetId,
-          range: "bibleData!A:A",
-          valueRenderOption: "FORMATTED_VALUE",
-        }),
-      ]);
-      bookNamesList = ((bnRes.data.values || []) as string[][])
-        .filter((r) => r[0] && r[2] && r[0] !== "----" && !isNaN(parseInt(r[2], 10)))
-        .map((r) => ({ zhName: r[0], enName: r[1] ?? "", bookNum: parseInt(r[2], 10) }))
-        .sort((a, b) => b.zhName.length - a.zhName.length);
-      bibleDataKeys = ((bdRes.data.values || []) as string[][])
-        .map((r) => parseInt(r[0] || "0", 10))
-        .filter((n) => n > 0);
-      console.log(`replaceVerseContent: loaded ${bookNamesList.length} books, ${bibleDataKeys.length} verses`);
-    } catch (err) {
-      console.warn("replaceVerseContent: failed to pre-fetch Bible data", err);
-    }
-  }
+  const bibleIndex = bibleSheetId ? await loadBibleIndex(bibleSheetId) : null;
 
   // ── Phase 1: resolve content and paginate for each entry ─────────────────
   interface EntryPlan {
@@ -1369,10 +1158,16 @@ export async function replaceVerseContent(
       continue;
     }
 
-    // Fetch Bible text; returns one result per comma-separated range segment
-    const verseSegments = bibleSheetId && entry.verse
-      ? await fetchVerseText(bibleSheetId, entry.verse, bookNamesList, bibleDataKeys)
-      : null;
+    // Fetch Bible text; one segment per comma-separated range. Literal entries
+    // (宣召自定义文字) and empty fields are printed as-is without a lookup.
+    const verseSegments =
+      bibleIndex && bibleSheetId && entry.verse && !entry.literal
+        ? await fetchSegments(
+            bibleSheetId,
+            bibleIndex,
+            resolveRef(entry.verse, bibleIndex.books, bibleIndex.bounds)
+          )
+        : null;
 
     let cnPages: string[];
     let cnTitles: string[];
@@ -1397,7 +1192,7 @@ export async function replaceVerseContent(
         enPages.push(...en.pages); enTitles.push(...en.pageTitles);
       }
     } else {
-      // Fallback: no Bible data, show reference text
+      // Literal text, an empty field, or no Bible sheet configured — print as-is.
       cnPages = [entry.verse]; cnTitles = [entry.vetitle];
       enPages = [entry.verse]; enTitles = [entry.vetitle];
     }

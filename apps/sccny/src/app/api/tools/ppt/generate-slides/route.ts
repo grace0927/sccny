@@ -11,7 +11,9 @@ import {
   buildPresentationUrl,
   fetchServiceRoles,
 } from "@/lib/google-slides";
-import { WorshipOrderData } from "@/lib/parse-worship-order";
+import { WorshipOrderData, collectScriptureRefs } from "@/lib/parse-worship-order";
+import { resolveReference } from "@/lib/bible-lookup";
+import { BibleReferenceError } from "@/lib/bible-reference";
 import { getComingSunday, parseServiceDate, formatCompact } from "@/lib/service-date";
 import { prisma } from "@/lib/db";
 
@@ -35,6 +37,25 @@ export async function POST(request: NextRequest) {
         { error: "Google Slides environment variables are not configured" },
         { status: 503 }
       );
+    }
+
+    // Validate every scripture reference BEFORE touching Drive, so an invalid
+    // reference can never leave an orphaned deck in the output folder — and so
+    // the operator is told which field is wrong instead of finding the raw
+    // reference text printed where scripture should be.
+    if (BIBLE_SHEET_ID) {
+      const invalidRefs: Array<{ field: string; ref: string; reason: string }> = [];
+      for (const { label, ref } of collectScriptureRefs(body)) {
+        try {
+          await resolveReference(ref);
+        } catch (error) {
+          if (!(error instanceof BibleReferenceError)) throw error;
+          invalidRefs.push({ field: label, ref, reason: error.message });
+        }
+      }
+      if (invalidRefs.length > 0) {
+        return NextResponse.json({ error: "经文引用无效", invalidRefs }, { status: 400 });
+      }
     }
 
     // Use the client-selected Sunday; fall back to the coming Sunday for
@@ -152,7 +173,8 @@ export async function POST(request: NextRequest) {
       presentationId,
       [
         body.callToWorshipCustomText
-          ? { keyword: "宣召", vetitle: "", verse: body.callToWorshipCustomText }
+          // Custom text is printed verbatim — never parsed as a reference.
+          ? { keyword: "宣召", vetitle: "", verse: body.callToWorshipCustomText, literal: true }
           : { keyword: "宣召", vetitle: body.callToWorship, verse: body.callToWorship },
         { keyword: "读经", vetitle: body.scriptureReading, verse: body.scriptureReading },
         { keyword: "金句", vetitle: body.memoryVerse, verse: body.memoryVerse, noSplit: true },
