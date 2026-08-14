@@ -173,13 +173,14 @@ export default function HymnLyricsPanel({ hymns }: { hymns: HymnEntry[] }) {
                     ⚠ 缺少歌词
                   </span>
                   {!draft.expanded && (
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="sm"
                       onClick={() => fetchLyrics(r, r.titleEn)}
-                      className="text-sm text-primary hover:underline"
                     >
                       查找歌词
-                    </button>
+                    </Button>
                   )}
                 </>
               )}

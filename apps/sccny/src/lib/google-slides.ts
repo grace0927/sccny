@@ -450,6 +450,10 @@ export async function copyHymnSlides(
   // Snapshot of the target presentation (for locating title slides)
   const targetPres = await slides.presentations.get({ presentationId: targetPresentationId });
   const targetSlides = targetPres.data.slides || [];
+  // The deck's real page size — this template is 4:3, so nothing here may assume 16:9.
+  const pageSize = targetPres.data.pageSize;
+  const pageWidth = pageSize?.width?.magnitude ?? DEFAULT_PAGE_WIDTH_EMU;
+  const pageHeight = pageSize?.height?.magnitude ?? DEFAULT_PAGE_HEIGHT_EMU;
 
   let insertionOffset = 0; // tracks extra slides inserted so far
 
@@ -483,6 +487,9 @@ export async function copyHymnSlides(
       } else {
         const videoSlideId = `hymn_yt_${Date.now()}_${Math.random().toString(36).slice(2)}`;
         const videoElemId = `${videoSlideId}_vid`;
+        // Fit a 16:9 video inside the deck's page without distorting it, centered.
+        const videoWidth = Math.min(pageWidth, (pageHeight * 16) / 9);
+        const videoHeight = (videoWidth * 9) / 16;
         await slides.presentations.batchUpdate({
           presentationId: targetPresentationId,
           requestBody: {
@@ -502,14 +509,14 @@ export async function copyHymnSlides(
                   elementProperties: {
                     pageObjectId: videoSlideId,
                     size: {
-                      width: { magnitude: 9144000, unit: "EMU" },
-                      height: { magnitude: 5143500, unit: "EMU" },
+                      width: { magnitude: videoWidth, unit: "EMU" },
+                      height: { magnitude: videoHeight, unit: "EMU" },
                     },
                     transform: {
                       scaleX: 1,
                       scaleY: 1,
-                      translateX: 0,
-                      translateY: 0,
+                      translateX: (pageWidth - videoWidth) / 2,
+                      translateY: (pageHeight - videoHeight) / 2,
                       unit: "EMU",
                     },
                   },
@@ -583,7 +590,9 @@ export async function copyHymnSlides(
         insertIndex,
         hymn.lyricsZh,
         hymn.lyricsEn ?? undefined,
-        targetSlides[titleSlideIndex]
+        targetSlides[titleSlideIndex],
+        pageWidth,
+        pageHeight
       );
       if (inserted > 0) {
         insertionOffset += inserted;
@@ -780,16 +789,118 @@ function buildSlideCopyRequests(
   return requests;
 }
 
-// EMU dimensions of a standard 16:9 slide (matches the video-slide sizing above)
-const SLIDE_WIDTH_EMU = 9144000;
-const SLIDE_HEIGHT_EMU = 5143500;
+// Page size of the church deck (4:3), used only when the API omits pageSize.
+const DEFAULT_PAGE_WIDTH_EMU = 9144000;
+const DEFAULT_PAGE_HEIGHT_EMU = 6858000;
+
+// Inset of the lyrics card inside the page, measured from the hymn bank's own
+// lyric slides (e.g. 生命圣诗 512 → bank pages 745-747).
+const LYRICS_MARGIN_X_EMU = 381000;
+const LYRICS_MARGIN_Y_EMU = 449225;
+
+// Type sizes for lyric slides. The first pair (24pt zh / 20pt en) is what the
+// hymn bank's own lyric slides use; the smaller pairs are only reached when a
+// stanza would otherwise overflow the card.
+const LYRICS_SIZE_LADDER: ReadonlyArray<readonly [number, number]> = [
+  [24, 20],
+  [20, 16],
+  [16, 13],
+];
+const LYRICS_LINE_SPACING = 150;
+const PT_TO_EMU = 12700;
+/** A rendered line box is taller than its point size; ~1.2x for Microsoft Yahei. */
+const LINE_HEIGHT_FACTOR = 1.2;
+/** Breathing room inside the card so text never touches its border. */
+const LYRICS_TEXT_PADDING_EMU = 274320; // 0.3"
+
+/** Run-style properties copied from the donor slide so lyrics match the deck's typography. */
+type DonorRunStyle = Record<string, unknown>;
+
+/**
+ * The pieces of a hymn title slide a lyric slide is cloned from: the
+ * translucent card, the text box holding the hymn number/title, and any
+ * placeholders (the "颂诗 HYMN" header) that a lyric slide should not keep.
+ */
+interface LyricsDonor {
+  slideId: string;
+  card: slides_v1.Schema$PageElement | null;
+  textBox: slides_v1.Schema$PageElement;
+  /** Placeholder elements to remove from the duplicate */
+  dropIds: string[];
+  runStyle: DonorRunStyle;
+}
+
+/** Pick the card / text box / placeholders out of a hymn title slide. */
+function findLyricsDonor(slide: slides_v1.Schema$Page | undefined): LyricsDonor | null {
+  if (!slide?.objectId) return null;
+
+  let card: slides_v1.Schema$PageElement | null = null;
+  let textBox: slides_v1.Schema$PageElement | null = null;
+  const dropIds: string[] = [];
+
+  for (const el of slide.pageElements || []) {
+    if (!el.objectId || !el.shape) continue;
+    // Placeholders carry the slide's own headings ("颂诗 HYMN") — not wanted on lyric slides
+    if (el.shape.placeholder) {
+      dropIds.push(el.objectId);
+      continue;
+    }
+    const hasText = (el.shape.text?.textElements || []).some((te) =>
+      te.textRun?.content?.trim()
+    );
+    if (hasText) {
+      if (!textBox) textBox = el;
+    } else if (!card) {
+      card = el;
+    }
+  }
+  if (!textBox) return null;
+
+  // Keep the deck's font and color; size and weight are set per stanza.
+  const firstRun = (textBox.shape?.text?.textElements || []).find((te) => te.textRun?.style)
+    ?.textRun?.style as DonorRunStyle | undefined;
+  const runStyle: DonorRunStyle = {};
+  for (const key of ["fontFamily", "weightedFontFamily", "foregroundColor"]) {
+    if (firstRun && firstRun[key] != null) runStyle[key] = firstRun[key];
+  }
+
+  return { slideId: slide.objectId, card, textBox, dropIds, runStyle };
+}
+
+/**
+ * Absolute transform that places an element at (x, y) with the given rendered
+ * size. Slides keeps a base `size` per element and scales it, so the scale
+ * factors are derived from that base rather than assumed to be 1.
+ */
+function absoluteTransform(
+  el: slides_v1.Schema$PageElement,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+): object {
+  const baseWidth = el.size?.width?.magnitude || width;
+  const baseHeight = el.size?.height?.magnitude || height;
+  return {
+    scaleX: width / baseWidth,
+    scaleY: height / baseHeight,
+    translateX: x,
+    translateY: y,
+    unit: "EMU",
+  };
+}
 
 /**
  * Generate lyric slides from stored lyrics text — one slide per stanza
  * (stanzas are separated by blank lines). When English lyrics are present,
  * each slide shows the Chinese stanza with the matching English stanza below
- * it (extra English stanzas are dropped). The slides inherit the hymn title
- * slide's background so they match the deck theme; text is white and centered.
+ * it (extra English stanzas are dropped).
+ *
+ * Slides are produced by DUPLICATING the hymn's own title slide and replacing
+ * its text, so they inherit the deck's layout, master background (which is a
+ * stretched picture on the master — never readable from the slide's own
+ * pageBackgroundFill), the translucent card, font and color. The card and text
+ * box are then resized to the full-page lyrics geometry used by the hymn bank.
  * Returns the number of slides inserted.
  */
 async function createLyricsSlides(
@@ -798,7 +909,9 @@ async function createLyricsSlides(
   insertIndex: number,
   lyricsZh: string,
   lyricsEn: string | undefined,
-  titleSlide: slides_v1.Schema$Page | undefined
+  titleSlide: slides_v1.Schema$Page | undefined,
+  pageWidth: number,
+  pageHeight: number
 ): Promise<number> {
   const splitStanzas = (text: string) =>
     text
@@ -810,97 +923,203 @@ async function createLyricsSlides(
   if (stanzasZh.length === 0) return 0;
   const stanzasEn = lyricsEn ? splitStanzas(lyricsEn) : [];
 
-  // Inherit the deck theme from the hymn title slide (clean object — see
-  // the propertyState note in buildSlideCopyRequests)
-  const bgFill = titleSlide?.pageProperties?.pageBackgroundFill;
-  let backgroundFill: object;
-  if (bgFill?.solidFill) {
-    backgroundFill = { solidFill: bgFill.solidFill };
-  } else if (bgFill?.stretchedPictureFill?.contentUrl) {
-    backgroundFill = {
-      stretchedPictureFill: { contentUrl: bgFill.stretchedPictureFill.contentUrl },
+  const cardX = LYRICS_MARGIN_X_EMU;
+  const cardY = LYRICS_MARGIN_Y_EMU;
+  const cardWidth = pageWidth - 2 * LYRICS_MARGIN_X_EMU;
+  const cardHeight = pageHeight - 2 * LYRICS_MARGIN_Y_EMU;
+
+  const slideText = (i: number) => {
+    const en = stanzasEn[i];
+    return en ? `${stanzasZh[i]}\n\n${en}` : stanzasZh[i];
+  };
+
+  // Pick one type size for the whole hymn — the largest on the ladder at which
+  // every stanza still fits the card — so stanzas don't change size mid-hymn.
+  const availableHeight = cardHeight - LYRICS_TEXT_PADDING_EMU;
+  const lineCounts = stanzasZh.map((zh, i) => {
+    const en = stanzasEn[i];
+    return {
+      // The blank separator line is styled at the Chinese size
+      zhLines: zh.split("\n").length + (en ? 1 : 0),
+      enLines: en ? en.split("\n").length : 0,
     };
-  } else {
-    // Dark default so the white lyric text stays readable
-    backgroundFill = { solidFill: { color: { rgbColor: { red: 0, green: 0, blue: 0 } } } };
-  }
+  });
+  const [zhSize, enSize] =
+    LYRICS_SIZE_LADDER.find(([zhPt, enPt]) =>
+      lineCounts.every(
+        ({ zhLines, enLines }) =>
+          (zhLines * zhPt + enLines * enPt) *
+            LINE_HEIGHT_FACTOR *
+            (LYRICS_LINE_SPACING / 100) *
+            PT_TO_EMU <=
+          availableHeight
+      )
+    ) ?? LYRICS_SIZE_LADDER[LYRICS_SIZE_LADDER.length - 1];
+
+  /** Text of one lyric slide. */
+  const stanzaContent = (i: number) => ({
+    zh: stanzasZh[i],
+    en: stanzasEn[i],
+    text: slideText(i),
+  });
 
   const requests: object[] = [];
-  stanzasZh.forEach((zh, i) => {
-    const en = stanzasEn[i];
-    const slideId = `hymn_lyr_${Date.now()}_${i}_${Math.random().toString(36).slice(2)}`;
-    const textBoxId = `${slideId}_txt`;
+  const donor = findLyricsDonor(titleSlide);
 
-    requests.push({
-      createSlide: {
-        objectId: slideId,
-        insertionIndex: insertIndex + i,
-        slideLayoutReference: { predefinedLayout: "BLANK" },
-      },
-    });
-    requests.push({
-      updatePageProperties: {
-        objectId: slideId,
-        pageProperties: { pageBackgroundFill: backgroundFill },
-        fields: "pageBackgroundFill",
-      },
-    });
-    requests.push({
-      createShape: {
-        objectId: textBoxId,
-        shapeType: "TEXT_BOX",
-        elementProperties: {
-          pageObjectId: slideId,
-          size: {
-            width: { magnitude: SLIDE_WIDTH_EMU, unit: "EMU" },
-            height: { magnitude: SLIDE_HEIGHT_EMU, unit: "EMU" },
+  if (donor) {
+    // Each duplicate lands directly after the title slide, so emitting the
+    // stanzas in reverse leaves them in reading order: title, 1, 2, … n.
+    for (let i = stanzasZh.length - 1; i >= 0; i--) {
+      const { zh, en, text } = stanzaContent(i);
+      const slideId = `hymn_lyr_${Date.now()}_${i}_${Math.random().toString(36).slice(2)}`;
+      const cardId = `${slideId}_card`;
+      const textBoxId = `${slideId}_txt`;
+
+      const objectIds: Record<string, string> = {
+        [donor.slideId]: slideId,
+        [donor.textBox.objectId!]: textBoxId,
+      };
+      if (donor.card?.objectId) objectIds[donor.card.objectId] = cardId;
+      donor.dropIds.forEach((id, n) => {
+        objectIds[id] = `${slideId}_d${n}`;
+      });
+
+      requests.push({ duplicateObject: { objectId: donor.slideId, objectIds } });
+
+      // Lyric slides carry no "颂诗 HYMN" header (matching the hymn bank)
+      donor.dropIds.forEach((_, n) => {
+        requests.push({ deleteObject: { objectId: `${slideId}_d${n}` } });
+      });
+
+      // Grow the title-sized card and text box to the full-page lyrics geometry
+      if (donor.card?.objectId) {
+        requests.push({
+          updatePageElementTransform: {
+            objectId: cardId,
+            applyMode: "ABSOLUTE",
+            transform: absoluteTransform(donor.card, cardX, cardY, cardWidth, cardHeight),
           },
-          transform: { scaleX: 1, scaleY: 1, translateX: 0, translateY: 0, unit: "EMU" },
+        });
+      }
+      requests.push({
+        updatePageElementTransform: {
+          objectId: textBoxId,
+          applyMode: "ABSOLUTE",
+          transform: absoluteTransform(donor.textBox, cardX, cardY, cardWidth, cardHeight),
         },
-      },
-    });
+      });
 
-    const text = en ? `${zh}\n\n${en}` : zh;
-    requests.push({ insertText: { objectId: textBoxId, insertionIndex: 0, text } });
-    requests.push({
-      updateShapeProperties: {
-        objectId: textBoxId,
-        shapeProperties: { contentAlignment: "MIDDLE" },
-        fields: "contentAlignment",
-      },
-    });
-    requests.push({
-      updateParagraphStyle: {
-        objectId: textBoxId,
-        style: { alignment: "CENTER" },
-        textRange: { type: "ALL" },
-        fields: "alignment",
-      },
-    });
-    requests.push({
-      updateTextStyle: {
-        objectId: textBoxId,
-        style: {
-          foregroundColor: { opaqueColor: { rgbColor: { red: 1, green: 1, blue: 1 } } },
-          fontSize: { magnitude: 28, unit: "PT" },
-          bold: true,
+      requests.push({ deleteText: { objectId: textBoxId, textRange: { type: "ALL" } } });
+      requests.push({ insertText: { objectId: textBoxId, insertionIndex: 0, text } });
+      requests.push({
+        updateShapeProperties: {
+          objectId: textBoxId,
+          shapeProperties: { contentAlignment: "MIDDLE" },
+          fields: "contentAlignment",
         },
-        textRange: { type: "ALL" },
-        fields: "foregroundColor,fontSize,bold",
-      },
-    });
-    if (en) {
-      const enStart = zh.length + 2; // after the Chinese stanza + blank line
+      });
+      requests.push({
+        updateParagraphStyle: {
+          objectId: textBoxId,
+          style: { alignment: "CENTER", lineSpacing: LYRICS_LINE_SPACING },
+          textRange: { type: "ALL" },
+          fields: "alignment,lineSpacing",
+        },
+      });
       requests.push({
         updateTextStyle: {
           objectId: textBoxId,
-          style: { fontSize: { magnitude: 20, unit: "PT" }, bold: false },
-          textRange: { type: "FIXED_RANGE", startIndex: enStart, endIndex: enStart + en.length },
+          style: { ...donor.runStyle, fontSize: { magnitude: zhSize, unit: "PT" }, bold: false },
+          textRange: { type: "ALL" },
+          fields: [...Object.keys(donor.runStyle), "fontSize", "bold"].join(","),
+        },
+      });
+      if (en) {
+        const enStart = zh.length + 2; // after the Chinese stanza + blank line
+        requests.push({
+          updateTextStyle: {
+            objectId: textBoxId,
+            style: { fontSize: { magnitude: enSize, unit: "PT" } },
+            textRange: { type: "FIXED_RANGE", startIndex: enStart, endIndex: enStart + en.length },
+            fields: "fontSize",
+          },
+        });
+      }
+    }
+  } else {
+    // Unrecognised template: build the slide on the title slide's own layout so
+    // it still inherits the master background, and leave the page background
+    // and text color to the theme rather than forcing a color pair.
+    const layoutId = titleSlide?.slideProperties?.layoutObjectId;
+    stanzasZh.forEach((_, i) => {
+      const { zh, en, text } = stanzaContent(i);
+      const slideId = `hymn_lyr_${Date.now()}_${i}_${Math.random().toString(36).slice(2)}`;
+      const textBoxId = `${slideId}_txt`;
+
+      requests.push({
+        createSlide: {
+          objectId: slideId,
+          insertionIndex: insertIndex + i,
+          slideLayoutReference: layoutId ? { layoutId } : { predefinedLayout: "BLANK" },
+        },
+      });
+      requests.push({
+        createShape: {
+          objectId: textBoxId,
+          shapeType: "TEXT_BOX",
+          elementProperties: {
+            pageObjectId: slideId,
+            size: {
+              width: { magnitude: cardWidth, unit: "EMU" },
+              height: { magnitude: cardHeight, unit: "EMU" },
+            },
+            transform: {
+              scaleX: 1,
+              scaleY: 1,
+              translateX: cardX,
+              translateY: cardY,
+              unit: "EMU",
+            },
+          },
+        },
+      });
+      requests.push({ insertText: { objectId: textBoxId, insertionIndex: 0, text } });
+      requests.push({
+        updateShapeProperties: {
+          objectId: textBoxId,
+          shapeProperties: { contentAlignment: "MIDDLE" },
+          fields: "contentAlignment",
+        },
+      });
+      requests.push({
+        updateParagraphStyle: {
+          objectId: textBoxId,
+          style: { alignment: "CENTER", lineSpacing: LYRICS_LINE_SPACING },
+          textRange: { type: "ALL" },
+          fields: "alignment,lineSpacing",
+        },
+      });
+      requests.push({
+        updateTextStyle: {
+          objectId: textBoxId,
+          style: { fontSize: { magnitude: zhSize, unit: "PT" }, bold: false },
+          textRange: { type: "ALL" },
           fields: "fontSize,bold",
         },
       });
-    }
-  });
+      if (en) {
+        const enStart = zh.length + 2;
+        requests.push({
+          updateTextStyle: {
+            objectId: textBoxId,
+            style: { fontSize: { magnitude: enSize, unit: "PT" } },
+            textRange: { type: "FIXED_RANGE", startIndex: enStart, endIndex: enStart + en.length },
+            fields: "fontSize",
+          },
+        });
+      }
+    });
+  }
 
   await slidesClient.presentations.batchUpdate({
     presentationId: targetPresentationId,
