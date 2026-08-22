@@ -3,6 +3,10 @@
     {
       "path": "/api/tasks/sync-sermons",
       "schedule": "0 2 * * 5"
+    },
+    {
+      "path": "/api/tasks/generate-worship-slides",
+      "schedule": "0 * * * *"
     }
   ]
 }
