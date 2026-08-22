@@ -360,6 +360,7 @@
       "hymns": "诗歌管理",
       "templates": "生成PPT",
       "generatedPpt": "已生成幻灯片",
+      "pendingSlides": "待审核幻灯片",
       "auditLog": "审计日志",
       "community": "社区管理"
     },

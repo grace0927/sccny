@@ -1,24 +1,9 @@
 import { google } from "googleapis";
 import { Readable } from "stream";
-import fs from "fs";
+import { getGoogleAuth } from "./google-auth";
 
 function getDriveClient() {
-  const credentialsJson = process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS;
-  const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-  if (!credentialsJson && !credentialsPath) {
-    throw new Error("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS is not configured");
-  }
-
-  const credentials = credentialsJson
-    ? JSON.parse(credentialsJson)
-    : JSON.parse(fs.readFileSync(credentialsPath!, "utf-8"));
-
-  const auth = new google.auth.GoogleAuth({
-    credentials,
-    scopes: ["https://www.googleapis.com/auth/drive"],
-  });
-
+  const auth = getGoogleAuth(["https://www.googleapis.com/auth/drive"]);
   return google.drive({ version: "v3", auth });
 }
 

@@ -70,6 +70,7 @@ See `turbo.json` for the authoritative list.
 - Google service account: `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS` (JSON) or `GOOGLE_APPLICATION_CREDENTIALS` (path)
 - Google IDs: `GOOGLE_DRIVE_FOLDER_ID` (community images), `GOOGLE_SLIDES_TEMPLATE_ID`, `GOOGLE_HYMN_BANK_ID`, `GOOGLE_BIBLE_SHEET_ID`, `GOOGLE_SLIDES_OUTPUT_FOLDER_ID`, `GOOGLE_SCHEDULE_SHEET_ID` (optional)
 - Worship-order parsing: `GEMINI_API_KEY` (optional; falls back to rule-based parser), `GEMINI_MODEL` (default `gemini-2.5-flash-lite`)
+- Email-triggered PPT: `GMAIL_IMPERSONATED_USER` (Workspace mailbox to poll, via domain-wide delegation), `GMAIL_WORSHIP_LABEL` (default `worship-order`), `GMAIL_PROCESSED_LABEL` (default `worship-order/processed`)
 
 ## Roadmap & Docs Maintenance
 
@@ -78,4 +79,4 @@ See `turbo.json` for the authoritative list.
 
 ## Deployment
 
-- Hosted on Vercel. Weekly cron (Fri 02:00 UTC) `/api/tasks/sync-sermons` syncs sermons from the legacy site; news via `/api/tasks/sync-news`. Both guarded by `CRON_SECRET`. Vercel Analytics via `@vercel/analytics`.
+- Hosted on Vercel. Crons in `apps/sccny/vercel.json`: weekly (Fri 02:00 UTC) `/api/tasks/sync-sermons` syncs sermons from the legacy site; daily (10:00 UTC) `/api/tasks/generate-worship-slides` turns labeled worship-procedure emails into slide decks (daily, not hourly: the Hobby plan allows only daily crons). News syncs via `/api/tasks/sync-news` (no schedule; triggered manually). All `/api/tasks/*` routes are guarded by `CRON_SECRET` via `lib/cron-auth.ts` — they fail closed if it is unset. Vercel Analytics via `@vercel/analytics`.
