@@ -23,9 +23,9 @@ const PROCESSED_LABEL = process.env.GMAIL_PROCESSED_LABEL ?? "worship-order/proc
  * Cap per run so one backlog can't blow the serverless time budget.
  *
  * Generating a deck is minutes of Slides/Drive API calls, not milliseconds, and
- * the procedure arrives roughly once a week — an hourly poll has no reason to
- * batch. Anything beyond the cap is picked up by the next run, because
- * unprocessed messages keep their trigger label.
+ * the procedure arrives roughly once a week, so a run has no reason to batch.
+ * Anything beyond the cap is picked up by the next run, because unprocessed
+ * messages keep their trigger label.
  */
 const MAX_MESSAGES_PER_RUN = 3;
 

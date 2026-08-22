@@ -12,7 +12,10 @@ import {
  * Google Slides deck for each. Generated decks land in `/admin/ppt/pending`
  * for an operator to review before Sunday.
  *
- * Scheduled hourly via `vercel.json`; guarded by `CRON_SECRET`.
+ * Scheduled daily (10:00 UTC) via `vercel.json`; guarded by `CRON_SECRET`.
+ * Daily rather than hourly because the Vercel Hobby plan permits only daily
+ * crons — and the procedure arrives about once a week, so a day of latency
+ * still leaves ample time before Sunday.
  */
 // Building a deck is many sequential Slides/Drive calls; the default 60s budget
 // is not enough for even one. 300s is the Vercel ceiling for Node functions.

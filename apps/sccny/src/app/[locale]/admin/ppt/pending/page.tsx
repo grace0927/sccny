@@ -38,6 +38,17 @@ const STATUS_CLASS: Record<JobStatus, string> = {
   FAILED: "bg-destructive/10 text-destructive",
 };
 
+/**
+ * A job that never reached a deck can be re-run.
+ *
+ * FAILED is the common case, but a run cut short mid-generation (function
+ * timeout, container recycle) strands a job at PENDING/PARSED: the unique
+ * gmailMessageId means the next cron skips it, so the only way back is here.
+ */
+function isRetryable(status: JobStatus): boolean {
+  return status === "PENDING" || status === "PARSED" || status === "FAILED";
+}
+
 function formatDateTime(iso: string | null): string {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -230,7 +241,7 @@ export default function PendingSlidesPage() {
                         {isBusy ? "处理中…" : "标记已审核"}
                       </Button>
                     )}
-                    {job.status === "FAILED" && (
+                    {isRetryable(job.status) && (
                       <Button onClick={() => retry(job.id)} disabled={isBusy}>
                         {isBusy ? "重试中…" : "重试"}
                       </Button>

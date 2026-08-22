@@ -79,4 +79,4 @@ See `turbo.json` for the authoritative list.
 
 ## Deployment
 
-- Hosted on Vercel. Crons in `apps/sccny/vercel.json`: weekly (Fri 02:00 UTC) `/api/tasks/sync-sermons` syncs sermons from the legacy site; hourly `/api/tasks/generate-worship-slides` turns labeled worship-procedure emails into slide decks. News syncs via `/api/tasks/sync-news` (no schedule; triggered manually). All `/api/tasks/*` routes are guarded by `CRON_SECRET` via `lib/cron-auth.ts` — they fail closed if it is unset. Vercel Analytics via `@vercel/analytics`.
+- Hosted on Vercel. Crons in `apps/sccny/vercel.json`: weekly (Fri 02:00 UTC) `/api/tasks/sync-sermons` syncs sermons from the legacy site; daily (10:00 UTC) `/api/tasks/generate-worship-slides` turns labeled worship-procedure emails into slide decks (daily, not hourly: the Hobby plan allows only daily crons). News syncs via `/api/tasks/sync-news` (no schedule; triggered manually). All `/api/tasks/*` routes are guarded by `CRON_SECRET` via `lib/cron-auth.ts` — they fail closed if it is unset. Vercel Analytics via `@vercel/analytics`.
