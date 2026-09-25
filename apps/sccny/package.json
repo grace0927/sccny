@@ -39,12 +39,12 @@
     "@types/node": "^26",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.11",
+    "eslint": "^10",
+    "eslint-config-next": "16.3.6",
     "tailwindcss": "^4",
-    "tsx": "^4.23.1",
-    "typescript": "^6",
-    "vitest": "^4.1.11"
+    "tsx": "^4.23.15",
+    "typescript": "^7",
+    "vitest": "^5.0.1"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
