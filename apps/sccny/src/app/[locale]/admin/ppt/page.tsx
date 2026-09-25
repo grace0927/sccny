@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import WorshipTextInput from "@/components/tools/ppt/WorshipTextInput";
 import WorshipOrderReviewForm from "@/components/tools/ppt/WorshipOrderReviewForm";
 import SlideGenerationResult from "@/components/tools/ppt/SlideGenerationResult";
@@ -22,15 +23,65 @@ interface InvalidRef {
   reason: string;
 }
 
-export default function AdminPptGenerationPage() {
+/** A job row as returned by `/api/admin/ppt/jobs/[id]`. */
+interface SlideJob {
+  rawText: string;
+  parsedData: WorshipOrderData | null;
+  serviceDate: string | null;
+}
+
+function AdminPptGeneration() {
+  const searchParams = useSearchParams();
+  const jobId = searchParams.get("jobId");
+
   const [step, setStep] = useState<Step>("input");
   const [serviceDate, setServiceDate] = useState(() => toDateInputValue(getComingSunday()));
   const [parsed, setParsed] = useState<WorshipOrderData | null>(null);
+  const [rawText, setRawText] = useState<string | undefined>(undefined);
   const [result, setResult] = useState<GenerationResult | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isLoadingJob, setIsLoadingJob] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function handleParsed(data: WorshipOrderData) {
+  // Reviewing an email-triggered deck: seed the wizard from the stored job and
+  // jump straight to step 2, so the operator gets the full review experience
+  // (verse preview, hymn lyrics check, per-field editing) and can regenerate.
+  useEffect(() => {
+    if (!jobId) return;
+    let active = true;
+    async function loadJob() {
+      setIsLoadingJob(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/admin/ppt/jobs/${jobId}`);
+        if (!res.ok) {
+          const json = await res.json().catch(() => ({}));
+          throw new Error(json.error || `Server error ${res.status}`);
+        }
+        const { data }: { data: SlideJob } = await res.json();
+        if (!active) return;
+        setRawText(data.rawText);
+        if (data.serviceDate) {
+          setServiceDate(toDateInputValue(new Date(data.serviceDate)));
+        }
+        if (data.parsedData) {
+          setParsed(data.parsedData);
+          setStep("review");
+        }
+      } catch (err) {
+        if (active) setError(err instanceof Error ? err.message : "加载任务失败");
+      } finally {
+        if (active) setIsLoadingJob(false);
+      }
+    }
+    loadJob();
+    return () => {
+      active = false;
+    };
+  }, [jobId]);
+
+  function handleParsed(data: WorshipOrderData, text: string) {
+    setRawText(text);
     // Default communion to true on the first Sunday of the selected month
     const sunday = parseServiceDate(serviceDate) ?? getComingSunday();
     setParsed({ ...data, hasCommunion: data.hasCommunion || isFirstSundayOfMonth(sunday) });
@@ -73,6 +124,7 @@ export default function AdminPptGenerationPage() {
     setStep("input");
     setServiceDate(toDateInputValue(getComingSunday()));
     setParsed(null);
+    setRawText(undefined);
     setResult(null);
     setError(null);
   }
@@ -107,11 +159,17 @@ export default function AdminPptGenerationPage() {
         </div>
       )}
 
-      {step === "input" && (
+      {isLoadingJob && (
+        <p className="text-sm text-muted-foreground">加载邮件任务中…</p>
+      )}
+
+      {!isLoadingJob && step === "input" && (
         <WorshipTextInput
+          key={rawText ?? "blank"}
           onParsed={handleParsed}
           serviceDate={serviceDate}
           onServiceDateChange={setServiceDate}
+          initialText={rawText}
         />
       )}
 
@@ -133,5 +191,13 @@ export default function AdminPptGenerationPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function AdminPptGenerationPage() {
+  return (
+    <Suspense fallback={<p className="text-sm text-muted-foreground">加载中…</p>}>
+      <AdminPptGeneration />
+    </Suspense>
   );
 }

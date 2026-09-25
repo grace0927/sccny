@@ -63,6 +63,7 @@ Standalone tools for ministry support.
 | :white_check_mark: | PPT Generation | [ppt-generation.md](./features/ppt-generation.md) | Bible Lookup (for scripture items) |
 | :white_check_mark: | Live Translation | [live-translation.md](./features/live-translation.md) | Admin Infrastructure (for operator auth) |
 | :white_check_mark: | Google Slides Automation | [google-slides-automation.md](./features/google-slides-automation.md) | PPT Generation |
+| :white_check_mark: | Email-Triggered PPT Generation | — (see [`docs/reference/tools.md`](./reference/tools.md#email-triggered-generation)) | PPT Generation, Google Slides Automation |
 
 ## Phase 5: Community
 
@@ -99,6 +100,7 @@ New models required across all features (cumulative):
 | `PptTemplate` | PPT Generation |
 | `WorshipOrder` | PPT Generation |
 | `WorshipOrderItem` | PPT Generation |
+| `WorshipSlideJob` | PPT Generation — email-triggered jobs (the only DB record of a generated deck) |
 | `BibleVerse` | Bible Lookup — *planned, not yet in schema* (verse text currently comes from a Google Sheet) |
 | `SystemConfig` | Community Feed |
 | `CommunityPost` | Community Feed |
@@ -107,7 +109,7 @@ New models required across all features (cumulative):
 
 | Package | Used By | Status |
 |---------|---------|--------|
-| `googleapis` | Slides generation, Drive (community images), Sheets (roster/Bible) | ✅ Installed |
+| `googleapis` | Slides generation, Drive (community images), Sheets (roster/Bible), Gmail (email trigger) | ✅ Installed |
 | `@google/generative-ai` | Worship-order parsing (Gemini) | ✅ Installed |
 | `@hello-pangea/dnd` | Worship order builder (drag-and-drop) | ✅ Installed |
 | `axios` | Bible API proxy (`tools/bible/search`) | ✅ Installed |

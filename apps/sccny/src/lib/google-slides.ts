@@ -1,44 +1,28 @@
 import "server-only";
 import { google, type slides_v1 } from "googleapis";
 import { Readable } from "stream";
-import fs from "fs";
 import { fetchSegments, loadBibleIndex } from "./bible-lookup";
 import { resolveRef } from "./bible-reference";
+import { getGoogleAuth } from "./google-auth";
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
-function getGoogleAuth() {
-  const credentialsJson = process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS;
-  const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-  if (!credentialsJson && !credentialsPath) {
-    throw new Error("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS is not configured");
-  }
-
-  const credentials = credentialsJson
-    ? JSON.parse(credentialsJson)
-    : JSON.parse(fs.readFileSync(credentialsPath!, "utf-8"));
-
-  return new google.auth.GoogleAuth({
-    credentials,
-    scopes: [
-      "https://www.googleapis.com/auth/drive",
-      "https://www.googleapis.com/auth/presentations",
-      "https://www.googleapis.com/auth/spreadsheets.readonly",
-    ],
-  });
-}
+const SLIDES_SCOPES = [
+  "https://www.googleapis.com/auth/drive",
+  "https://www.googleapis.com/auth/presentations",
+  "https://www.googleapis.com/auth/spreadsheets.readonly",
+];
 
 function getSlidesClient() {
-  return google.slides({ version: "v1", auth: getGoogleAuth() });
+  return google.slides({ version: "v1", auth: getGoogleAuth(SLIDES_SCOPES) });
 }
 
 function getDriveClient() {
-  return google.drive({ version: "v3", auth: getGoogleAuth() });
+  return google.drive({ version: "v3", auth: getGoogleAuth(SLIDES_SCOPES) });
 }
 
 function getSheetsClient() {
-  return google.sheets({ version: "v4", auth: getGoogleAuth() });
+  return google.sheets({ version: "v4", auth: getGoogleAuth(SLIDES_SCOPES) });
 }
 
 // ── Template copy ─────────────────────────────────────────────────────────────

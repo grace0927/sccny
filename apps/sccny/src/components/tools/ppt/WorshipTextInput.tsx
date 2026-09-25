@@ -9,11 +9,13 @@ interface WorshipTextInputProps {
   onParsed: (data: WorshipOrderData, rawText: string) => void;
   serviceDate: string;
   onServiceDateChange: (value: string) => void;
+  /** Seed text — the worship-order body from an email-triggered job. */
+  initialText?: string;
 }
 
-export default function WorshipTextInput({ onParsed, serviceDate, onServiceDateChange }: WorshipTextInputProps) {
+export default function WorshipTextInput({ onParsed, serviceDate, onServiceDateChange, initialText }: WorshipTextInputProps) {
   const sundayOptions = useMemo(() => getUpcomingSundays(), []);
-  const [text, setText] = useState(DEFAULT_WORSHIP_ORDER_TEMPLATE);
+  const [text, setText] = useState(initialText || DEFAULT_WORSHIP_ORDER_TEMPLATE);
   const [parsing, setParsing] = useState(false);
 
   async function handleParse() {

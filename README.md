@@ -44,7 +44,15 @@ DATABASE_URL_UNPOOLED="postgresql://..." # For migrations
 NEXT_PUBLIC_STACK_PROJECT_ID="..."
 NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY="..."
 STACK_SECRET_SERVER_KEY="..."
-CRON_SECRET="..."
+CRON_SECRET="..."                        # Required; /api/tasks/* fail closed without it
+
+# Google service account (JSON blob, or a path via GOOGLE_APPLICATION_CREDENTIALS)
+GOOGLE_SERVICE_ACCOUNT_CREDENTIALS="{...}"
+
+# Email-triggered PPT generation
+GMAIL_IMPERSONATED_USER="office@sccny.org"          # Workspace mailbox to poll
+GMAIL_WORSHIP_LABEL="worship-order"                 # Gmail label the filter applies
+GMAIL_PROCESSED_LABEL="worship-order/processed"     # Applied after a message is handled
 ```
 
 ### Development

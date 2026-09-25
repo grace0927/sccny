@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { isAuthorizedCron, cronUnauthorizedResponse } from "@/lib/cron-auth";
 import { newsScraper } from "@/lib/news-scraper";
 
 /**
@@ -7,7 +8,9 @@ import { newsScraper } from "@/lib/news-scraper";
  * Manually trigger news synchronization from the church website
  * Scrapes news from https://www.scc-ny.org/news/ and updates database
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (!isAuthorizedCron(request)) return cronUnauthorizedResponse();
+
   try {
     console.log("Starting manual news sync...");
 

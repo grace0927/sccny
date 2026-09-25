@@ -12,8 +12,9 @@ export async function POST() {
 
     // Trigger the existing sync endpoint internally
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    // The task route exports GET only; this previously sent POST and always 405'd.
     const res = await fetch(`${baseUrl}/api/tasks/sync-sermons`, {
-      method: "POST",
+      method: "GET",
       headers: {
         Authorization: `Bearer ${process.env.CRON_SECRET}`,
       },

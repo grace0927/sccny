@@ -2,7 +2,10 @@
   "$schema": "https://v2-9-16.turborepo.dev/schema.json",
   "tasks": {
     "build": {
-      "outputs": [".next/**", "!.next/cache/**"],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**"
+      ],
       "env": [
         "POSTGRES_URL",
         "POSTGRES_PRISMA_URL",
@@ -30,7 +33,11 @@
         "GOOGLE_SLIDES_OUTPUT_FOLDER_ID",
         "GOOGLE_SCHEDULE_SHEET_ID",
         "GEMINI_API_KEY",
-        "GEMINI_MODEL"
+        "GEMINI_MODEL",
+        "GOOGLE_APPLICATION_CREDENTIALS",
+        "GMAIL_IMPERSONATED_USER",
+        "GMAIL_WORSHIP_LABEL",
+        "GMAIL_PROCESSED_LABEL"
       ]
     },
     "dev": {

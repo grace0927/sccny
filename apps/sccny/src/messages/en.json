@@ -360,6 +360,7 @@
       "hymns": "Hymns",
       "templates": "PPT Generation",
       "generatedPpt": "Generated Slides",
+      "pendingSlides": "Pending Review",
       "auditLog": "Audit Log",
       "community": "Community"
     },

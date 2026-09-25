@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { isAuthorizedCron, cronUnauthorizedResponse } from "@/lib/cron-auth";
 import { sermonScraper } from "@/lib/sermon-scraper";
 
 /**
@@ -7,7 +8,9 @@ import { sermonScraper } from "@/lib/sermon-scraper";
  * Manually trigger sermon synchronization from the church website
  * This endpoint is also called by Vercel cron jobs for automated daily sync
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (!isAuthorizedCron(request)) return cronUnauthorizedResponse();
+
   try {
     console.log("Starting manual sermon sync...");
 
