@@ -16,6 +16,7 @@ import { resolveReference } from "@/lib/bible-lookup";
 import { BibleReferenceError } from "@/lib/bible-reference";
 import { getComingSunday, parseServiceDate, formatCompact } from "@/lib/service-date";
 import { prisma } from "@/lib/db";
+import { Prisma } from "@/generated/prisma";
 
 const TEMPLATE_ID = process.env.GOOGLE_SLIDES_TEMPLATE_ID!;
 const HYMN_BANK_ID = process.env.GOOGLE_HYMN_BANK_ID!;
@@ -30,7 +31,8 @@ export async function POST(request: NextRequest) {
 
     await requirePermission(user.id, "ppt.generate");
 
-    const body: WorshipOrderData & { serviceDate?: string } = await request.json();
+    const body: WorshipOrderData & { serviceDate?: string; rawText?: string } =
+      await request.json();
 
     if (!TEMPLATE_ID || !OUTPUT_FOLDER_ID) {
       return NextResponse.json(
@@ -211,7 +213,44 @@ export async function POST(request: NextRequest) {
 
     const presentationUrl = buildPresentationUrl(presentationId);
 
-    // 7. Audit log
+    // 7. Save the program this deck was generated from, so it can be shown on
+    //    the result screen and on the generated-slides list. Best-effort: the
+    //    deck already exists, so a DB failure must not fail the request.
+    //    Only the worship-order fields go into the snapshot; serviceDate and
+    //    rawText are transport-only and have their own columns.
+    const programData: WorshipOrderData = {
+      hymns: body.hymns,
+      scriptureReading: body.scriptureReading,
+      memoryVerse: body.memoryVerse,
+      sermonTitle: body.sermonTitle,
+      sermonSubtitle: body.sermonSubtitle,
+      speaker: body.speaker,
+      callToWorship: body.callToWorship,
+      callToWorshipCustomText: body.callToWorshipCustomText,
+      confessionPrayer: body.confessionPrayer,
+      assuranceOfPardon: body.assuranceOfPardon,
+      hasCommunion: body.hasCommunion,
+      otherLines: body.otherLines,
+    };
+    try {
+      await prisma.worshipOrder.create({
+        data: {
+          name: title,
+          date: thisSunday,
+          createdBy: user.id,
+          presentationId,
+          presentationUrl,
+          rawText: body.rawText ?? null,
+          // WorshipOrderData is a plain, JSON-safe interface; it just lacks the
+          // index signature Prisma's Json input type requires.
+          data: programData as unknown as Prisma.InputJsonObject,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to save worship order for", presentationId, error);
+    }
+
+    // 8. Audit log
     await logAction({
       userId: user.id,
       userName: user.displayName ?? user.primaryEmail ?? "Unknown",

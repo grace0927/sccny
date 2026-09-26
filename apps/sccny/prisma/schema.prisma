@@ -400,6 +400,17 @@ model WorshipOrder {
   createdAt  DateTime           @default(now())
   updatedAt  DateTime           @updatedAt
 
+  // Snapshot of the program a PPT deck was generated from. Set by the PPT
+  // wizard (/api/tools/ppt/generate-slides); null for rows created through the
+  // worship-orders CRUD routes, which use `items` instead.
+  /// Google Slides file id — links a generated deck back to its program
+  presentationId  String? @unique
+  presentationUrl String?
+  /// Verbatim program text the operator pasted in step 1
+  rawText         String? @db.Text
+  /// WorshipOrderData as it was at generation time (after step-2 edits)
+  data            Json?
+
   @@index([date])
   @@map("worship_orders")
 }
