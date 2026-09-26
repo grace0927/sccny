@@ -1,17 +1,25 @@
 "use client";
 
 import { Button, Card, CardContent, CardHeader, CardTitle } from "dark-blue";
+import WorshipOrderSummary from "@/components/tools/ppt/WorshipOrderSummary";
+import { WorshipOrderData } from "@/lib/parse-worship-order";
 
 interface SlideGenerationResultProps {
   presentationUrl: string;
-  presentationId: string;
   missingHymns?: string[];
+  /** The program the deck was generated from, shown so it can be double-checked */
+  program?: WorshipOrderData;
+  serviceDate?: string;
+  rawText?: string;
   onStartOver: () => void;
 }
 
 export default function SlideGenerationResult({
   presentationUrl,
   missingHymns,
+  program,
+  serviceDate,
+  rawText,
   onStartOver,
 }: SlideGenerationResultProps) {
   return (
@@ -33,6 +41,12 @@ export default function SlideGenerationResult({
             <ul className="list-disc list-inside text-sm text-yellow-700 dark:text-yellow-300 space-y-0.5">
               {missingHymns.map((h) => <li key={h}>{h}</li>)}
             </ul>
+          </div>
+        )}
+        {program && (
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-foreground">本次生成所用程序</p>
+            <WorshipOrderSummary data={program} serviceDate={serviceDate} rawText={rawText} />
           </div>
         )}
         <div className="flex flex-col sm:flex-row gap-3">

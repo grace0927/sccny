@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { Button, Card, CardContent } from "dark-blue";
+import WorshipOrderSummary from "@/components/tools/ppt/WorshipOrderSummary";
+import { WorshipOrderData } from "@/lib/parse-worship-order";
+
+/** The worship program a deck was generated from, when one was recorded. */
+interface GeneratedProgram {
+  serviceDate: string;
+  rawText?: string;
+  data: WorshipOrderData;
+}
 
 interface DrivePresentation {
   id: string;
@@ -9,6 +18,8 @@ interface DrivePresentation {
   createdTime: string;
   modifiedTime: string;
   webViewLink: string;
+  /** Null for decks generated before programs were persisted */
+  program: GeneratedProgram | null;
 }
 
 function formatDateTime(iso: string): string {
@@ -28,6 +39,7 @@ export default function GeneratedPptPage() {
   const [items, setItems] = useState<DrivePresentation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -59,7 +71,7 @@ export default function GeneratedPptPage() {
       <div>
         <h1 className="text-2xl font-bold text-foreground">已生成幻灯片</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          查看已生成并保存到共享云端硬盘文件夹中的崇拜幻灯片。
+          查看已生成并保存到共享云端硬盘文件夹中的崇拜幻灯片。点击标题可查看所用的崇拜程序。
         </p>
       </div>
 
@@ -75,28 +87,63 @@ export default function GeneratedPptPage() {
         <p className="text-sm text-muted-foreground">暂无已生成的幻灯片。</p>
       ) : (
         <div className="space-y-3">
-          {items.map((item) => (
-            <Card key={item.id}>
-              <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-4">
-                <div className="min-w-0">
-                  <p className="font-medium text-foreground truncate">{item.name || "未命名"}</p>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    生成时间：{formatDateTime(item.createdTime)}
-                  </p>
-                </div>
-                <a
-                  href={item.webViewLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0"
-                >
-                  <Button variant="outline" className="w-full sm:w-auto">
-                    在 Google Slides 中打开
-                  </Button>
-                </a>
-              </CardContent>
-            </Card>
-          ))}
+          {items.map((item) => {
+            const title = item.name || "未命名";
+            const isExpanded = expandedId === item.id;
+            const panelId = `program-${item.id}`;
+            return (
+              <Card key={item.id}>
+                <CardContent className="py-4 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="min-w-0">
+                      {item.program ? (
+                        <button
+                          type="button"
+                          aria-expanded={isExpanded}
+                          aria-controls={panelId}
+                          onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                          className="flex items-center gap-1.5 font-medium text-foreground hover:underline max-w-full"
+                        >
+                          <span
+                            aria-hidden="true"
+                            className={`text-muted-foreground transition-transform ${isExpanded ? "rotate-90" : ""}`}
+                          >
+                            ▸
+                          </span>
+                          <span className="truncate">{title}</span>
+                        </button>
+                      ) : (
+                        <p className="font-medium text-foreground truncate">{title}</p>
+                      )}
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        生成时间：{formatDateTime(item.createdTime)}
+                      </p>
+                    </div>
+                    <a
+                      href={item.webViewLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0"
+                    >
+                      <Button variant="outline" className="w-full sm:w-auto">
+                        在 Google Slides 中打开
+                      </Button>
+                    </a>
+                  </div>
+
+                  {item.program && isExpanded && (
+                    <div id={panelId}>
+                      <WorshipOrderSummary
+                        data={item.program.data}
+                        serviceDate={item.program.serviceDate}
+                        rawText={item.program.rawText}
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

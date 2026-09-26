@@ -26,14 +26,18 @@ export default function AdminPptGenerationPage() {
   const [step, setStep] = useState<Step>("input");
   const [serviceDate, setServiceDate] = useState(() => toDateInputValue(getComingSunday()));
   const [parsed, setParsed] = useState<WorshipOrderData | null>(null);
+  // Verbatim step-1 paste, kept so the result screen and the stored program can
+  // show the original text next to the parsed fields.
+  const [rawText, setRawText] = useState<string>("");
   const [result, setResult] = useState<GenerationResult | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function handleParsed(data: WorshipOrderData) {
+  function handleParsed(data: WorshipOrderData, text: string) {
     // Default communion to true on the first Sunday of the selected month
     const sunday = parseServiceDate(serviceDate) ?? getComingSunday();
     setParsed({ ...data, hasCommunion: data.hasCommunion || isFirstSundayOfMonth(sunday) });
+    setRawText(text);
     setStep("review");
     setError(null);
   }
@@ -45,7 +49,7 @@ export default function AdminPptGenerationPage() {
       const res = await fetch("/api/tools/ppt/generate-slides", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, serviceDate }),
+        body: JSON.stringify({ ...data, serviceDate, rawText }),
       });
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
@@ -60,6 +64,9 @@ export default function AdminPptGenerationPage() {
         throw new Error(json.error || `Server error ${res.status}`);
       }
       const json: GenerationResult = await res.json();
+      // The review form owns the edited copy, so adopt it — the result screen
+      // must show the program the deck was actually built from.
+      setParsed(data);
       setResult(json);
       setStep("result");
     } catch (err) {
@@ -73,6 +80,7 @@ export default function AdminPptGenerationPage() {
     setStep("input");
     setServiceDate(toDateInputValue(getComingSunday()));
     setParsed(null);
+    setRawText("");
     setResult(null);
     setError(null);
   }
@@ -127,8 +135,10 @@ export default function AdminPptGenerationPage() {
       {step === "result" && result && (
         <SlideGenerationResult
           presentationUrl={result.presentationUrl}
-          presentationId={result.presentationId}
           missingHymns={result.missingHymns}
+          program={parsed ?? undefined}
+          serviceDate={serviceDate}
+          rawText={rawText}
           onStartOver={handleStartOver}
         />
       )}
